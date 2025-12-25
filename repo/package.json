@@ -1,0 +1,22 @@
+{
+  "name": "info_systems",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "install:all": "pnpm install",
+    "build:types": "pnpm --filter @repo/types run build",
+    "dev:backend": "pnpm --filter @repo/backend-node run dev",
+    "dev:frontend": "pnpm --filter @repo/frontend-angular run start",
+    "dev:types": "pnpm --filter @repo/types run dev",
+    "types:generate": "supabase gen types typescript --db-url postgresql://postgres:postgres@localhost:54322/postgres > packages/types/src/database.types.ts && pnpm run build:types",
+    "types:generate:linked": "supabase gen types typescript --linked > packages/types/src/database.types.ts && pnpm run build:types"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "typescript": "^5.9.3"
+  },
+  "dependencies": {
+    "@types/node": "^24.10.4",
+    "tslib": "^2.8.1"
+  }
+}

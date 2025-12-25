@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  supabase:
+    image: supabase/supabase:latest
+    container_name: supabase
+    ports:
+      - "54321:5432"   # Postgres
+      - "54322:54322"  # API
+      - "54323:54323"  # Studio Dashboard
+    env_file:
+      - .env
+    volumes:
+      - ./supabase:/data
+    networks:
+      - appnet
+
+  backend:
+    build: ./apps/backend-node
+    container_name: backend
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"
+    depends_on:
+      - supabase
+    networks:
+      - appnet
+
+  frontend:
+    build: ./apps/frontend-angular
+    container_name: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+    networks:
+      - appnet
+
+networks:
+  appnet:
+    driver: bridge

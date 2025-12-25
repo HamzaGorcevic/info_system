@@ -1,0 +1,164 @@
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+    --color-primary-dark: #1B3C53;
+    --color-primary: #234C6A;
+    --color-primary-light: #456882;
+    --color-neutral-light: #E3E3E3;
+
+    --font-outfit: "Outfit", sans-serif;
+}
+
+:root {
+    --primary-dark: #1B3C53;
+    --primary: #234C6A;
+    --primary-light: #456882;
+    --neutral-light: #E3E3E3;
+    --font-main: 'Outfit', sans-serif;
+}
+
+* {
+    font-family: var(--font-main);
+}
+
+body {
+    background-color: #F0F2F5;
+    color: var(--primary-dark);
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #F0F2F5;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 10px;
+    border: 2px solid #F0F2F5;
+}
+
+/* Global Button Styles */
+.btn {
+    @apply px-8 py-4 font-black uppercase tracking-[0.2em] transition-all duration-500 border-2 inline-flex items-center justify-center cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed rounded-2xl text-xs;
+}
+
+.btn-primary {
+    background-color: #1B3C53;
+    color: white;
+    border-color: #1B3C53;
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.btn-primary:hover {
+    background-color: #234C6A;
+    box-shadow: 0 20px 40px rgba(27, 60, 83, 0.3);
+    transform: translateY(-4px);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.btn-outline {
+    @apply bg-transparent text-[#1B3C53] border-[#1B3C53] hover:bg-[#1B3C53] hover:text-white rounded-2xl;
+}
+
+.btn-ghost {
+    @apply bg-transparent text-[#456882] border-transparent hover:bg-[#456882]/10 rounded-2xl;
+}
+
+/* Input Styles */
+.input-field {
+    @apply w-full px-6 py-5 bg-white/70 backdrop-blur-md border-2 border-[#456882]/10 text-[#1B3C53] focus:outline-none focus:border-[#1B3C53] focus:bg-white transition-all duration-300 placeholder:text-[#456882]/30 rounded-[1.25rem] font-bold text-sm;
+}
+
+/* Card Styles */
+.glass-card {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 30px 60px rgba(27, 60, 83, 0.08);
+    padding: 2.5rem;
+    border-radius: 3rem;
+    transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.glass-card:hover {
+    box-shadow: 0 40px 80px rgba(27, 60, 83, 0.12);
+    transform: translateY(-10px);
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    @apply font-black tracking-tighter;
+    color: var(--primary-dark);
+    line-height: 0.9;
+}
+
+.text-gradient {
+    background: linear-gradient(135deg, #1B3C53 0%, #456882 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(40px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-fade-in-up {
+    animation: fadeInUp 1s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.stagger-1 {
+    animation-delay: 0.1s;
+}
+
+.stagger-2 {
+    animation-delay: 0.2s;
+}
+
+.stagger-3 {
+    animation-delay: 0.3s;
+}
+
+.stagger-4 {
+    animation-delay: 0.4s;
+}
+
+.stagger-5 {
+    animation-delay: 0.5s;
+}
+
+/* Utility Classes */
+.bg-mesh {
+    background-color: #F0F2F5;
+    background-image:
+        radial-gradient(at 0% 0%, rgba(27, 60, 83, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(69, 104, 130, 0.05) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(27, 60, 83, 0.05) 0px, transparent 50%),
+        radial-gradient(at 0% 100%, rgba(69, 104, 130, 0.05) 0px, transparent 50%);
+}

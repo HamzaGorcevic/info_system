@@ -1,0 +1,145 @@
+<div class="min-h-screen bg-mesh flex flex-col items-center justify-center p-6 sm:p-12 relative overflow-hidden">
+
+    <!-- Decorative Elements -->
+    <div class="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-[#1B3C53]/5 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-[-20%] left-[-10%] w-[60%] h-[60%] bg-[#456882]/5 rounded-full blur-3xl"></div>
+
+    <div class="w-full max-w-6xl relative z-10">
+        <div
+            class="grid grid-cols-1 lg:grid-cols-12 bg-white rounded-[3rem] shadow-[0_50px_100px_rgba(27,60,83,0.15)] overflow-hidden border border-white/20">
+
+            <!-- Left Side: Branding/Info -->
+            <div
+                class="lg:col-span-5 bg-[#1B3C53] p-12 md:p-16 flex flex-col justify-between text-white relative overflow-hidden">
+                <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-32 -mt-32 blur-3xl"></div>
+
+                <div class="relative z-10">
+                    <div
+                        class="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mb-10 border border-white/10">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
+                            </path>
+                        </svg>
+                    </div>
+                    <h1 style="color: white !important;" class="text-6xl font-black leading-none mb-8 tracking-tighter">
+                        ADMIN<br /><span class="opacity-40">PORTAL</span>
+                    </h1>
+                    <div class="w-20 h-2 bg-[#456882] mb-10 rounded-full"></div>
+                    <p class="text-xl font-medium text-white/70 leading-relaxed max-w-sm">
+                        Establish your digital command center. Register your building and start managing with precision
+                        and security.
+                    </p>
+                </div>
+
+                <div class="mt-16 space-y-6 relative z-10">
+                    <div class="flex items-center gap-6 group">
+                        <div
+                            class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center font-black text-sm border border-white/10 group-hover:bg-white group-hover:text-[#1B3C53] transition-all duration-500">
+                            01</div>
+                        <span
+                            class="uppercase tracking-[0.2em] font-black text-[10px] opacity-60 group-hover:opacity-100 transition-opacity">Create
+                            Identity</span>
+                    </div>
+                    <div class="flex items-center gap-6 group">
+                        <div
+                            class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center font-black text-sm border border-white/10 group-hover:bg-white group-hover:text-[#1B3C53] transition-all duration-500">
+                            02</div>
+                        <span
+                            class="uppercase tracking-[0.2em] font-black text-[10px] opacity-60 group-hover:opacity-100 transition-opacity">Register
+                            Asset</span>
+                    </div>
+                    <div class="flex items-center gap-6 group">
+                        <div
+                            class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center font-black text-sm border border-white/10 group-hover:bg-white group-hover:text-[#1B3C53] transition-all duration-500">
+                            03</div>
+                        <span
+                            class="uppercase tracking-[0.2em] font-black text-[10px] opacity-60 group-hover:opacity-100 transition-opacity">Initialize
+                            Control</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Side: Form -->
+            <div class="lg:col-span-7 p-12 md:p-16 bg-white">
+                <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="space-y-10">
+
+                    <div *ngIf="error" class="bg-red-50 border-l-4 border-red-600 p-6 rounded-2xl animate-fade-in-up">
+                        <h4 class="text-red-600 font-black text-xs uppercase tracking-widest mb-1">System Error</h4>
+                        <p class="text-sm text-red-700 font-bold">{{ error }}</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                        <section class="space-y-6">
+                            <h3 class="text-[10px] font-black tracking-[0.3em] text-[#456882] uppercase ml-1">
+                                Administrator Identity</h3>
+                            <div class="space-y-4">
+                                <input type="text" formControlName="fullName" placeholder="FULL NAME"
+                                    class="input-field">
+                                <input type="email" formControlName="email" placeholder="EMAIL ADDRESS"
+                                    class="input-field">
+                                <input type="password" formControlName="password" placeholder="SECURE PASSWORD"
+                                    class="input-field">
+                            </div>
+                        </section>
+
+                        <section class="space-y-6">
+                            <h3 class="text-[10px] font-black tracking-[0.3em] text-[#456882] uppercase ml-1">Asset
+                                Configuration</h3>
+                            <div class="space-y-4">
+                                <input type="text" formControlName="buildingName" placeholder="BUILDING NAME"
+                                    class="input-field">
+                                <input type="text" formControlName="location" placeholder="LOCATION / ADDRESS"
+                                    class="input-field">
+                                <div class="relative group">
+                                    <label
+                                        class="absolute -top-2 left-4 bg-white px-2 text-[9px] font-black text-[#456882] tracking-widest uppercase transition-colors group-focus-within:text-[#1B3C53]">Total
+                                        Units</label>
+                                    <input type="number" formControlName="numberApartments" class="input-field">
+                                </div>
+                            </div>
+                        </section>
+                    </div>
+
+                    <div class="pt-6 flex flex-col items-center gap-8">
+                        <app-ui-button type="submit" variant="primary"
+                            customClass="w-full !py-5 shadow-2xl shadow-[#1B3C53]/20" [loading]="loading"
+                            [disabled]="registerForm.invalid">
+                            INITIALIZE SYSTEM ONBOARDING
+                        </app-ui-button>
+
+                        <div class="text-center pt-8 border-t border-gray-100 w-full">
+                            <p class="text-[10px] font-bold text-[#456882] tracking-widest uppercase">
+                                Already have an account?
+                                <a routerLink="/login" class="text-[#1B3C53] hover:underline ml-2 font-black">Authorize
+                                    Session</a>
+                            </p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<app-ui-modal [isOpen]="showSuccessModal" title="Registration Complete" [showFooter]="true"
+    (closed)="navigateToLogin()">
+    <div class="text-center py-12">
+        <div
+            class="w-24 h-24 bg-[#1B3C53] text-white flex items-center justify-center mx-auto mb-8 rounded-[2rem] shadow-2xl shadow-[#1B3C53]/30">
+            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path>
+            </svg>
+        </div>
+        <h2 class="text-3xl font-black text-[#1B3C53] mb-3 uppercase tracking-tight">System Initialized</h2>
+        <p class="text-[#456882] font-medium max-w-xs mx-auto leading-relaxed">Your administrator account and building
+            profile have been successfully established in the secure database.</p>
+    </div>
+
+    <div footer class="w-full">
+        <app-ui-button variant="primary" customClass="w-full !py-5" (btnClick)="navigateToLogin()">
+            PROCEED TO LOGIN
+        </app-ui-button>
+    </div>
+</app-ui-modal>

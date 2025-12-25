@@ -1,9 +1,47 @@
+<<<<<<< HEAD
+=======
+# Dependencies
+node_modules/
+.pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+out/
+.next/
+.angular/
+out-tsc/
+bazel-out/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+*.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+.project
+.classpath
+.settings/
+*.sublime-workspace
+.history/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+>>>>>>> 0f59e93 (feat(auth/migration) Included auth logic on client and server)
 # Logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+<<<<<<< HEAD
 lerna-debug.log*
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
@@ -137,3 +175,20 @@ dist
 # Vite logs files
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
+=======
+testem.log
+libpeerconnection.log
+
+# Supabase
+.branches/
+.temp/
+supabase/.temp/
+supabase/functions/.env
+
+# Miscellaneous
+/connect.lock
+/coverage
+/typings
+__screenshots__/
+.sass-cache/
+>>>>>>> 0f59e93 (feat(auth/migration) Included auth logic on client and server)

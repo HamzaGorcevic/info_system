@@ -1,0 +1,27 @@
+{
+    "compilerOptions": {
+        "target": "ES2022",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "strict": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true,
+        "baseUrl": ".",
+        "paths": {
+            "@repo/supabase": [
+                "packages/supabase/src/client.ts"
+            ],
+            "@repo/supabase/*": [
+                "packages/supabase/src/*"
+            ],
+            "@repo/types": [
+                "packages/types/src/index.ts"
+            ],
+            "@repo/types/*": [
+                "packages/types/src/*"
+            ]
+        }
+    }
+}
