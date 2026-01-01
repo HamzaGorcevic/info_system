@@ -12,6 +12,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@repo/domain": "workspace:*",
     "@repo/supabase": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/morgan": "^1.9.10",

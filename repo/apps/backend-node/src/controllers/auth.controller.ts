@@ -1,12 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { authService } from '../services/auth.service.js';
-import { registerAdminSchema, loginSchema } from '../schemas/auth.schema.js';
 
 export class AuthController {
     async registerAdmin(req: Request, res: Response, next: NextFunction) {
         try {
-            const validatedData = registerAdminSchema.parse(req.body);
-            const result = await authService.registerAdmin(validatedData);
+            const result = await authService.registerAdmin(req.body);
             res.status(201).json({
                 message: 'Admin and Building registered successfully',
                 ...result
@@ -18,8 +16,7 @@ export class AuthController {
 
     async login(req: Request, res: Response, next: NextFunction) {
         try {
-            const validatedData = loginSchema.parse(req.body);
-            const result = await authService.login(validatedData);
+            const result = await authService.login(req.body);
             res.status(200).json({
                 message: 'Login successful',
                 ...result
@@ -31,8 +28,7 @@ export class AuthController {
 
     async registerTenant(req: Request, res: Response, next: NextFunction) {
         try {
-            const validatedData = req.body;
-            const result = await authService.registerTenant(validatedData);
+            const result = await authService.registerTenant(req.body);
             res.status(201).json({
                 message: 'Tenant registered successfully. Awaiting verification.',
                 ...result

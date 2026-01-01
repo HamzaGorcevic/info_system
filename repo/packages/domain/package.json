@@ -1,5 +1,5 @@
 {
-  "name": "@repo/supabase",
+  "name": "@repo/domain",
   "version": "1.0.0",
   "type": "module",
   "description": "",
@@ -12,7 +12,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.13.1",
   "dependencies": {
-    "@supabase/supabase-js": "^2.89.0"
+    "zod": "^4.2.1"
   },
   "exports": {
     ".": "./src/index.ts",

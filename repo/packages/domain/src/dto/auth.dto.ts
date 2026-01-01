@@ -22,6 +22,6 @@ export const registerTenantSchema = z.object({
     apartmentNumber: z.number().min(1),
 });
 
-export type RegisterAdminInput = z.infer<typeof registerAdminSchema>;
-export type LoginInput = z.infer<typeof loginSchema>;
-export type RegisterTenantInput = z.infer<typeof registerTenantSchema>;
+export type RegisterAdminInputDto = z.infer<typeof registerAdminSchema>;
+export type LoginInputDto = z.infer<typeof loginSchema>;
+export type RegisterTenantInputDto = z.infer<typeof registerTenantSchema>;

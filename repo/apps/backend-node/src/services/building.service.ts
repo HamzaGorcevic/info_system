@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@repo/supabase/admin";
+import { supabaseAdmin } from "@repo/supabase";
 export class BuildingService {
     async getUnverifiedTenants(buildingId: string) {
         console.log('Fetching unverified tenants for building:', buildingId);

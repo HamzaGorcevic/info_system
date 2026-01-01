@@ -1,9 +1,14 @@
-import { supabaseAdmin } from "@repo/supabase/admin";
-import { RegisterAdminInput, LoginInput } from "../schemas/auth.schema.js";
+import { supabaseAdmin } from "@repo/supabase";
 import { supabase } from "@repo/supabase";
+import { IUserRepository, RegisterAdminInputDto, LoginInputDto, RegisterTenantInputDto } from "@repo/domain";
+import { UserRepository } from "../repositories/user.repository.js"
 
 export class AuthService {
-    async registerAdmin(input: RegisterAdminInput) {
+    constructor(
+        private userRepository: IUserRepository = new UserRepository()
+    ) { }
+
+    async registerAdmin(input: RegisterAdminInputDto) {
         const { email, password, fullName, buildingName, location, numberApartments } = input;
 
         const { data: building, error: buildingError } = await supabaseAdmin
@@ -40,19 +45,16 @@ export class AuthService {
 
         const userId = authData.user.id;
 
-        // 3. Insert into public.users table
-        const { error: userError } = await supabaseAdmin
-            .from('users')
-            .insert({
+        // 3. Insert into public.users table using Repository
+        try {
+            await this.userRepository.create({
                 id: userId,
                 email,
-                full_name: fullName,
+                fullName,
                 role: 'manager',
-                is_verified: true,
-                verified_at: new Date().toISOString()
+                isVerified: true
             });
-
-        if (userError) {
+        } catch (userError: any) {
             await supabaseAdmin.auth.admin.deleteUser(userId);
             await supabaseAdmin.from('buildings').delete().eq('id', building.id);
             throw new Error(userError.message);
@@ -78,7 +80,7 @@ export class AuthService {
         };
     }
 
-    async login(input: LoginInput) {
+    async login(input: LoginInputDto) {
         const { email, password } = input;
 
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -107,7 +109,7 @@ export class AuthService {
         };
     }
 
-    async registerTenant(input: any) {
+    async registerTenant(input: RegisterTenantInputDto) {
         const { email, password, fullName, buildingId, apartmentNumber } = input;
         console.log(`Registering tenant ${fullName} for building ${buildingId}`);
 

@@ -4,7 +4,7 @@ import type { Request, Response } from "express"
 import cors from "cors"
 import morgan from "morgan"
 import routes from "./src/routes/index.js"
-import { errorHandler } from "./src/middleware/error.middleware.js"
+import { errorHandler } from "./src/middlewares/error.middleware.js"
 
 const app = express()
 
@@ -26,7 +26,7 @@ app.use(errorHandler)
 const port = process.env.PORT || 4000;
 
 const server = app.listen(port, () => {
-    console.log(`🚀 Backend active at http://localhost:${port}`)
+    console.log(` Backend active at http://localhost:${port}`)
 });
 
 // Catch port-in-use or other startup errors

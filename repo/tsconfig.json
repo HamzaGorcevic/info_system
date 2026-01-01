@@ -11,16 +11,13 @@
         "baseUrl": ".",
         "paths": {
             "@repo/supabase": [
-                "packages/supabase/src/client.ts"
-            ],
-            "@repo/supabase/*": [
-                "packages/supabase/src/*"
+                "packages/supabase/src/index.ts"
             ],
             "@repo/types": [
                 "packages/types/src/index.ts"
             ],
-            "@repo/types/*": [
-                "packages/types/src/*"
+            "@repo/domain": [
+                "packages/domain/src/index.ts"
             ]
         }
     }
