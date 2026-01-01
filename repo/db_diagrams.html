@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Schema Tables</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            padding: 40px;
+            background-color: #fff;
+            color: #000;
+        }
+
+        .table-container {
+            margin-bottom: 50px;
+            display: inline-block;
+            vertical-align: top;
+            margin-right: 20px;
+        }
+
+        table {
+            border-collapse: collapse;
+            width: 600px;
+            margin-bottom: 20px;
+            border: 1px solid #999;
+        }
+
+        th,
+        td {
+            border: 1px solid #999;
+            padding: 4px 8px;
+            font-size: 14px;
+        }
+
+        /* Main Header Style */
+        .main-header {
+            background-color: #808080;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            padding: 8px;
+        }
+
+        /* Column Headers Style */
+        .col-header {
+            background-color: #f2f2f2;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        /* Cell Styles */
+        td {
+            vertical-align: top;
+        }
+
+        .field-col {
+            width: 30%;
+            font-weight: bold;
+        }
+
+        .type-col {
+            width: 30%;
+        }
+
+        .constraint-col {
+            width: 40%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- buildings -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">buildings&lt;id, location, number_apartments, building_name,
+                        created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">location</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">number_apartments</td>
+                    <td class="type-col">integer</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_name</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- users -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">users&lt;id, email, full_name, role, is_verified, verified_by,
+                        verified_at, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, Strani ključ (auth.users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">email</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null, jedinstveno</td>
+                </tr>
+                <tr>
+                    <td class="field-col">full_name</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">role</td>
+                    <td class="type-col">varchar(50)</td>
+                    <td class="constraint-col">Not null, check (tenant, manager, household_member)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">is_verified</td>
+                    <td class="type-col">bool</td>
+                    <td class="constraint-col">default false</td>
+                </tr>
+                <tr>
+                    <td class="field-col">verified_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">verified_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- building_managers -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">building_managers&lt;id, user_id, building_id, created_at&gt;
+                    </th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">user_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (buildings)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- tenants -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">tenants&lt;id, user_id, building_id, tenant_number,
+                        apartment_number, is_owner, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">user_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (buildings)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">tenant_number</td>
+                    <td class="type-col">integer</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">apartment_number</td>
+                    <td class="type-col">integer</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">is_owner</td>
+                    <td class="type-col">bool</td>
+                    <td class="constraint-col">default false</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- tenant_expenses -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">tenant_expenses&lt;id, tenant_id, created_by, expense_type,
+                        amount, description, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">tenant_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (tenants)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">expense_type</td>
+                    <td class="type-col">varchar(100)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">amount</td>
+                    <td class="type-col">decimal(10, 2)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">description</td>
+                    <td class="type-col">text</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- servicers -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">servicers&lt;id, full_name, phone, email, company_name,
+                        profession, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">full_name</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">phone</td>
+                    <td class="type-col">varchar(50)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">email</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">company_name</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">profession</td>
+                    <td class="type-col">varchar(100)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- malfunctions -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">malfunctions&lt;id, tenant_id, reporter_id, servicer_id, title,
+                        description, category, status, assigned_at, started_at, resolved_at, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">tenant_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (tenants)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">reporter_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">servicer_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Strani ključ (servicers)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">title</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">description</td>
+                    <td class="type-col">text</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">category</td>
+                    <td class="type-col">varchar(100)</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">status</td>
+                    <td class="type-col">varchar(50)</td>
+                    <td class="constraint-col">default 'reported'</td>
+                </tr>
+                <tr>
+                    <td class="field-col">assigned_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">started_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">resolved_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- interventions -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">interventions&lt;id, malfunction_id, servicer_id, tenant_id,
+                        scheduled_at, started_at, completed_at, status, notes, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">malfunction_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (malfunctions)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">servicer_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (servicers)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">tenant_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (tenants)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">scheduled_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">started_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">completed_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">status</td>
+                    <td class="type-col">varchar(50)</td>
+                    <td class="constraint-col">default 'scheduled'</td>
+                </tr>
+                <tr>
+                    <td class="field-col">notes</td>
+                    <td class="type-col">text</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ratings -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">ratings&lt;id, intervention_id, servicer_id, rated_by,
+                        rating_score, comment, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">intervention_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (interventions)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">servicer_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (servicers)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">rated_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">rating_score</td>
+                    <td class="type-col">integer</td>
+                    <td class="constraint-col">Not null, check (1-5)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">comment</td>
+                    <td class="type-col">text</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- events -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">events&lt;id, building_id, title, scheduled_at, content,
+                        created_by, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Strani ključ (buildings)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">title</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">scheduled_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">content</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- messages -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">messages&lt;id, building_id, posted_by, content, message_type,
+                        created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Strani ključ (buildings)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">posted_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">content</td>
+                    <td class="type-col">text</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">message_type</td>
+                    <td class="type-col">varchar(50)</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- suggestions -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">suggestions&lt;id, building_id, created_by, title, content,
+                        status, percentage_of_votes, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Strani ključ (buildings)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">title</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">content</td>
+                    <td class="type-col">text</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">status</td>
+                    <td class="type-col">varchar(50)</td>
+                    <td class="constraint-col">default 'draft'</td>
+                </tr>
+                <tr>
+                    <td class="field-col">percentage_of_votes</td>
+                    <td class="type-col">integer</td>
+                    <td class="constraint-col">default 0</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- suggestion_votes -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">suggestion_votes&lt;id, suggestion_id, voted_by, vote,
+                        created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">suggestion_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (suggestions)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">voted_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">vote</td>
+                    <td class="type-col">bool</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- documents -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">documents&lt;id, building_id, uploaded_by, title, file_url,
+                        document_type, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Strani ključ (buildings)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">uploaded_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">title</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">file_url</td>
+                    <td class="type-col">text</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">document_type</td>
+                    <td class="type-col">varchar(100)</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- audit_logs -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">audit_logs&lt;id, user_id, action_type, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">user_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">action_type</td>
+                    <td class="type-col">varchar(100)</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- guest_access_tokens -->
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th colspan="3" class="main-header">guest_access_tokens&lt;id, token, servicer_id, malfunction_id,
+                        building_id, granted_by, expires_at, is_active, last_used_at, created_at&gt;</th>
+                </tr>
+                <tr class="col-header">
+                    <td>Polje</td>
+                    <td>Tip podatka</td>
+                    <td>Ograničenje</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td class="field-col">id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                </tr>
+                <tr>
+                    <td class="field-col">token</td>
+                    <td class="type-col">varchar(255)</td>
+                    <td class="constraint-col">Not null, jedinstveno</td>
+                </tr>
+                <tr>
+                    <td class="field-col">servicer_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (servicers)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">malfunction_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (malfunctions)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">building_id</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (buildings)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">granted_by</td>
+                    <td class="type-col">uuid</td>
+                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">expires_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">Not null</td>
+                </tr>
+                <tr>
+                    <td class="field-col">is_active</td>
+                    <td class="type-col">bool</td>
+                    <td class="constraint-col">default true</td>
+                </tr>
+                <tr>
+                    <td class="field-col">last_used_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col"></td>
+                </tr>
+                <tr>
+                    <td class="field-col">created_at</td>
+                    <td class="type-col">timestamp</td>
+                    <td class="constraint-col">default NOW()</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+</body>
+
+</html>

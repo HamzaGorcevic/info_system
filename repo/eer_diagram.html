@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EER Model Diagram</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({
+            startOnLoad: true,
+            flowchart: {
+                curve: 'basis',
+                defaultRenderer: 'elk'
+            }
+        });
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        .diagram-container {
+            width: 100%;
+            overflow: auto;
+            background: white;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>EER Model (Chen Notation Style)</h1>
+    <div class="diagram-container">
+        <pre class="mermaid">
+        flowchart TD
+            %% Styles
+            classDef entity fill:#fff,stroke:#000,stroke-width:2px;
+            classDef relation fill:#fff,stroke:#000,stroke-width:2px,shape:diamond;
+            classDef attribute fill:#fff,stroke:#000,stroke-width:1px,stroke-dasharray: 5 5;
+            classDef attributeKey fill:#fff,stroke:#000,stroke-width:1px,text-decoration:underline;
+
+            %% ================= USERS =================
+            USER[USERS]:::entity
+            userId([<u>id</u>]):::attributeKey
+            userEmail([email]):::attribute
+            userRole([role]):::attribute
+            userFullname([full_name]):::attribute
+            
+            USER --- userId
+            USER --- userEmail
+            USER --- userRole
+            USER --- userFullname
+
+            %% ================= BUILDINGS =================
+            BUILDING[BUILDINGS]:::entity
+            buildId([<u>id</u>]):::attributeKey
+            buildLoc([location]):::attribute
+            buildName([name]):::attribute
+            
+            BUILDING --- buildId
+            BUILDING --- buildLoc
+            BUILDING --- buildName
+
+            %% REL: MANAGES (User - Building)
+            MANAGES{MANAGES}:::relation
+            USER ---|1,N| MANAGES
+            MANAGES ---|1,N| BUILDING
+
+            %% ================= TENANTS =================
+            TENANT[TENANTS]:::entity
+            tenantId([<u>id</u>]):::attributeKey
+            tenantNum([tenant_number]):::attribute
+            aptNum([apartment_number]):::attribute
+            
+            TENANT --- tenantId
+            TENANT --- tenantNum
+            TENANT --- aptNum
+
+            %% REL: LIVES_IN (User - Tenant - Building)
+            %% Modeled as: User is a Tenant in a Building
+            IS_TENANT{IS_TENANT}:::relation
+            USER ---|1,1| IS_TENANT
+            IS_TENANT ---|0,1| TENANT
+            
+            LOCATED_IN{LOCATED_IN}:::relation
+            TENANT ---|1,1| LOCATED_IN
+            LOCATED_IN ---|0,N| BUILDING
+
+            %% ================= SERVICERS =================
+            SERVICER[SERVICERS]:::entity
+            servId([<u>id</u>]):::attributeKey
+            servName([full_name]):::attribute
+            servProf([profession]):::attribute
+            
+            SERVICER --- servId
+            SERVICER --- servName
+            SERVICER --- servProf
+
+            %% ================= MALFUNCTIONS =================
+            MALFUNCTION[MALFUNCTIONS]:::entity
+            malId([<u>id</u>]):::attributeKey
+            malTitle([title]):::attribute
+            malStatus([status]):::attribute
+            
+            MALFUNCTION --- malId
+            MALFUNCTION --- malTitle
+            MALFUNCTION --- malStatus
+
+            %% REL: REPORTS (Tenant reports Malfunction)
+            REPORTS{REPORTS}:::relation
+            TENANT ---|1,N| REPORTS
+            REPORTS ---|1,1| MALFUNCTION
+
+            %% REL: ASSIGNED_TO (Servicer assigned to Malfunction)
+            ASSIGNED{ASSIGNED}:::relation
+            SERVICER ---|0,N| ASSIGNED
+            ASSIGNED ---|0,N| MALFUNCTION
+
+            %% ================= INTERVENTIONS =================
+            INTERVENTION[INTERVENTIONS]:::entity
+            intId([<u>id</u>]):::attributeKey
+            intStatus([status]):::attribute
+            intDate([scheduled_at]):::attribute
+            
+            INTERVENTION --- intId
+            INTERVENTION --- intStatus
+            INTERVENTION --- intDate
+
+            %% REL: HAS_INTERVENTION (Malfunction has Intervention)
+            HAS_INT{HAS_INT}:::relation
+            MALFUNCTION ---|1,N| HAS_INT
+            HAS_INT ---|1,1| INTERVENTION
+
+            %% REL: PERFORMS (Servicer performs Intervention)
+            PERFORMS{PERFORMS}:::relation
+            SERVICER ---|1,N| PERFORMS
+            PERFORMS ---|0,N| INTERVENTION
+
+            %% ================= RATINGS =================
+            RATING[RATINGS]:::entity
+            rateId([<u>id</u>]):::attributeKey
+            rateScore([score]):::attribute
+            rateComment([comment]):::attribute
+            
+            RATING --- rateId
+            RATING --- rateScore
+            RATING --- rateComment
+
+            %% REL: RATED_BY (User rates Intervention)
+            GIVES_RATING{GIVES}:::relation
+            USER ---|1,N| GIVES_RATING
+            GIVES_RATING ---|1,1| RATING
+
+            RATES_INT{RATES}:::relation
+            RATING ---|1,1| RATES_INT
+            RATES_INT ---|0,N| INTERVENTION
+
+        </pre>
+    </div>
+</body>
+
+</html>
