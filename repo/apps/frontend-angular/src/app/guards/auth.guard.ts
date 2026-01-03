@@ -17,10 +17,13 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
         const router = inject(Router);
 
         if (authService.hasRole(allowedRoles)) {
-            return true;
+            if (authService.isVerified()) {
+                return true;
+            }
+            router.navigate(['/verification-pending']);
+            return false;
         }
 
-        // If logged in but wrong role, redirect to their correct dashboard
         if (authService.isLoggedIn()) {
             const user = authService.currentUser();
             if (user?.role === 'manager') {
@@ -31,7 +34,6 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
             return false;
         }
 
-        // Not logged in at all
         router.navigate(['/login']);
         return false;
     };

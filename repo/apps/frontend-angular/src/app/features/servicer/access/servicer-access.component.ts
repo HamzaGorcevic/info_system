@@ -9,7 +9,7 @@ import { ServicerMalfunctionDetailComponent } from '../malfunction-detail/servic
   standalone: true,
   imports: [CommonModule, ServicerMalfunctionDetailComponent],
   template: `
-    <div class="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-4">
+    <div class="min-h-screen bg-[#F0F2F5] flex items-center justify-center p-4 relative">
       <div *ngIf="isLoading" class="flex flex-col items-center">
         <div class="w-12 h-12 border-4 border-[#1B3C53] border-t-transparent rounded-full animate-spin mb-4"></div>
         <p class="text-[#456882] font-bold tracking-widest text-sm">VERIFYING ACCESS...</p>
@@ -25,6 +25,15 @@ import { ServicerMalfunctionDetailComponent } from '../malfunction-detail/servic
         <p class="text-[#456882]">{{ error }}</p>
       </div>
 
+      <button *ngIf="tokenData" 
+              (click)="logout()" 
+              class="absolute top-4 right-4 bg-white text-red-600 px-4 py-2 rounded-lg hover:bg-red-50 transition-colors shadow-md font-bold text-sm flex items-center gap-2">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9" />
+        </svg>
+        LEAVE SESSION
+      </button>
+
       <app-servicer-malfunction-detail 
         *ngIf="tokenData" 
         [data]="tokenData">
@@ -34,6 +43,7 @@ import { ServicerMalfunctionDetailComponent } from '../malfunction-detail/servic
 })
 export class ServicerAccessComponent implements OnInit {
   private route = inject(ActivatedRoute);
+  private router = inject(Router);
   private servicerService = inject(ServicerService);
   private cdr = inject(ChangeDetectorRef);
 
@@ -42,14 +52,26 @@ export class ServicerAccessComponent implements OnInit {
   tokenData: any = null;
 
   ngOnInit() {
-    const token = this.route.snapshot.paramMap.get('token');
+    let token = this.route.snapshot.paramMap.get('token');
+
+    if (!token) {
+      token = sessionStorage.getItem('servicer_token');
+    }
+
     if (!token) {
       this.error = 'Invalid link. Token is missing.';
       this.isLoading = false;
       return;
     }
 
-    console.log('Starting token verification for:', token);
+    if (this.route.snapshot.paramMap.get('token')) {
+      sessionStorage.setItem('servicer_token', token);
+
+      const cleanUrl = window.location.pathname.replace(`/${token}`, '');
+      window.history.replaceState({}, '', cleanUrl);
+    }
+
+    console.log('Starting token verification');
     this.servicerService.verifyToken(token).subscribe({
       next: (data) => {
         console.log('Token verification success:', data);
@@ -61,8 +83,14 @@ export class ServicerAccessComponent implements OnInit {
         console.error('Token verification failed', err);
         this.error = 'This link is invalid or has expired.';
         this.isLoading = false;
+        sessionStorage.removeItem('servicer_token');
         this.cdr.detectChanges();
       }
     });
+  }
+
+  logout() {
+    sessionStorage.removeItem('servicer_token');
+    this.router.navigate(['/login']);
   }
 }

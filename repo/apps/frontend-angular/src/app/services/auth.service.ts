@@ -65,4 +65,10 @@ export class AuthService {
         const user = this._user();
         return user && roles.includes(user.role);
     }
+
+    isVerified(): boolean {
+        const user = this._user();
+        if (user?.role === 'manager') return true;
+        return !!user?.is_verified;
+    }
 }

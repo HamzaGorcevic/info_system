@@ -1,14 +1,11 @@
-import { IMalfunctionRepository, CreateMalfunctionInput } from "@repo/domain";
+import { IMalfunctionRepository, CreateMalfunctionInput, IStorageService } from "@repo/domain";
 import { Database } from "@repo/types";
-import { SupabaseStorageService } from "./storage.service.js";
 
 export class MalfunctionsService {
-    constructor(
-        private malfunctionRepository: IMalfunctionRepository,
-        private storageService: SupabaseStorageService
-    ) { }
 
     async reportMalfunction(
+        malfunctionRepository: IMalfunctionRepository,
+        storageService: IStorageService,
         data: CreateMalfunctionInput,
         imageFile?: { buffer: Buffer, mimetype: string, originalname: string }
     ): Promise<Database['public']['Tables']['malfunctions']['Row']> {
@@ -16,28 +13,41 @@ export class MalfunctionsService {
 
         if (imageFile) {
             const path = `malfunctions/${Date.now()}_${imageFile.originalname}`;
-            imageUrl = await this.storageService.uploadImage('malfunctions', path, imageFile.buffer, imageFile.mimetype);
+            imageUrl = await storageService.uploadImage('malfunctions', path, imageFile.buffer, imageFile.mimetype);
         }
 
-        return this.malfunctionRepository.create({
+        return malfunctionRepository.create({
             ...data,
             image_url: imageUrl
         });
     }
 
-    async getMalfunction(id: string): Promise<Database['public']['Tables']['malfunctions']['Row'] | null> {
-        return this.malfunctionRepository.findById(id);
+    async getMalfunction(
+        malfunctionRepository: IMalfunctionRepository,
+        id: string
+    ): Promise<Database['public']['Tables']['malfunctions']['Row'] | null> {
+        return malfunctionRepository.findById(id);
     }
 
-    async getTenantMalfunctions(tenantId: string): Promise<Database['public']['Tables']['malfunctions']['Row'][]> {
-        return this.malfunctionRepository.findByTenantId(tenantId);
+    async getTenantMalfunctions(
+        malfunctionRepository: IMalfunctionRepository,
+        tenantId: string
+    ): Promise<Database['public']['Tables']['malfunctions']['Row'][]> {
+        return malfunctionRepository.findByTenantId(tenantId);
     }
 
-    async getAllMalfunctions(): Promise<Database['public']['Tables']['malfunctions']['Row'][]> {
-        return this.malfunctionRepository.findAll();
+    async getAllMalfunctions(
+        malfunctionRepository: IMalfunctionRepository
+    ): Promise<Database['public']['Tables']['malfunctions']['Row'][]> {
+        return malfunctionRepository.findAll();
     }
 
-    async rateMalfunction(data: Database['public']['Tables']['ratings']['Insert']): Promise<Database['public']['Tables']['ratings']['Row']> {
-        return this.malfunctionRepository.rate(data);
+    async rateMalfunction(
+        malfunctionRepository: IMalfunctionRepository,
+        data: Database['public']['Tables']['ratings']['Insert']
+    ): Promise<Database['public']['Tables']['ratings']['Row']> {
+        return malfunctionRepository.rate(data);
     }
 }
+
+export const malfunctionsService = new MalfunctionsService();

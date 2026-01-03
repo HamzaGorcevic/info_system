@@ -7,7 +7,7 @@ export interface IServicerRepository {
     createGuestToken(data: Database['public']['Tables']['guest_access_tokens']['Insert']): Promise<Database['public']['Tables']['guest_access_tokens']['Row']>;
     getBuildingIdFromMalfunction(malfunctionId: string): Promise<string>;
     validateGuestToken(token: string): Promise<any>;
-    updateMalfunctionStatus(malfunctionId: string, status: string): Promise<void>;
+    updateMalfunctionStatus(malfunctionId: string, status: string, token: string): Promise<void>;
     assignServicerToMalfunction(malfunctionId: string, servicerId: string): Promise<void>;
     getAllTokens(): Promise<any[]>;
     revokeToken(tokenId: string): Promise<void>;

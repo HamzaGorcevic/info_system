@@ -15,16 +15,20 @@
     "@repo/domain": "workspace:*",
     "@repo/supabase": "workspace:*",
     "@types/cors": "^2.8.19",
-    "@types/morgan": "^1.9.10",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^5.2.1",
-    "morgan": "^1.10.1",
+    "helmet": "^8.1.0",
+    "multer": "^2.0.2",
+    "pino": "^10.1.0",
+    "pino-http": "^11.0.0",
+    "pino-pretty": "^13.1.3",
     "zod": "^4.2.1"
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
     "@types/multer": "^2.0.0",
-    "@types/node": "^24.10.1"
+    "@types/node": "^24.10.1",
+    "@types/pino-http": "^6.1.0"
   }
 }

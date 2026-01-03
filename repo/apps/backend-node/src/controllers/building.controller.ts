@@ -1,18 +1,15 @@
 import { Request, Response, NextFunction } from 'express';
-import { BuildingService } from '../services/building.service.js';
+import { buildingService } from '../services/building.service.js';
+import { RepositoryFactory } from '../factories/repository.factory.js';
 
 export class BuildingController {
-    constructor(
-        private buildingService: BuildingService = new BuildingService()
-    ) {
-        this.findUnverifiedTenants = this.findUnverifiedTenants.bind(this);
-        this.verifyTenant = this.verifyTenant.bind(this);
-        this.getTenantData = this.getTenantData.bind(this);
-    }
     async findUnverifiedTenants(req: Request, res: Response, next: NextFunction) {
         try {
+            const context = req.context;
+            const buildingRepository = RepositoryFactory.getBuildingRepository(context);
+
             const { buildingId } = req.params;
-            const result = await this.buildingService.findUnverifiedTenants(buildingId);
+            const result = await buildingService.findUnverifiedTenants(buildingRepository, buildingId);
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -21,9 +18,13 @@ export class BuildingController {
 
     async verifyTenant(req: Request, res: Response, next: NextFunction) {
         try {
+            const context = req.context;
+            const buildingRepository = RepositoryFactory.getBuildingRepository(context);
+            const userRepository = RepositoryFactory.getUserRepository(context);
+
             const { userId } = req.params;
             const { adminId } = req.body;
-            const result = await this.buildingService.verifyTenant(userId, adminId);
+            const result = await buildingService.verifyTenant(buildingRepository, userRepository, userId, adminId);
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -32,8 +33,11 @@ export class BuildingController {
 
     async getTenantData(req: Request, res: Response, next: NextFunction) {
         try {
+            const context = req.context;
+            const buildingRepository = RepositoryFactory.getBuildingRepository(context);
+
             const { userId } = req.params;
-            const result = await this.buildingService.getTenantData(userId);
+            const result = await buildingService.getTenantData(buildingRepository, userId);
             res.status(200).json(result);
         } catch (error) {
             next(error);

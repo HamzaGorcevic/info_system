@@ -1,12 +1,14 @@
-import { supabaseAdmin, supabase } from "@repo/supabase"
+import { SupabaseClient } from "@repo/supabase";
 import { IUserRepository, User, CreateUserInput, UpdateUserInput } from "@repo/domain";
 import { Database } from "@repo/types";
 
 type DBUser = Database['public']['Tables']['users']['Row'];
 
 export class UserRepository implements IUserRepository {
+    constructor(private client: SupabaseClient) { }
+
     async findById(id: string): Promise<User | null> {
-        const { data, error } = await supabase
+        const { data, error } = await this.client
             .from('users')
             .select('*')
             .eq('id', id)
@@ -17,7 +19,7 @@ export class UserRepository implements IUserRepository {
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        const { data, error } = await supabase
+        const { data, error } = await this.client
             .from('users')
             .select('*')
             .eq('email', email)
@@ -28,7 +30,7 @@ export class UserRepository implements IUserRepository {
     }
 
     async create(user: CreateUserInput): Promise<User> {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await this.client
             .from('users')
             .insert({
                 id: user.id,
@@ -45,7 +47,7 @@ export class UserRepository implements IUserRepository {
     }
 
     async update(id: string, user: UpdateUserInput): Promise<User> {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await this.client
             .from('users')
             .update({
                 full_name: user.fullName,
@@ -61,7 +63,7 @@ export class UserRepository implements IUserRepository {
     }
 
     async verifyUser(id: string, adminId: string): Promise<void> {
-        const { error } = await supabaseAdmin
+        const { error } = await this.client
             .from('users')
             .update({
                 is_verified: true,

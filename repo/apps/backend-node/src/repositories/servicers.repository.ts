@@ -80,19 +80,22 @@ export class ServicersRepository implements IServicerRepository {
         return tenant.building_id;
     }
     async validateGuestToken(token: string): Promise<any> {
-        const { data, error } = await this.client
-            .from('guest_access_tokens')
-            .select('*, malfunctions(*)')
-            .eq('token', token)
-            .eq('is_active', true)
-            .gt('expires_at', new Date().toISOString())
-            .maybeSingle();
+        const { data, error } = await this.client.rpc('verify_guest_token', { token_param: token });
 
         if (error) throw new Error(error.message);
-        return data;
+
+        if (!data || data.length === 0) return null;
+
+        return data[0];
     }
 
-    async updateMalfunctionStatus(malfunctionId: string, status: string): Promise<void> {
+    async updateMalfunctionStatus(malfunctionId: string, status: string, token: string): Promise<void> {
+        await this.client.rpc('set_config', {
+            setting: 'request.guest_token',
+            value: token,
+            is_local: true
+        });
+
         const { error } = await this.client
             .from('malfunctions')
             .update({ status })

@@ -1,14 +1,13 @@
 import { supabaseAdmin } from "@repo/supabase";
 import { supabase } from "@repo/supabase";
-import { IUserRepository, RegisterAdminInputDto, LoginInputDto, RegisterTenantInputDto } from "@repo/domain";
-import { UserRepository } from "../repositories/user.repository.js"
+import { IUserRepository, IBuildingRepository, RegisterAdminInputDto, LoginInputDto, RegisterTenantInputDto } from "@repo/domain";
 
 export class AuthService {
-    constructor(
-        private userRepository: IUserRepository = new UserRepository()
-    ) { }
 
-    async registerAdmin(input: RegisterAdminInputDto) {
+    async registerAdmin(
+        userRepository: IUserRepository,
+        input: RegisterAdminInputDto
+    ) {
         const { email, password, fullName, buildingName, location, numberApartments } = input;
 
         const { data: building, error: buildingError } = await supabaseAdmin
@@ -25,7 +24,6 @@ export class AuthService {
             throw new Error(`Building creation failed: ${buildingError?.message}`);
         }
 
-        // 2. Create user in Supabase Auth
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
@@ -45,9 +43,8 @@ export class AuthService {
 
         const userId = authData.user.id;
 
-        // 3. Insert into public.users table using Repository
         try {
-            await this.userRepository.create({
+            await userRepository.create({
                 id: userId,
                 email,
                 fullName,
@@ -92,7 +89,6 @@ export class AuthService {
             throw new Error(error.message);
         }
 
-        // Fetch user profile to get the role
         const { data: profile, error: profileError } = await supabase
             .from('users')
             .select('*')
@@ -162,19 +158,12 @@ export class AuthService {
         };
     }
 
-    async getAdminBuildings(userId: string) {
+    async getAdminBuildings(
+        buildingRepository: IBuildingRepository,
+        userId: string
+    ) {
         console.log('Fetching buildings for admin:', userId);
-        const { data, error } = await supabaseAdmin
-            .from('building_managers')
-            .select('building_id, buildings(*)')
-            .eq('user_id', userId);
-
-        if (error) {
-            console.error('Supabase Error in getAdminBuildings:', error);
-            throw new Error(error.message);
-        }
-
-        const buildings = data.map((item: any) => item.buildings);
+        const buildings = await buildingRepository.findBuildingsByManagerId(userId);
         console.log(`Found ${buildings.length} buildings for admin ${userId}`);
         return buildings;
     }

@@ -1,20 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import { createAuthenticatedClient } from '@repo/supabase';
-import { MalfunctionsRepository } from '../repositories/malfunctions.repository.js';
-import { MalfunctionsService } from '../services/malfunctions.service.js';
-import { SupabaseStorageService } from '../services/storage.service.js';
+import { malfunctionsService } from '../services/malfunctions.service.js';
+import { RepositoryFactory } from '../factories/repository.factory.js';
 import { CreateMalfunctionInput } from '@repo/domain';
 
 export class MalfunctionsController {
     async reportMalfunction(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = req.headers.authorization?.split(' ')[1];
-            if (!token) throw new Error('No authorization token provided');
-
-            const client = createAuthenticatedClient(token);
-            const repository = new MalfunctionsRepository(client);
-            const storage = new SupabaseStorageService(client);
-            const service = new MalfunctionsService(repository, storage);
+            const context = req.context;
+            const repository = RepositoryFactory.getMalfunctionsRepository(context);
+            const storage = RepositoryFactory.getStorageService(context);
 
             const { tenant_id, reporter_id, title, description, category } = req.body;
 
@@ -33,7 +27,7 @@ export class MalfunctionsController {
                 originalname: req.file.originalname
             } : undefined;
 
-            const result = await service.reportMalfunction(malfunctionData, file);
+            const result = await malfunctionsService.reportMalfunction(repository, storage, malfunctionData, file);
             res.status(201).json(result);
         } catch (error) {
             next(error);
@@ -42,16 +36,11 @@ export class MalfunctionsController {
 
     async getMalfunctions(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = req.headers.authorization?.split(' ')[1];
-            if (!token) throw new Error('No authorization token provided');
-
-            const client = createAuthenticatedClient(token);
-            const repository = new MalfunctionsRepository(client);
-            const storage = new SupabaseStorageService(client);
-            const service = new MalfunctionsService(repository, storage);
+            const context = req.context;
+            const repository = RepositoryFactory.getMalfunctionsRepository(context);
 
             const { tenantId } = req.params;
-            const result = await service.getTenantMalfunctions(tenantId);
+            const result = await malfunctionsService.getTenantMalfunctions(repository, tenantId);
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -60,15 +49,10 @@ export class MalfunctionsController {
 
     async getAllMalfunctions(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = req.headers.authorization?.split(' ')[1];
-            if (!token) throw new Error('No authorization token provided');
+            const context = req.context;
+            const repository = RepositoryFactory.getMalfunctionsRepository(context);
 
-            const client = createAuthenticatedClient(token);
-            const repository = new MalfunctionsRepository(client);
-            const storage = new SupabaseStorageService(client);
-            const service = new MalfunctionsService(repository, storage);
-
-            const result = await service.getAllMalfunctions();
+            const result = await malfunctionsService.getAllMalfunctions(repository);
             res.status(200).json(result);
         } catch (error) {
             next(error);
@@ -77,25 +61,21 @@ export class MalfunctionsController {
 
     async rateMalfunction(req: Request, res: Response, next: NextFunction) {
         try {
-            const token = req.headers.authorization?.split(' ')[1];
-            if (!token) throw new Error('No authorization token provided');
-
-            const client = createAuthenticatedClient(token);
-            const repository = new MalfunctionsRepository(client);
-            const storage = new SupabaseStorageService(client);
-            const service = new MalfunctionsService(repository, storage);
+            const context = req.context;
+            const repository = RepositoryFactory.getMalfunctionsRepository(context);
 
             const { malfunction_id, servicer_id, rating_score, comment } = req.body;
-            const { data: { user }, error } = await client.auth.getUser();
 
-            if (error || !user) throw new Error('Unauthorized');
+            if (!context.currentUser) {
+                throw new Error('Unauthorized');
+            }
 
-            const result = await service.rateMalfunction({
+            const result = await malfunctionsService.rateMalfunction(repository, {
                 malfunction_id,
                 servicer_id,
                 rating_score,
                 comment,
-                rated_by: user.id
+                rated_by: context.currentUser.id
             });
             res.status(201).json(result);
         } catch (error) {

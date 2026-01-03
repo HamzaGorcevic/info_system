@@ -14,12 +14,18 @@ import { ServicerManagementComponent } from './features/admin/servicers/servicer
 import { ServicerAccessComponent } from './features/servicer/access/servicer-access.component';
 import { AccessTokensComponent } from './features/admin/access-tokens/access-tokens.component';
 import { roleGuard, guestGuard } from './guards/auth.guard';
+import { guestTokenGuard } from './guards/guest-token.guard';
+import { VerificationPendingComponent } from './features/auth/verification-pending/verification-pending.component';
 
 export const routes: Routes = [
     {
         path: 'login',
         component: Login,
         canActivate: [guestGuard]
+    },
+    {
+        path: 'verification-pending',
+        component: VerificationPendingComponent
     },
     {
         path: 'admin/register',
@@ -82,12 +88,22 @@ export const routes: Routes = [
         canActivate: [roleGuard(['tenant'])]
     },
     {
+        path: 'servicer/access',
+        component: ServicerAccessComponent,
+        canActivate: [guestTokenGuard]
+    },
+    {
         path: 'servicer/access/:token',
-        component: ServicerAccessComponent
+        component: ServicerAccessComponent,
+        canActivate: [guestTokenGuard]
     },
     {
         path: '',
         redirectTo: 'login',
         pathMatch: 'full'
+    },
+    {
+        path: '**',
+        redirectTo: 'login'
     }
 ];
