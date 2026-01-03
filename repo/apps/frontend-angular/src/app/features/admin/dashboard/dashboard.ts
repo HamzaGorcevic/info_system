@@ -6,10 +6,10 @@ import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 
 @Component({
-    selector: 'app-dashboard',
-    standalone: true,
-    imports: [CommonModule, RouterModule, UiCard, UiButton],
-    template: `
+  selector: 'app-dashboard',
+  standalone: true,
+  imports: [CommonModule, RouterModule, UiCard, UiButton],
+  template: `
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12">
       <div class="max-w-7xl mx-auto">
         <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 animate-fade-in-up">
@@ -54,6 +54,45 @@ import { UiButton } from '../../../shared/ui/button/button';
               </div>
             </app-ui-card>
           </div>
+          
+          <div class="animate-fade-in-up stagger-3">
+            <app-ui-card title="MALFUNCTION MANAGEMENT" class="h-full">
+              <div class="flex flex-col h-full">
+                <p class="text-[#456882] mb-8 leading-relaxed">Oversee reported malfunctions and assign servicers with access tokens.</p>
+                <div class="mt-auto">
+                  <app-ui-button variant="primary" class="w-full" routerLink="/admin/malfunctions">
+                    MANAGE MALFUNCTIONS
+                  </app-ui-button>
+                </div>
+              </div>
+            </app-ui-card>
+          </div>
+
+          <div class="animate-fade-in-up stagger-4">
+            <app-ui-card title="SERVICER MANAGEMENT" class="h-full">
+              <div class="flex flex-col h-full">
+                <p class="text-[#456882] mb-8 leading-relaxed">Manage service providers, view ratings, and generate access tokens.</p>
+                <div class="mt-auto">
+                  <app-ui-button variant="primary" class="w-full" routerLink="/admin/servicers">
+                    MANAGE SERVICERS
+                  </app-ui-button>
+                </div>
+              </div>
+            </app-ui-card>
+          </div>
+
+          <div class="animate-fade-in-up stagger-5">
+            <app-ui-card title="ACCESS TOKENS" class="h-full">
+              <div class="flex flex-col h-full">
+                <p class="text-[#456882] mb-8 leading-relaxed">View and manage all generated access tokens for servicers.</p>
+                <div class="mt-auto">
+                  <app-ui-button variant="primary" class="w-full" routerLink="/admin/tokens">
+                    MANAGE TOKENS
+                  </app-ui-button>
+                </div>
+              </div>
+            </app-ui-card>
+          </div>
 
           <div class="animate-fade-in-up stagger-3">
             <app-ui-card title="SYSTEM STATUS" class="h-full">
@@ -90,12 +129,12 @@ import { UiButton } from '../../../shared/ui/button/button';
   `
 })
 export class Dashboard implements OnInit {
-    constructor(private authService: AuthService) { }
+  constructor(private authService: AuthService) { }
 
-    ngOnInit() { }
+  ngOnInit() { }
 
-    logout() {
-        this.authService.logout();
-        window.location.href = '/login';
-    }
+  logout() {
+    this.authService.logout();
+    window.location.href = '/login';
+  }
 }

@@ -5,4 +5,5 @@ export interface IUserRepository {
     findByEmail(email: string): Promise<User | null>;
     create(user: CreateUserInput): Promise<User>;
     update(id: string, user: UpdateUserInput): Promise<User>;
+    verifyUser(id: string, adminId: string): Promise<void>;
 }

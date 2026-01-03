@@ -1,0 +1,82 @@
+<app-tenant-nav></app-tenant-nav>
+
+<div class="min-h-screen bg-mesh p-6 md:p-12 pt-0">
+    <div class="max-w-2xl mx-auto">
+        <div class="mb-6">
+            <app-back-button route="/tenant/malfunctions" label="Back to Issues"></app-back-button>
+        </div>
+        <app-ui-card title="REPORT MALFUNCTION">
+            <form [formGroup]="reportForm" (ngSubmit)="onSubmit()" class="space-y-6">
+                <div class="space-y-2">
+                    <label for="title"
+                        class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Title</label>
+                    <input type="text" id="title" formControlName="title" placeholder="e.g., Leaking Faucet"
+                        class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53] placeholder-[#456882]/50">
+                </div>
+
+                <div class="space-y-2">
+                    <label for="category"
+                        class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Category</label>
+                    <select id="category" formControlName="category"
+                        class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53]">
+                        <option value="">Select a category</option>
+                        <option value="plumbing">Plumbing</option>
+                        <option value="electrical">Electrical</option>
+                        <option value="structural">Structural</option>
+                        <option value="appliance">Appliance</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+
+                <div class="space-y-2">
+                    <label for="description"
+                        class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Description</label>
+                    <textarea id="description" formControlName="description" rows="4"
+                        placeholder="Describe the problem in detail..."
+                        class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53] placeholder-[#456882]/50 resize-none"></textarea>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Photo
+                        Evidence</label>
+                    <div class="border-2 border-dashed border-[#1B3C53]/20 rounded-xl p-8 text-center hover:bg-[#F0F2F5] transition-colors cursor-pointer"
+                        (click)="fileInput.click()">
+                        <input type="file" id="image" (change)="onFileSelected($event)" accept="image/*" hidden
+                            #fileInput>
+
+                        <div *ngIf="!previewUrl" class="flex flex-col items-center gap-2">
+                            <div
+                                class="w-12 h-12 bg-[#1B3C53]/10 rounded-full flex items-center justify-center text-[#1B3C53]">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2"
+                                    stroke="currentColor" class="w-6 h-6">
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                        d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+                                </svg>
+                            </div>
+                            <span class="font-bold text-[#1B3C53]">Click to upload photo</span>
+                            <span class="text-xs text-[#456882]">JPG, PNG up to 5MB</span>
+                        </div>
+
+                        <div *ngIf="previewUrl" class="relative group">
+                            <img [src]="previewUrl" alt="Preview" class="max-h-64 mx-auto rounded-lg shadow-md">
+                            <div
+                                class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity rounded-lg">
+                                <span class="text-white font-bold">Change Photo</span>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="text-xs font-medium text-[#1B3C53]" *ngIf="selectedFile">{{ selectedFile.name }}</span>
+                </div>
+
+                <div class="pt-4">
+                    <app-ui-button type="submit" variant="primary" customClass="w-full !py-4"
+                        [disabled]="reportForm.invalid || isSubmitting" [loading]="isSubmitting">
+                        SUBMIT REPORT
+                    </app-ui-button>
+                </div>
+            </form>
+        </app-ui-card>
+    </div>
+</div>

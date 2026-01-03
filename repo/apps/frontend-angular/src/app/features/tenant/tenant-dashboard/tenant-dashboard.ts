@@ -1,16 +1,20 @@
 import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../services/auth.service';
 import { BuildingService } from '../../../services/building.service';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
+import { TenantData } from '../../../models/domain.models';
+import { TenantNavComponent } from '../../../shared/ui/tenant-nav/tenant-nav.component';
 
 @Component({
-    selector: 'app-tenant-dashboard',
-    standalone: true,
-    imports: [CommonModule, UiCard, UiButton],
-    template: `
-    <div class="min-h-screen bg-mesh p-6 md:p-12">
+  selector: 'app-tenant-dashboard',
+  standalone: true,
+  imports: [CommonModule, UiCard, UiButton, TenantNavComponent],
+  template: `
+    <app-tenant-nav></app-tenant-nav>
+    <div class="min-h-screen bg-mesh p-6 md:p-12 pt-0">
       <div class="max-w-5xl mx-auto">
         <header class="flex justify-between items-center mb-16 animate-fade-in-up">
           <div>
@@ -67,8 +71,8 @@ import { UiButton } from '../../../shared/ui/button/button';
           <div class="animate-fade-in-up stagger-3">
             <app-ui-card title="QUICK ACTIONS">
               <div class="space-y-4">
-                <app-ui-button variant="primary" customClass="w-full !py-6 !text-sm" [disabled]="!isVerified">
-                  REPORT MALFUNCTION
+                <app-ui-button variant="primary" customClass="w-full !py-6 !text-sm" [disabled]="!isVerified" (btnClick)="navigateTo('/tenant/malfunctions')">
+                  MALFUNCTIONS
                 </app-ui-button>
                 <app-ui-button variant="outline" customClass="w-full !py-6 !text-sm" [disabled]="!isVerified">
                   VIEW EXPENSES
@@ -85,36 +89,41 @@ import { UiButton } from '../../../shared/ui/button/button';
   `
 })
 export class TenantDashboard implements OnInit {
-    isVerified = false;
-    tenantData: any = null;
+  isVerified = false;
+  tenantData: TenantData | null = null;
 
-    constructor(
-        private authService: AuthService,
-        private buildingService: BuildingService,
-        private cdr: ChangeDetectorRef
-    ) { }
+  constructor(
+    private authService: AuthService,
+    private buildingService: BuildingService,
+    private cdr: ChangeDetectorRef,
+    private router: Router
+  ) { }
 
-    ngOnInit() {
-        const user = this.authService.currentUser();
-        if (user) {
-            this.isVerified = user.is_verified;
-            this.loadTenantData(user.id);
-        }
+  navigateTo(path: string) {
+    this.router.navigate([path]);
+  }
+
+  ngOnInit() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.isVerified = user.is_verified;
+      this.loadTenantData(user.id);
     }
+  }
 
-    loadTenantData(userId: string) {
-        if (this.tenantData && this.tenantData.user_id === userId) return;
-        this.buildingService.getTenantData(userId).subscribe({
-            next: (data) => {
-                this.tenantData = data;
-                this.cdr.detectChanges();
-            },
-            error: (err) => console.error('Error loading tenant data:', err)
-        });
-    }
+  loadTenantData(userId: string) {
+    if (this.tenantData && this.tenantData.user_id === userId) return;
+    this.buildingService.getTenantData(userId).subscribe({
+      next: (data) => {
+        this.tenantData = data;
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error loading tenant data:', err)
+    });
+  }
 
-    logout() {
-        this.authService.logout();
-        window.location.href = '/login';
-    }
+  logout() {
+    this.authService.logout();
+    window.location.href = '/login';
+  }
 }

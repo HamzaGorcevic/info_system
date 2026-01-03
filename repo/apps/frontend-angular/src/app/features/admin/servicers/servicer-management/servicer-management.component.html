@@ -1,0 +1,177 @@
+<app-admin-nav></app-admin-nav>
+
+<div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-6">
+            <app-back-button route="/dashboard" label="Back to Dashboard"></app-back-button>
+        </div>
+
+        <header class="flex justify-between items-center mb-12 animate-fade-in-up">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-[#1B3C53] mb-2">
+                    SERVICER <span class="text-gradient">MANAGEMENT</span>
+                </h1>
+                <p class="text-[#456882] font-bold uppercase tracking-[0.3em] text-xs">Manage Contractors & Access</p>
+            </div>
+            <app-ui-button variant="primary" (btnClick)="toggleAddForm()" customClass="!rounded-full px-8">
+                {{ showAddForm ? 'CANCEL' : 'ADD NEW SERVICER' }}
+            </app-ui-button>
+        </header>
+
+        <div *ngIf="showAddForm" class="mb-12 animate-fade-in-up">
+            <app-ui-card title="ADD NEW SERVICER">
+                <form [formGroup]="addForm" (ngSubmit)="onSubmit()" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Full
+                                Name</label>
+                            <input type="text" formControlName="full_name"
+                                class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53]">
+                        </div>
+                        <div class="space-y-2">
+                            <label
+                                class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Profession</label>
+                            <input type="text" formControlName="profession" placeholder="e.g. Plumber"
+                                class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53]">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Phone</label>
+                            <input type="text" formControlName="phone"
+                                class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53]">
+                        </div>
+                        <div class="space-y-2">
+                            <label class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Email</label>
+                            <input type="email" formControlName="email"
+                                class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53]">
+                        </div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-sm font-bold text-[#1B3C53] uppercase tracking-wider">Company
+                            Name</label>
+                        <input type="text" formControlName="company_name"
+                            class="w-full p-4 bg-[#F0F2F5] border-2 border-transparent rounded-xl focus:border-[#1B3C53] focus:outline-none transition-colors font-medium text-[#1B3C53]">
+                    </div>
+
+                    <div class="pt-4">
+                        <app-ui-button type="submit" variant="primary" customClass="w-full !py-4"
+                            [disabled]="addForm.invalid">
+                            CREATE SERVICER
+                        </app-ui-button>
+                    </div>
+                </form>
+            </app-ui-card>
+        </div>
+
+        <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+            <div class="w-12 h-12 border-4 border-[#1B3C53] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        <div *ngIf="!isLoading && servicers.length === 0" class="text-center py-20 animate-fade-in-up">
+            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-12 h-12 text-[#456882]">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M18 18.72a9.094 9.094 0 003.741-.479 3 3 0 00-4.682-2.72m.94 3.198l.001.031c0 .225-.012.447-.037.666A11.944 11.944 0 0112 21c-2.17 0-4.207-.576-5.963-1.584A6.062 6.062 0 016 18.719m12 0a5.971 5.971 0 00-.941-3.197m0 0A5.995 5.995 0 0012 12.75a5.995 5.995 0 00-5.058 2.772m0 0a3 3 0 00-4.681 2.72 8.986 8.986 0 003.74.477m.94-3.197a5.971 5.971 0 00-.94 3.197M15 6.75a3 3 0 11-6 0 3 3 0 016 0zm6 3a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0zm-13.5 0a2.25 2.25 0 11-4.5 0 2.25 2.25 0 014.5 0z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[#1B3C53] mb-2">No Servicers Found</h3>
+            <p class="text-[#456882]">Add your first servicer to get started.</p>
+        </div>
+
+        <div *ngIf="!isLoading && servicers.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div *ngFor="let servicer of servicers; let i = index" class="animate-fade-in-up"
+                [style.animation-delay]="i * 100 + 'ms'">
+                <app-ui-card [title]="servicer.profession"
+                    class="h-full group hover:-translate-y-1 transition-transform duration-300">
+                    <div class="flex flex-col h-full">
+                        <div class="mb-6">
+                            <h3 class="text-xl font-black text-[#1B3C53] mb-1">{{ servicer.full_name }}</h3>
+                            <p class="text-[#456882] font-medium text-sm">{{ servicer.company_name || 'Independent
+                                Contractor' }}</p>
+
+                            <div class="flex items-center gap-2 mt-2">
+                                <div class="flex text-yellow-400">
+                                    <svg *ngFor="let star of [1,2,3,4,5]" xmlns="http://www.w3.org/2000/svg"
+                                        viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4"
+                                        [class.text-gray-300]="star > getAverageRating(servicer)">
+                                        <path fill-rule="evenodd"
+                                            d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.007 5.404.433c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.433 2.082-5.006z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <span class="text-xs font-bold text-[#456882]">({{ getRatingCount(servicer) }}
+                                    ratings)</span>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4 mb-8 flex-grow">
+                            <div class="flex items-center gap-3 text-[#456882]">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="w-5 h-5">
+                                    <path fill-rule="evenodd"
+                                        d="M2 3.5A1.5 1.5 0 013.5 2h1.148a1.5 1.5 0 011.465 1.175l.716 3.223a1.5 1.5 0 01-1.052 1.767l-.933.267c-.41.117-.643.555-.48.95a11.542 11.542 0 006.254 6.254c.395.163.833-.07.95-.48l.267-.933a1.5 1.5 0 011.767-1.052l3.223.716A1.5 1.5 0 0118 15.352V16.5a1.5 1.5 0 01-1.5 1.5H15c-1.149 0-2.263-.15-3.326-.43A13.022 13.022 0 012.43 8.326 13.019 13.019 0 012 5V3.5z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                                <span class="text-sm font-bold">{{ servicer.phone }}</span>
+                            </div>
+                            <div class="flex items-center gap-3 text-[#456882]" *ngIf="servicer.email">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                                    class="w-5 h-5">
+                                    <path
+                                        d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+                                    <path
+                                        d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+                                </svg>
+                                <span class="text-sm font-bold">{{ servicer.email }}</span>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t-2 border-[#F0F2F5] mt-auto">
+                            <app-ui-button variant="outline" customClass="w-full !py-3 !text-xs"
+                                (btnClick)="openAssignModal(servicer)">
+                                GENERATE ACCESS TOKEN
+                            </app-ui-button>
+                        </div>
+                    </div>
+                </app-ui-card>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assign Modal -->
+    <app-ui-modal [isOpen]="showAssignModal" [title]="'Assign Task to ' + (selectedServicer?.full_name || 'Servicer')"
+        (closed)="closeAssignModal()" [showFooter]="false">
+
+        <p class="text-[#456882] mb-4">Select a reported malfunction to assign to this servicer:</p>
+
+        <div class="space-y-3 max-h-[60vh] overflow-y-auto">
+            <div *ngFor="let m of malfunctions"
+                class="p-4 border border-[#F0F2F5] rounded-xl hover:border-[#1B3C53] cursor-pointer transition-colors"
+                (click)="assignToken(m)">
+                <div class="flex justify-between items-start mb-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-[#1B3C53]">{{ m.category || 'General'
+                        }}</span>
+                    <span
+                        class="text-[10px] font-black uppercase tracking-widest px-2 py-1 bg-gray-100 rounded-full text-gray-600">
+                        {{ m.status }}
+                    </span>
+                </div>
+                <h4 class="font-bold text-[#1B3C53] mb-1">{{ m.title }}</h4>
+                <p class="text-sm text-[#456882] line-clamp-2">{{ m.description }}</p>
+            </div>
+
+            <div *ngIf="malfunctions.length === 0" class="text-center py-8 text-[#456882]">
+                No unresolved malfunctions found.
+            </div>
+        </div>
+    </app-ui-modal>
+
+    <!-- Token Success Modal -->
+    <app-token-success-modal [isOpen]="!!generatedToken" [token]="generatedToken"
+        [servicerName]="selectedServicer?.full_name || ''" (closed)="closeSuccessModal()">
+    </app-token-success-modal>
+</div>

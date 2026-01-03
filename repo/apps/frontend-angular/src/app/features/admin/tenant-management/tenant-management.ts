@@ -2,25 +2,24 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BuildingService } from '../../../services/building.service';
 import { AuthService } from '../../../services/auth.service';
-import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 import { RouterModule } from '@angular/router';
+import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
+import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
-    selector: 'app-tenant-management',
-    standalone: true,
-    imports: [CommonModule, UiButton, RouterModule],
-    template: `
-    <div class="min-h-screen bg-mesh p-6 md:p-12">
+  selector: 'app-tenant-management',
+  standalone: true,
+  imports: [CommonModule, UiButton, RouterModule, AdminNavComponent, BackButtonComponent],
+  template: `
+    <app-admin-nav></app-admin-nav>
+    <div class="min-h-screen bg-mesh p-6 md:p-12 pt-0">
       <div class="max-w-5xl mx-auto">
+        <div class="mb-6">
+            <app-back-button route="/dashboard" label="Back to Dashboard"></app-back-button>
+        </div>
         <header class="mb-16 flex flex-col md:flex-row justify-between items-start md:items-end animate-fade-in-up">
           <div>
-            <app-ui-button variant="ghost" routerLink="/dashboard" customClass="mb-6 !p-0 hover:!bg-transparent group">
-              <span class="flex items-center gap-2 text-[#456882] font-black tracking-widest text-[10px] group-hover:text-[#1B3C53] transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
-                BACK TO COMMAND CENTER
-              </span>
-            </app-ui-button>
             <h1 class="text-5xl font-black tracking-tighter text-[#1B3C53]">
               RESIDENT <span class="text-gradient">VERIFICATION</span>
             </h1>
@@ -93,58 +92,58 @@ import { RouterModule } from '@angular/router';
   `
 })
 export class TenantManagement implements OnInit {
-    pendingTenants: any[] = [];
+  pendingTenants: any[] = [];
 
-    constructor(
-        private buildingService: BuildingService,
-        private authService: AuthService,
-        private cdr: ChangeDetectorRef
-    ) { }
+  constructor(
+    private buildingService: BuildingService,
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-    ngOnInit() {
-        const user = this.authService.currentUser();
-        if (user) {
-            this.loadPending(user.id);
-        } else {
-            // Fallback to localStorage if signal is not yet set
-            const session = JSON.parse(localStorage.getItem('sb-session') || '{}');
-            const userId = session.user?.id || session.user?.profile?.id;
-            if (userId) {
-                this.loadPending(userId);
-            }
-        }
+  ngOnInit() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.loadPending(user.id);
+    } else {
+      // Fallback to localStorage if signal is not yet set
+      const session = JSON.parse(localStorage.getItem('sb-session') || '{}');
+      const userId = session.user?.id || session.user?.profile?.id;
+      if (userId) {
+        this.loadPending(userId);
+      }
     }
+  }
 
-    loadPending(adminId: string) {
-        this.authService.getAdminBuildings(adminId).subscribe({
-            next: (buildings: any[]) => {
-                this.pendingTenants = [];
-                buildings.forEach(building => {
-                    this.buildingService.getUnverifiedTenants(building.id).subscribe({
-                        next: (tenants: any[]) => {
-                            this.pendingTenants = [...this.pendingTenants, ...tenants];
-                            this.cdr.detectChanges();
-                        },
-                        error: (err) => console.error('Error loading tenants for building:', building.id, err)
-                    });
-                });
+  loadPending(adminId: string) {
+    this.authService.getAdminBuildings(adminId).subscribe({
+      next: (buildings: any[]) => {
+        this.pendingTenants = [];
+        buildings.forEach(building => {
+          this.buildingService.getUnverifiedTenants(building.id).subscribe({
+            next: (tenants: any[]) => {
+              this.pendingTenants = [...this.pendingTenants, ...tenants];
+              this.cdr.detectChanges();
             },
-            error: (err) => console.error('Error loading admin buildings:', err)
+            error: (err) => console.error('Error loading tenants for building:', building.id, err)
+          });
         });
-    }
+      },
+      error: (err) => console.error('Error loading admin buildings:', err)
+    });
+  }
 
-    verify(userId: string) {
-        const admin = this.authService.currentUser();
-        const adminId = admin?.id || JSON.parse(localStorage.getItem('sb-session') || '{}').user?.id;
+  verify(userId: string) {
+    const admin = this.authService.currentUser();
+    const adminId = admin?.id || JSON.parse(localStorage.getItem('sb-session') || '{}').user?.id;
 
-        if (adminId) {
-            this.buildingService.verifyTenant(userId, adminId).subscribe({
-                next: () => {
-                    console.log('Tenant verified successfully');
-                    this.loadPending(adminId);
-                },
-                error: (err) => console.error('Error verifying tenant:', err)
-            });
-        }
+    if (adminId) {
+      this.buildingService.verifyTenant(userId, adminId).subscribe({
+        next: () => {
+          console.log('Tenant verified successfully');
+          this.loadPending(adminId);
+        },
+        error: (err) => console.error('Error verifying tenant:', err)
+      });
     }
+  }
 }

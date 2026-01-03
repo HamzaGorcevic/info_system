@@ -1,0 +1,94 @@
+<app-tenant-nav></app-tenant-nav>
+
+<div class="min-h-screen bg-mesh p-6 md:p-12 pt-0">
+    <div class="max-w-7xl mx-auto">
+        <div class="mb-6">
+            <app-back-button route="/tenant/dashboard" label="Back to Dashboard"></app-back-button>
+        </div>
+
+        <header class="flex justify-between items-center mb-12 animate-fade-in-up">
+            <div>
+                <h1 class="text-4xl md:text-5xl font-black tracking-tighter text-[#1B3C53] mb-2">
+                    REPORTED <span class="text-gradient">ISSUES</span>
+                </h1>
+                <p class="text-[#456882] font-bold uppercase tracking-[0.3em] text-xs">Track Maintenance Requests</p>
+            </div>
+            <app-ui-button variant="primary" routerLink="/tenant/malfunctions/report" customClass="!rounded-full px-8">
+                REPORT NEW ISSUE
+            </app-ui-button>
+        </header>
+
+        <div *ngIf="isLoading" class="flex justify-center items-center py-20">
+            <div class="w-12 h-12 border-4 border-[#1B3C53] border-t-transparent rounded-full animate-spin"></div>
+        </div>
+
+        <div *ngIf="!isLoading && malfunctions.length === 0" class="text-center py-20 animate-fade-in-up">
+            <div class="w-24 h-24 bg-[#F0F2F5] rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                    stroke="currentColor" class="w-12 h-12 text-[#456882]">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                        d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-[#1B3C53] mb-2">No Issues Reported</h3>
+            <p class="text-[#456882]">Everything looks good! You haven't reported any malfunctions yet.</p>
+        </div>
+
+        <div *ngIf="!isLoading && malfunctions.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div *ngFor="let item of malfunctions; let i = index" class="animate-fade-in-up"
+                [style.animation-delay]="i * 100 + 'ms'">
+                <app-ui-card class="h-full group hover:-translate-y-1 transition-transform duration-300">
+                    <div class="flex flex-col h-full">
+                        <div class="relative h-48 -mx-6 -mt-6 mb-6 overflow-hidden border-b-2 border-[#1B3C53]"
+                            *ngIf="item.image_url">
+                            <img [src]="item.image_url" [alt]="item.title"
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-4 right-4">
+                                <span
+                                    [class]="'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ' + getStatusClass(item.status)">
+                                    {{ item.status.replace('_', ' ') }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!item.image_url" class="flex justify-between items-start mb-4">
+                            <span
+                                class="text-[10px] font-black uppercase tracking-widest text-[#456882] bg-[#F0F2F5] px-3 py-1 rounded-full">
+                                {{ item.category || 'General' }}
+                            </span>
+                            <span
+                                [class]="'px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ' + getStatusClass(item.status)">
+                                {{ item.status.replace('_', ' ') }}
+                            </span>
+                        </div>
+
+                        <h3 class="text-xl font-black text-[#1B3C53] mb-2 leading-tight">{{ item.title }}</h3>
+                        <p class="text-[#456882] text-sm leading-relaxed mb-6 line-clamp-3 flex-grow">{{
+                            item.description }}</p>
+
+                        <div *ngIf="item.status === 'resolved' && item.servicer_id && !hasUserRated(item)"
+                            class="border-t-2 border-[#F0F2F5] pt-4">
+                            <p class="text-xs font-bold text-[#456882] mb-2 uppercase tracking-wider">Rate Service
+                                Quality</p>
+                            <div class="flex gap-1 mb-3">
+                                <button *ngFor="let star of [1,2,3,4,5]" (click)="rateMalfunction(item, star, '')"
+                                    (mouseenter)="setHoveredStar(item.id, star)"
+                                    (mouseleave)="setHoveredStar(item.id, 0)"
+                                    class="text-3xl hover:scale-125 transition-all duration-200 cursor-pointer focus:outline-none"
+                                    [class.text-yellow-400]="getHoveredStar(item.id) >= star"
+                                    [class.text-gray-300]="getHoveredStar(item.id) < star">
+                                    ★
+                                </button>
+                            </div>
+                            <p class="text-xs text-[#456882] italic">Click a star to rate (1-5)</p>
+                        </div>
+
+                        <div class="text-xs text-[#456882] mt-auto pt-4 border-t border-[#F0F2F5]">
+                            Reported {{ item.created_at | date:'short' }}
+                        </div>
+                    </div>
+                </app-ui-card>
+            </div>
+        </div>
+    </div>
+</div>

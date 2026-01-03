@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "@repo/supabase"
+import { supabaseAdmin, supabase } from "@repo/supabase"
 import { IUserRepository, User, CreateUserInput, UpdateUserInput } from "@repo/domain";
 import { Database } from "@repo/types";
 
@@ -6,7 +6,7 @@ type DBUser = Database['public']['Tables']['users']['Row'];
 
 export class UserRepository implements IUserRepository {
     async findById(id: string): Promise<User | null> {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await supabase
             .from('users')
             .select('*')
             .eq('id', id)
@@ -17,7 +17,7 @@ export class UserRepository implements IUserRepository {
     }
 
     async findByEmail(email: string): Promise<User | null> {
-        const { data, error } = await supabaseAdmin
+        const { data, error } = await supabase
             .from('users')
             .select('*')
             .eq('email', email)
@@ -58,6 +58,19 @@ export class UserRepository implements IUserRepository {
 
         if (error) throw new Error(error.message);
         return this.mapToDomain(data as DBUser);
+    }
+
+    async verifyUser(id: string, adminId: string): Promise<void> {
+        const { error } = await supabaseAdmin
+            .from('users')
+            .update({
+                is_verified: true,
+                verified_by: adminId,
+                verified_at: new Date().toISOString()
+            })
+            .eq('id', id);
+
+        if (error) throw new Error(error.message);
     }
 
     private mapToDomain(dbUser: DBUser): User {

@@ -1,76 +1,43 @@
-import { supabaseAdmin } from "@repo/supabase";
-export class BuildingService {
-    async getUnverifiedTenants(buildingId: string) {
+import { IBuildiningRepository } from "packages/domain/src/repositories/buildings.repository.interface.js";
+import { BuildingRepository } from "../repositories/building.repository.js";
+import { UserRepository } from "../repositories/user.repository.js";
+import { IUserRepository } from "@repo/domain";
+import { Database } from "@repo/types";
+
+export class BuildingService implements IBuildiningRepository {
+    constructor(
+        private buildingRepository: BuildingRepository = new BuildingRepository(),
+        private userRepository: IUserRepository = new UserRepository()
+    ) { }
+
+    async findUnverifiedTenants(buildingId: string): Promise<Database['public']['Tables']['tenants']['Row'][]> {
         console.log('Fetching unverified tenants for building:', buildingId);
 
-        const { data, error } = await supabaseAdmin
-            .from('tenants')
-            .select('*, users!inner(*), buildings(*)')
-            .eq('building_id', buildingId)
-            .eq('users.is_verified', false);
-
-        if (error) {
-            console.error('Supabase Error in getUnverifiedTenants:', error);
-            throw new Error(error.message);
-        }
+        const data = await this.buildingRepository.findUnverifiedTenants(buildingId);
 
         console.log(`Found ${data?.length || 0} unverified tenants for building ${buildingId}`);
         return data;
     }
 
-    async verifyTenant(userId: string, adminId: string) {
-        const { error } = await supabaseAdmin
-            .from('users')
-            .update({
-                is_verified: true,
-                verified_by: adminId,
-                verified_at: new Date().toISOString()
-            })
-            .eq('id', userId);
+    async verifyTenant(userId: string, adminId: string): Promise<{ success: boolean }> {
+        await this.userRepository.verifyUser(userId, adminId);
 
-        if (error) {
-            throw new Error(error.message);
-        }
-
-        // Check if we should make them owner (First verified tenant in the apartment)
-        const { data: tenant } = await supabaseAdmin
-            .from('tenants')
-            .select('id, building_id, apartment_number')
-            .eq('user_id', userId)
-            .maybeSingle();
+        const tenant = await this.buildingRepository.findTenantByUserId(userId);
 
         if (tenant) {
-            // Check for existing owners in this apartment
-            const { count } = await supabaseAdmin
-                .from('tenants')
-                .select('*', { count: 'exact', head: true })
-                .eq('building_id', tenant.building_id)
-                .eq('apartment_number', tenant.apartment_number)
-                .eq('is_owner', true);
+            const count = await this.buildingRepository.countOwnersInApartment(tenant.building_id, tenant.apartment_number);
 
-            // If no owner exists for this apartment, make this user the owner
             if (count === 0) {
                 console.log(`Setting user ${userId} as owner of Apt ${tenant.apartment_number}`);
-                await supabaseAdmin
-                    .from('tenants')
-                    .update({ is_owner: true })
-                    .eq('id', tenant.id);
+                await this.buildingRepository.updateTenant(tenant.id, { is_owner: true });
             }
         }
 
         return { success: true };
     }
 
-    async getTenantData(userId: string) {
-        const { data, error } = await supabaseAdmin
-            .from('tenants')
-            .select('*, buildings(*)')
-            .eq('user_id', userId)
-            .maybeSingle();
-        if (error) {
-            console.error('Supabase Error in getTenantData:', error);
-            throw new Error(error.message);
-        }
+    async getTenantData(userId: string): Promise<Database['public']['Tables']['tenants']['Row'] | null> {
+        const data = await this.buildingRepository.findTenantByUserId(userId);
 
         if (!data) {
             console.warn('No tenant data found for user:', userId);

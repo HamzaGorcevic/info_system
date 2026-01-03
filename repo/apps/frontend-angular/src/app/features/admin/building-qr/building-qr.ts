@@ -5,21 +5,21 @@ import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 import { RouterModule } from '@angular/router';
 import * as QRCode from 'qrcode';
+import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
+import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
-    selector: 'app-building-qr',
-    standalone: true,
-    imports: [CommonModule, UiCard, UiButton, RouterModule],
-    template: `
-    <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12">
+  selector: 'app-building-qr',
+  standalone: true,
+  imports: [CommonModule, UiCard, UiButton, RouterModule, AdminNavComponent, BackButtonComponent],
+  template: `
+    <app-admin-nav></app-admin-nav>
+    <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
       <div class="max-w-4xl mx-auto">
+        <div class="mb-6">
+            <app-back-button route="/dashboard" label="Back to Dashboard"></app-back-button>
+        </div>
         <header class="mb-16 animate-fade-in-up">
-          <app-ui-button variant="ghost" routerLink="/dashboard" class="mb-6 !p-0 hover:!bg-transparent group">
-            <span class="flex items-center gap-2 text-[#456882] font-black tracking-widest text-[10px] group-hover:text-[#1B3C53] transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M15 19l-7-7 7-7"></path></svg>
-              BACK TO COMMAND CENTER
-            </span>
-          </app-ui-button>
           <h1 class="text-5xl font-black tracking-tighter text-[#1B3C53]">
             ACCESS <span class="text-gradient">GENERATOR</span>
           </h1>
@@ -73,48 +73,48 @@ import * as QRCode from 'qrcode';
   `
 })
 export class BuildingQR implements OnInit {
-    buildings: any[] = [];
+  buildings: any[] = [];
 
-    constructor(
-        private authService: AuthService,
-        private cdr: ChangeDetectorRef
-    ) { }
+  constructor(
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef
+  ) { }
 
-    ngOnInit() {
-        const sessionStr = localStorage.getItem('sb-session');
-        if (sessionStr) {
-            const session = JSON.parse(sessionStr);
-            if (session.user) {
-                this.authService.getAdminBuildings(session.user.id).subscribe((res: any[]) => {
-                    this.buildings = res;
-                    this.cdr.detectChanges();
-                    setTimeout(() => this.generateQRs(), 100);
-                });
-            }
-        }
-    }
-
-    generateQRs() {
-        this.buildings.forEach(b => {
-            const buildingId = b.id;
-            const canvas = document.getElementById(`qr-${buildingId}`) as HTMLCanvasElement;
-            if (canvas) {
-                const url = `${window.location.origin}/tenant/register?buildingId=${buildingId}`;
-                QRCode.toCanvas(canvas, url, {
-                    width: 200,
-                    margin: 2,
-                    color: {
-                        dark: '#1B3C53',
-                        light: '#FFFFFF'
-                    }
-                });
-            }
+  ngOnInit() {
+    const sessionStr = localStorage.getItem('sb-session');
+    if (sessionStr) {
+      const session = JSON.parse(sessionStr);
+      if (session.user) {
+        this.authService.getAdminBuildings(session.user.id).subscribe((res: any[]) => {
+          this.buildings = res;
+          this.cdr.detectChanges();
+          setTimeout(() => this.generateQRs(), 100);
         });
+      }
     }
+  }
 
-    copyLink(id: string) {
-        const url = `${window.location.origin}/tenant/register?buildingId=${id}`;
-        navigator.clipboard.writeText(url);
-        alert('Registration link copied to system clipboard.');
-    }
+  generateQRs() {
+    this.buildings.forEach(b => {
+      const buildingId = b.id;
+      const canvas = document.getElementById(`qr-${buildingId}`) as HTMLCanvasElement;
+      if (canvas) {
+        const url = `${window.location.origin}/tenant/register?buildingId=${buildingId}`;
+        QRCode.toCanvas(canvas, url, {
+          width: 200,
+          margin: 2,
+          color: {
+            dark: '#1B3C53',
+            light: '#FFFFFF'
+          }
+        });
+      }
+    });
+  }
+
+  copyLink(id: string) {
+    const url = `${window.location.origin}/tenant/register?buildingId=${id}`;
+    navigator.clipboard.writeText(url);
+    alert('Registration link copied to system clipboard.');
+  }
 }

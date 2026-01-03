@@ -87,6 +87,7 @@ CREATE TABLE malfunctions (
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     reporter_id UUID NOT NULL REFERENCES users(id),
     servicer_id UUID REFERENCES servicers(id),
+    image_url VARCHAR(250),
     title VARCHAR(255) NOT NULL,
     description TEXT NOT NULL,
     category VARCHAR(100),
