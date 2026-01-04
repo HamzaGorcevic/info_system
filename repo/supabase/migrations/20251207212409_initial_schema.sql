@@ -525,6 +525,9 @@ CREATE POLICY "Managers can update suggestions" ON suggestions
 CREATE POLICY "Managers can delete suggestions" ON suggestions
     FOR DELETE USING (is_manager_of_building(building_id));
 
+CREATE POLICY "Tenants can delete own suggestions" ON suggestions
+    FOR DELETE USING (created_by = auth.uid());
+
 -- SUGGESTION_VOTES
 ALTER TABLE suggestion_votes ENABLE ROW LEVEL SECURITY;
 
