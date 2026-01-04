@@ -2,35 +2,35 @@ import { IBuildingRepository, IUserRepository } from "@repo/domain";
 import { Database } from "@repo/types";
 
 export class BuildingService {
+    constructor(
+        private buildingRepository: IBuildingRepository,
+        private userRepository?: IUserRepository
+    ) { }
 
     async findUnverifiedTenants(
-        buildingRepository: IBuildingRepository,
         buildingId: string
     ): Promise<Database['public']['Tables']['tenants']['Row'][]> {
-        console.log('Fetching unverified tenants for building:', buildingId);
-
-        const data = await buildingRepository.findUnverifiedTenants(buildingId);
-
-        console.log(`Found ${data?.length || 0} unverified tenants for building ${buildingId}`);
+        const data = await this.buildingRepository.findUnverifiedTenants(buildingId);
         return data;
     }
 
     async verifyTenant(
-        buildingRepository: IBuildingRepository,
-        userRepository: IUserRepository,
         userId: string,
         adminId: string
     ): Promise<{ success: boolean }> {
-        await userRepository.verifyUser(userId, adminId);
+        if (!this.userRepository) {
+            throw new Error("UserRepository is required for verifyTenant");
+        }
 
-        const tenant = await buildingRepository.findTenantByUserId(userId);
+        await this.userRepository.verifyUser(userId, adminId);
+
+        const tenant = await this.buildingRepository.findTenantByUserId(userId);
 
         if (tenant) {
-            const count = await buildingRepository.countOwnersInApartment(tenant.building_id, tenant.apartment_number);
+            const count = await this.buildingRepository.countOwnersInApartment(tenant.building_id, tenant.apartment_number);
 
             if (count === 0) {
-                console.log(`Setting user ${userId} as owner of Apt ${tenant.apartment_number}`);
-                await buildingRepository.updateTenant(tenant.id, { is_owner: true });
+                await this.buildingRepository.updateTenant(tenant.id, { is_owner: true });
             }
         }
 
@@ -38,17 +38,14 @@ export class BuildingService {
     }
 
     async getTenantData(
-        buildingRepository: IBuildingRepository,
         userId: string
     ): Promise<Database['public']['Tables']['tenants']['Row'] | null> {
-        const data = await buildingRepository.findTenantByUserId(userId);
+        const data = await this.buildingRepository.findTenantByUserId(userId);
 
         if (!data) {
-            console.warn('No tenant data found for user:', userId);
+            return null;
         }
 
         return data;
     }
 }
-
-export const buildingService = new BuildingService();

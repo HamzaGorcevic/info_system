@@ -3,11 +3,16 @@ import { supabase } from "@repo/supabase";
 import { IUserRepository, IBuildingRepository, RegisterAdminInputDto, LoginInputDto, RegisterTenantInputDto } from "@repo/domain";
 
 export class AuthService {
+    constructor(
+        private userRepository?: IUserRepository,
+        private buildingRepository?: IBuildingRepository
+    ) { }
 
     async registerAdmin(
-        userRepository: IUserRepository,
         input: RegisterAdminInputDto
     ) {
+        if (!this.userRepository) throw new Error("UserRepository is required for registerAdmin");
+
         const { email, password, fullName, buildingName, location, numberApartments } = input;
 
         const { data: building, error: buildingError } = await supabaseAdmin
@@ -44,7 +49,7 @@ export class AuthService {
         const userId = authData.user.id;
 
         try {
-            await userRepository.create({
+            await this.userRepository.create({
                 id: userId,
                 email,
                 fullName,
@@ -159,14 +164,12 @@ export class AuthService {
     }
 
     async getAdminBuildings(
-        buildingRepository: IBuildingRepository,
         userId: string
     ) {
+        if (!this.buildingRepository) throw new Error("BuildingRepository is required for getAdminBuildings");
         console.log('Fetching buildings for admin:', userId);
-        const buildings = await buildingRepository.findBuildingsByManagerId(userId);
+        const buildings = await this.buildingRepository.findBuildingsByManagerId(userId);
         console.log(`Found ${buildings.length} buildings for admin ${userId}`);
         return buildings;
     }
 }
-
-export const authService = new AuthService();

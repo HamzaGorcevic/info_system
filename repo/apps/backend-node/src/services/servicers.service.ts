@@ -3,33 +3,32 @@ import { Database } from "@repo/types";
 import crypto from 'crypto';
 
 export class ServicersService {
+    constructor(
+        private servicersRepository: IServicerRepository
+    ) { }
 
     async createServicer(
-        servicersRepository: IServicerRepository,
         data: CreateServicerInput
     ): Promise<Database['public']['Tables']['servicers']['Row']> {
-        return servicersRepository.create(data);
+        return this.servicersRepository.create(data);
     }
 
-    async getAllServicers(
-        servicersRepository: IServicerRepository
-    ): Promise<Database['public']['Tables']['servicers']['Row'][]> {
-        return servicersRepository.findAll();
+    async getAllServicers(): Promise<Database['public']['Tables']['servicers']['Row'][]> {
+        return this.servicersRepository.findAll();
     }
 
     async assignToken(
-        servicersRepository: IServicerRepository,
         servicerId: string,
         malfunctionId: string,
         grantedBy: string
     ): Promise<string> {
-        const buildingId = await servicersRepository.getBuildingIdFromMalfunction(malfunctionId);
+        const buildingId = await this.servicersRepository.getBuildingIdFromMalfunction(malfunctionId);
 
         const token = crypto.randomBytes(32).toString('hex');
         const expiresAt = new Date();
         expiresAt.setHours(expiresAt.getHours() + 24);
 
-        await servicersRepository.createGuestToken({
+        await this.servicersRepository.createGuestToken({
             token,
             servicer_id: servicerId,
             malfunction_id: malfunctionId,
@@ -39,16 +38,15 @@ export class ServicersService {
             is_active: true
         });
 
-        await servicersRepository.assignServicerToMalfunction(malfunctionId, servicerId);
+        await this.servicersRepository.assignServicerToMalfunction(malfunctionId, servicerId);
 
         return token;
     }
 
     async verifyToken(
-        servicersRepository: IServicerRepository,
         token: string
     ): Promise<any> {
-        const tokenRecord = await servicersRepository.validateGuestToken(token);
+        const tokenRecord = await this.servicersRepository.validateGuestToken(token);
         if (!tokenRecord) {
             throw new Error('Invalid or expired token');
         }
@@ -56,27 +54,21 @@ export class ServicersService {
     }
 
     async updateStatus(
-        servicersRepository: IServicerRepository,
         token: string,
         status: string
     ): Promise<void> {
-        const tokenRecord = await this.verifyToken(servicersRepository, token);
+        const tokenRecord = await this.verifyToken(token);
         const malfunctionId = tokenRecord.malfunction_id;
-        await servicersRepository.updateMalfunctionStatus(malfunctionId, status, token);
+        await this.servicersRepository.updateMalfunctionStatus(malfunctionId, status, token);
     }
 
-    async getAllTokens(
-        servicersRepository: IServicerRepository
-    ): Promise<any[]> {
-        return servicersRepository.getAllTokens();
+    async getAllTokens(): Promise<any[]> {
+        return this.servicersRepository.getAllTokens();
     }
 
     async revokeToken(
-        servicersRepository: IServicerRepository,
         tokenId: string
     ): Promise<void> {
-        return servicersRepository.revokeToken(tokenId);
+        return this.servicersRepository.revokeToken(tokenId);
     }
 }
-
-export const servicersService = new ServicersService();
