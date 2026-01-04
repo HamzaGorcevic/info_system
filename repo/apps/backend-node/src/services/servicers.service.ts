@@ -45,7 +45,7 @@ export class ServicersService {
 
     async verifyToken(
         token: string
-    ): Promise<any> {
+    ): Promise<Database['public']['Tables']['guest_access_tokens']['Row']> {
         const tokenRecord = await this.servicersRepository.validateGuestToken(token);
         if (!tokenRecord) {
             throw new Error('Invalid or expired token');
@@ -62,7 +62,7 @@ export class ServicersService {
         await this.servicersRepository.updateMalfunctionStatus(malfunctionId, status, token);
     }
 
-    async getAllTokens(): Promise<any[]> {
+    async getAllTokens(): Promise<Database['public']['Tables']['guest_access_tokens']['Row'][]> {
         return this.servicersRepository.getAllTokens();
     }
 

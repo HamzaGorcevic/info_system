@@ -79,14 +79,14 @@ export class ServicersRepository implements IServicerRepository {
 
         return tenant.building_id;
     }
-    async validateGuestToken(token: string): Promise<any> {
+    async validateGuestToken(token: string): Promise<Database['public']['Tables']['guest_access_tokens']['Row'] | null> {
         const { data, error } = await this.client.rpc('verify_guest_token', { token_param: token });
 
         if (error) throw new Error(error.message);
 
         if (!data || data.length === 0) return null;
 
-        return data[0];
+        return data[0] as unknown as Database['public']['Tables']['guest_access_tokens']['Row'];
     }
 
     async updateMalfunctionStatus(malfunctionId: string, status: string, token: string): Promise<void> {
@@ -113,14 +113,14 @@ export class ServicersRepository implements IServicerRepository {
         if (error) throw new Error(error.message);
     }
 
-    async getAllTokens(): Promise<any[]> {
+    async getAllTokens(): Promise<Database['public']['Tables']['guest_access_tokens']['Row'][]> {
         const { data, error } = await this.client
             .from('guest_access_tokens')
             .select('*, servicers(full_name), malfunctions(title, category)')
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
-        return data || [];
+        return (data || []) as unknown as Database['public']['Tables']['guest_access_tokens']['Row'][];
     }
 
     async revokeToken(tokenId: string): Promise<void> {
