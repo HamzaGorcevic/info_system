@@ -20,7 +20,8 @@ import { CreateAnnouncementComponent } from './features/admin/events-messages/cr
 import { AnnouncementsListComponent } from './features/tenant/events-messages/announcements-list.component';
 import { AnnouncementsBuildingListComponent } from './features/admin/events-messages/announcements-building-list.component';
 
-import { TenantSuggestionsComponent } from './features/tenant/suggestions/tenant-suggestions.component';
+import { SuggestionListComponent } from './features/tenant/suggestions/suggestion-list.component';
+import { SuggestionCreateComponent } from './features/tenant/suggestions/suggestion-create.component';
 import { SuggestionsBuildingListComponent } from './features/admin/suggestions/suggestions-building-list.component';
 import { ManagerSuggestionsComponent } from './features/admin/suggestions/manager-suggestions.component';
 
@@ -121,7 +122,12 @@ export const routes: Routes = [
     },
     {
         path: 'tenant/suggestions',
-        component: TenantSuggestionsComponent,
+        component: SuggestionListComponent,
+        canActivate: [roleGuard(['tenant'])]
+    },
+    {
+        path: 'tenant/suggestions/new',
+        component: SuggestionCreateComponent,
         canActivate: [roleGuard(['tenant'])]
     },
     {
