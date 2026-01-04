@@ -16,6 +16,13 @@ import { AccessTokensComponent } from './features/admin/access-tokens/access-tok
 import { roleGuard, guestGuard } from './guards/auth.guard';
 import { guestTokenGuard } from './guards/guest-token.guard';
 import { VerificationPendingComponent } from './features/auth/verification-pending/verification-pending.component';
+import { CreateAnnouncementComponent } from './features/admin/events-messages/create-announcement.component';
+import { AnnouncementsListComponent } from './features/tenant/events-messages/announcements-list.component';
+import { AnnouncementsBuildingListComponent } from './features/admin/events-messages/announcements-building-list.component';
+
+import { TenantSuggestionsComponent } from './features/tenant/suggestions/tenant-suggestions.component';
+import { SuggestionsBuildingListComponent } from './features/admin/suggestions/suggestions-building-list.component';
+import { ManagerSuggestionsComponent } from './features/admin/suggestions/manager-suggestions.component';
 
 export const routes: Routes = [
     {
@@ -63,6 +70,26 @@ export const routes: Routes = [
         canActivate: [roleGuard(['manager'])]
     },
     {
+        path: 'admin/announcements',
+        component: AnnouncementsBuildingListComponent,
+        canActivate: [roleGuard(['manager'])]
+    },
+    {
+        path: 'admin/announcements/:buildingId',
+        component: CreateAnnouncementComponent,
+        canActivate: [roleGuard(['manager'])]
+    },
+    {
+        path: 'admin/suggestions',
+        component: SuggestionsBuildingListComponent,
+        canActivate: [roleGuard(['manager'])]
+    },
+    {
+        path: 'admin/suggestions/:buildingId',
+        component: ManagerSuggestionsComponent,
+        canActivate: [roleGuard(['manager'])]
+    },
+    {
         path: 'tenant/register',
         component: TenantRegister,
         canActivate: [guestGuard]
@@ -85,6 +112,16 @@ export const routes: Routes = [
     {
         path: 'tenant/malfunctions/report',
         component: ReportMalfunctionComponent,
+        canActivate: [roleGuard(['tenant'])]
+    },
+    {
+        path: 'tenant/announcements',
+        component: AnnouncementsListComponent,
+        canActivate: [roleGuard(['tenant'])]
+    },
+    {
+        path: 'tenant/suggestions',
+        component: TenantSuggestionsComponent,
         canActivate: [roleGuard(['tenant'])]
     },
     {

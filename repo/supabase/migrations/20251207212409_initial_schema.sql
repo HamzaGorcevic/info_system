@@ -262,6 +262,18 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Check if user is a tenant in a specific building
+CREATE OR REPLACE FUNCTION is_tenant_in_building(building_id_param UUID)
+RETURNS BOOLEAN AS $$
+BEGIN
+    RETURN EXISTS (
+        SELECT 1 FROM tenants 
+        WHERE user_id = auth.uid() 
+        AND building_id = building_id_param
+    );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Secure Token Verification RPC (Returns token + malfunction details)
 CREATE OR REPLACE FUNCTION verify_guest_token(token_param TEXT)
 RETURNS TABLE (
@@ -501,14 +513,17 @@ CREATE POLICY "Users in building can view suggestions" ON suggestions
         )
     );
 
-CREATE POLICY "Only owners and managers can create suggestions" ON suggestions
+CREATE POLICY "Tenants and Managers can create suggestions" ON suggestions
     FOR INSERT WITH CHECK (
-        (EXISTS (SELECT 1 FROM tenants WHERE user_id = auth.uid() AND is_owner = true))
-        OR is_manager()
+        is_tenant_in_building(building_id)
+        OR is_manager_of_building(building_id)
     );
 
 CREATE POLICY "Managers can update suggestions" ON suggestions
     FOR UPDATE USING (is_manager());
+
+CREATE POLICY "Managers can delete suggestions" ON suggestions
+    FOR DELETE USING (is_manager_of_building(building_id));
 
 -- SUGGESTION_VOTES
 ALTER TABLE suggestion_votes ENABLE ROW LEVEL SECURITY;
@@ -516,10 +531,25 @@ ALTER TABLE suggestion_votes ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Users can view votes" ON suggestion_votes
     FOR SELECT USING (true);
 
-CREATE POLICY "Only owners can vote" ON suggestion_votes
+CREATE POLICY "Tenants can vote" ON suggestion_votes
     FOR INSERT WITH CHECK (
-        EXISTS (SELECT 1 FROM tenants WHERE user_id = auth.uid() AND is_owner = true)
+        EXISTS (
+            SELECT 1 FROM suggestions s
+            WHERE s.id = suggestion_id
+            AND is_tenant_in_building(s.building_id)
+            AND s.created_by != auth.uid()
+        )
         AND voted_by = auth.uid()
+    );
+
+CREATE POLICY "Tenants can delete their vote" ON suggestion_votes
+    FOR DELETE USING (
+        voted_by = auth.uid()
+    );
+
+CREATE POLICY "Tenants can update their vote" ON suggestion_votes
+    FOR UPDATE USING (
+        voted_by = auth.uid()
     );
 
 -- EVENTS

@@ -3,6 +3,9 @@ import { AuthService } from "../services/auth.service.js";
 import { BuildingService } from "../services/building.service.js";
 import { MalfunctionsService } from "../services/malfunctions.service.js";
 import { ServicersService } from "../services/servicers.service.js";
+import { EventsService } from "../services/events.service.js";
+import { MessagesService } from "../services/messages.service.js";
+import { SuggestionsService } from "../services/suggestions.service.js";
 import { RepositoryFactory } from "./repository.factory.js";
 
 export class ServiceFactory {
@@ -27,5 +30,20 @@ export class ServiceFactory {
     static getServicersService(context: IContext): ServicersService {
         const servicersRepository = RepositoryFactory.getServicersRepository(context);
         return new ServicersService(servicersRepository);
+    }
+
+    static getEventsService(context: IContext): EventsService {
+        const eventsRepository = RepositoryFactory.getEventsRepository(context);
+        return new EventsService(eventsRepository);
+    }
+
+    static getMessagesService(context: IContext): MessagesService {
+        const messagesRepository = RepositoryFactory.getMessagesRepository(context);
+        return new MessagesService(messagesRepository);
+    }
+
+    static getSuggestionsService(context: IContext): SuggestionsService {
+        const suggestionsRepository = RepositoryFactory.getSuggestionsRepository(context);
+        return new SuggestionsService(suggestionsRepository);
     }
 }

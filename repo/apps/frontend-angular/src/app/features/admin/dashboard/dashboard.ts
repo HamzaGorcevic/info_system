@@ -94,6 +94,19 @@ import { UiButton } from '../../../shared/ui/button/button';
             </app-ui-card>
           </div>
 
+          <div class="animate-fade-in-up stagger-6">
+            <app-ui-card title="ANNOUNCEMENTS" class="h-full">
+              <div class="flex flex-col h-full">
+                <p class="text-[#456882] mb-8 leading-relaxed">Create events and post messages for your building tenants.</p>
+                <div class="mt-auto">
+                  <app-ui-button variant="primary" class="w-full" routerLink="/admin/announcements">
+                    MANAGE ANNOUNCEMENTS
+                  </app-ui-button>
+                </div>
+              </div>
+            </app-ui-card>
+          </div>
+
           <div class="animate-fade-in-up stagger-3">
             <app-ui-card title="SYSTEM STATUS" class="h-full">
               <div class="space-y-6">

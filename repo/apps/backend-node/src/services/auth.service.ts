@@ -114,6 +114,37 @@ export class AuthService {
         const { email, password, fullName, buildingId, apartmentNumber } = input;
         console.log(`Registering tenant ${fullName} for building ${buildingId}`);
 
+        const { data: building, error: buildingError } = await supabaseAdmin
+            .from('buildings')
+            .select('number_apartments')
+            .eq('id', buildingId)
+            .single();
+
+        if (buildingError || !building) {
+            const error: any = new Error("Building not found");
+            error.status = 404;
+            throw error;
+        }
+
+        if (apartmentNumber > building.number_apartments) {
+            const error: any = new Error(`Apartment number ${apartmentNumber} is invalid. This building only has ${building.number_apartments} apartments.`);
+            error.status = 400;
+            throw error;
+        }
+
+        const { data: existingTenant } = await supabaseAdmin
+            .from('tenants')
+            .select('id')
+            .eq('building_id', buildingId)
+            .eq('apartment_number', apartmentNumber)
+            .maybeSingle();
+
+        if (existingTenant) {
+            const error: any = new Error(`Apartment ${apartmentNumber} is already occupied.`);
+            error.status = 409; // Conflict
+            throw error;
+        }
+
         const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
             email,
             password,
@@ -144,13 +175,23 @@ export class AuthService {
             throw new Error(userError.message);
         }
 
+        const { data: maxTenant } = await supabaseAdmin
+            .from('tenants')
+            .select('tenant_number')
+            .eq('building_id', buildingId)
+            .order('tenant_number', { ascending: false })
+            .limit(1)
+            .single();
+
+        const nextTenantNumber = (maxTenant?.tenant_number || 0) + 1;
+
         const { error: tenantError } = await supabaseAdmin
             .from('tenants')
             .insert({
                 user_id: userId,
                 building_id: buildingId,
                 apartment_number: apartmentNumber,
-                tenant_number: 1
+                tenant_number: nextTenantNumber
             });
 
         if (tenantError) {

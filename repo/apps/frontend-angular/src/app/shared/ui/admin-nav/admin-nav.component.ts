@@ -37,6 +37,8 @@ export class AdminNavComponent {
     { label: 'Malfunctions', route: '/admin/malfunctions' },
     { label: 'Servicers', route: '/admin/servicers' },
     { label: 'Access Tokens', route: '/admin/tokens' },
+    { label: 'Announcements', route: '/admin/announcements' },
+    { label: 'Suggestions', route: '/admin/suggestions' },
     { label: 'QR Codes', route: '/admin/qr' }
   ];
 }

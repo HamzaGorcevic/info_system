@@ -8,10 +8,10 @@ import { UiButton } from '../../../shared/ui/button/button';
 import { finalize } from 'rxjs';
 
 @Component({
-    selector: 'app-tenant-register',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, RouterModule, UiCard, UiButton],
-    template: `
+  selector: 'app-tenant-register',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, UiCard, UiButton],
+  template: `
     <div class="min-h-screen bg-mesh flex flex-col items-center justify-center p-6 relative overflow-hidden">
       
       <!-- Decorative Elements -->
@@ -104,59 +104,61 @@ import { finalize } from 'rxjs';
   `
 })
 export class TenantRegister implements OnInit {
-    registerForm: FormGroup;
-    loading = false;
-    error: string | null = null;
-    success = false;
-    buildingId: string | null = null;
+  registerForm: FormGroup;
+  loading = false;
+  error: string | null = null;
+  success = false;
+  buildingId: string | null = null;
 
-    constructor(
-        private fb: FormBuilder,
-        private authService: AuthService,
-        private route: ActivatedRoute,
-        private router: Router,
-        private cdr: ChangeDetectorRef
-    ) {
-        this.registerForm = this.fb.group({
-            email: ['', [Validators.required, Validators.email]],
-            password: ['', [Validators.required, Validators.minLength(6)]],
-            fullName: ['', [Validators.required, Validators.minLength(2)]],
-            apartmentNumber: ['', [Validators.required, Validators.min(1)]],
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private route: ActivatedRoute,
+    private router: Router,
+    private cdr: ChangeDetectorRef
+  ) {
+    this.registerForm = this.fb.group({
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', [Validators.required, Validators.minLength(6)]],
+      fullName: ['', [Validators.required, Validators.minLength(2)]],
+      apartmentNumber: ['', [Validators.required, Validators.min(1)]],
+    });
+  }
+
+  ngOnInit() {
+    this.buildingId = this.route.snapshot.queryParamMap.get('buildingId');
+    if (!this.buildingId) {
+      this.error = "Invalid registration link. Building ID missing.";
+    }
+  }
+
+  onSubmit() {
+    if (this.registerForm.valid && this.buildingId) {
+      this.loading = true;
+      this.error = null;
+      this.cdr.detectChanges();
+
+      const data = {
+        ...this.registerForm.value,
+        buildingId: this.buildingId
+      };
+
+      this.authService.registerTenant(data)
+        .pipe(finalize(() => {
+          this.loading = false;
+          this.cdr.detectChanges();
+        }))
+        .subscribe({
+          next: (res) => {
+            this.success = true;
+            setTimeout(() => this.router.navigate(['/login']), 3000);
+          },
+          error: (err) => {
+            this.error = err.error?.message || err.message || 'Registration failed.';
+            this.loading = false;
+            this.cdr.detectChanges();
+          }
         });
     }
-
-    ngOnInit() {
-        this.buildingId = this.route.snapshot.queryParamMap.get('buildingId');
-        if (!this.buildingId) {
-            this.error = "Invalid registration link. Building ID missing.";
-        }
-    }
-
-    onSubmit() {
-        if (this.registerForm.valid && this.buildingId) {
-            this.loading = true;
-            this.error = null;
-            this.cdr.detectChanges();
-
-            const data = {
-                ...this.registerForm.value,
-                buildingId: this.buildingId
-            };
-
-            this.authService.registerTenant(data)
-                .pipe(finalize(() => {
-                    this.loading = false;
-                    this.cdr.detectChanges();
-                }))
-                .subscribe({
-                    next: (res) => {
-                        this.success = true;
-                        setTimeout(() => this.router.navigate(['/login']), 3000);
-                    },
-                    error: (err) => {
-                        this.error = err.error?.error || 'Registration failed.';
-                    }
-                });
-        }
-    }
+  }
 }

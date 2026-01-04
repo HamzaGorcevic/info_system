@@ -77,6 +77,12 @@ import { TenantNavComponent } from '../../../shared/ui/tenant-nav/tenant-nav.com
                 <app-ui-button variant="outline" customClass="w-full !py-6 !text-sm" [disabled]="!isVerified">
                   VIEW EXPENSES
                 </app-ui-button>
+                <app-ui-button variant="primary" customClass="w-full !py-6 !text-sm" [disabled]="!isVerified" (btnClick)="navigateTo('/tenant/announcements')">
+                  ANNOUNCEMENTS
+                </app-ui-button>
+                <app-ui-button variant="outline" customClass="w-full !py-6 !text-sm" [disabled]="!isVerified" (btnClick)="navigateTo('/tenant/suggestions')">
+                  SUGGESTIONS
+                </app-ui-button>
                 <app-ui-button variant="ghost" customClass="w-full !py-6 !text-sm" [disabled]="!isVerified">
                   BUILDING DOCUMENTS
                 </app-ui-button>

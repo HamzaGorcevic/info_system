@@ -8,5 +8,9 @@ export * from './repositories/malfunctions.repository.interface.js';
 export * from './repositories/servicers.repository.interface.js';
 export * from './services/storage.service.interface.js';
 export * from './repositories/buildings.repository.interface.js';
-
-
+export * from './entities/event.entity.js';
+export * from './entities/message.entity.js';
+export * from './entities/suggestion.entity.js';
+export * from './repositories/events.repository.interface.js';
+export * from './repositories/messages.repository.interface.js';
+export * from './repositories/suggestions.repository.interface.js';
