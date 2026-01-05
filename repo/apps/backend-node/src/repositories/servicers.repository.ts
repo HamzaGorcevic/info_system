@@ -105,12 +105,35 @@ export class ServicersRepository implements IServicerRepository {
     }
 
     async assignServicerToMalfunction(malfunctionId: string, servicerId: string): Promise<void> {
-        const { error } = await this.client
+        // First get the malfunction to extract tenant_id
+        const { data: malfunction, error: malfunctionError } = await this.client
             .from('malfunctions')
-            .update({ servicer_id: servicerId, status: 'assigned' })
+            .select('tenant_id')
+            .eq('id', malfunctionId)
+            .single();
+
+        if (malfunctionError || !malfunction) throw new Error('Malfunction not found');
+
+        // Update the malfunction with the servicer
+        const { error: updateError } = await this.client
+            .from('malfunctions')
+            .update({ servicer_id: servicerId, status: 'assigned', assigned_at: new Date().toISOString() })
             .eq('id', malfunctionId);
 
-        if (error) throw new Error(error.message);
+        if (updateError) throw new Error(updateError.message);
+
+        // Create an intervention record for this assignment
+        const { error: interventionError } = await this.client
+            .from('interventions')
+            .insert({
+                malfunction_id: malfunctionId,
+                servicer_id: servicerId,
+                tenant_id: malfunction.tenant_id,
+                status: 'scheduled',
+                scheduled_at: new Date().toISOString()
+            });
+
+        if (interventionError) throw new Error(interventionError.message);
     }
 
     async getAllTokens(): Promise<Database['public']['Tables']['guest_access_tokens']['Row'][]> {

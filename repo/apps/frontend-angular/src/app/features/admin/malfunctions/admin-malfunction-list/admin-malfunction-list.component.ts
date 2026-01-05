@@ -7,14 +7,14 @@ import { Malfunction, Servicer } from '../../../../models/domain.models';
 import { AssignServicerDialogComponent } from '../assign-servicer-dialog/assign-servicer-dialog.component';
 import { TokenSuccessModalComponent } from '../../../../shared/ui/token-success-modal/token-success-modal.component';
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
-import { AdminNavComponent } from '../../../../shared/ui/admin-nav/admin-nav.component';
+
 
 @Component({
-    selector: 'app-admin-malfunction-list',
-    standalone: true,
-    imports: [CommonModule, UiCard, UiButton, AssignServicerDialogComponent, TokenSuccessModalComponent, BackButtonComponent, AdminNavComponent],
-    template: `
-    <app-admin-nav></app-admin-nav>
+  selector: 'app-admin-malfunction-list',
+  standalone: true,
+  imports: [CommonModule, UiCard, UiButton, AssignServicerDialogComponent, TokenSuccessModalComponent, BackButtonComponent],
+  template: `
+
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
       <div class="max-w-7xl mx-auto">
         <div class="mb-6">
@@ -111,52 +111,52 @@ import { AdminNavComponent } from '../../../../shared/ui/admin-nav/admin-nav.com
   `
 })
 export class AdminMalfunctionListComponent implements OnInit {
-    private malfunctionService = inject(MalfunctionService);
-    private cdr = inject(ChangeDetectorRef);
+  private malfunctionService = inject(MalfunctionService);
+  private cdr = inject(ChangeDetectorRef);
 
-    malfunctions: Malfunction[] = [];
-    isLoading = true;
-    selectedMalfunction: Malfunction | null = null;
+  malfunctions: Malfunction[] = [];
+  isLoading = true;
+  selectedMalfunction: Malfunction | null = null;
 
-    generatedToken: string | null = null;
-    assignedServicerName: string = '';
+  generatedToken: string | null = null;
+  assignedServicerName: string = '';
 
-    ngOnInit() {
-        this.loadMalfunctions();
+  ngOnInit() {
+    this.loadMalfunctions();
+  }
+
+  loadMalfunctions() {
+    this.malfunctionService.getAllMalfunctions().subscribe({
+      next: (data) => {
+        this.malfunctions = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading malfunctions', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  getStatusClass(status: string): string {
+    switch (status) {
+      case 'reported': return 'bg-blue-100 text-blue-800';
+      case 'assigned': return 'bg-yellow-100 text-yellow-800';
+      case 'in_progress': return 'bg-green-100 text-green-800';
+      case 'resolved': return 'bg-gray-100 text-gray-800';
+      default: return 'bg-gray-100 text-gray-800';
     }
+  }
 
-    loadMalfunctions() {
-        this.malfunctionService.getAllMalfunctions().subscribe({
-            next: (data) => {
-                this.malfunctions = data;
-                this.isLoading = false;
-                this.cdr.detectChanges();
-            },
-            error: (err) => {
-                console.error('Error loading malfunctions', err);
-                this.isLoading = false;
-                this.cdr.detectChanges();
-            }
-        });
-    }
+  openAssignDialog(malfunction: Malfunction) {
+    this.selectedMalfunction = malfunction;
+  }
 
-    getStatusClass(status: string): string {
-        switch (status) {
-            case 'reported': return 'bg-blue-100 text-blue-800';
-            case 'assigned': return 'bg-yellow-100 text-yellow-800';
-            case 'in_progress': return 'bg-green-100 text-green-800';
-            case 'resolved': return 'bg-gray-100 text-gray-800';
-            default: return 'bg-gray-100 text-gray-800';
-        }
-    }
-
-    openAssignDialog(malfunction: Malfunction) {
-        this.selectedMalfunction = malfunction;
-    }
-
-    onServicerAssigned(event: { servicer: Servicer, token: string }) {
-        this.generatedToken = event.token;
-        this.assignedServicerName = event.servicer.full_name;
-        this.selectedMalfunction = null;
-    }
+  onServicerAssigned(event: { servicer: Servicer, token: string }) {
+    this.generatedToken = event.token;
+    this.assignedServicerName = event.servicer.full_name;
+    this.selectedMalfunction = null;
+  }
 }

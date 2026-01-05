@@ -37,18 +37,38 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
         if (!malfunctions || malfunctions.length === 0) return [];
 
         const malfunctionIds = malfunctions.map(m => m.id);
-        const { data: ratings, error: ratingsError } = await this.client
-            .from('ratings')
-            .select('*')
+
+        const { data: interventions, error: interventionsError } = await this.client
+            .from('interventions')
+            .select('id, malfunction_id')
             .in('malfunction_id', malfunctionIds);
 
-        if (ratingsError) throw new Error(ratingsError.message);
+        if (interventionsError) throw new Error(interventionsError.message);
 
-        // 3. Attach ratings to malfunctions
-        return malfunctions.map(m => ({
-            ...m,
-            ratings: ratings?.filter(r => r.malfunction_id === m.id) || []
-        })) as any;
+        const interventionIds = interventions?.map(i => i.id) || [];
+        let ratings: any[] = [];
+
+        if (interventionIds.length > 0) {
+            const { data: fetchedRatings, error: ratingsError } = await this.client
+                .from('ratings')
+                .select('*')
+                .in('intervention_id', interventionIds);
+
+            if (ratingsError) throw new Error(ratingsError.message);
+            ratings = fetchedRatings || [];
+        }
+
+        // Attach ratings to malfunctions via interventions
+        return malfunctions.map(m => {
+            const mInterventions = interventions?.filter(i => i.malfunction_id === m.id) || [];
+            const mInterventionIds = mInterventions.map(i => i.id);
+            const mRatings = ratings.filter(r => mInterventionIds.includes(r.intervention_id));
+
+            return {
+                ...m,
+                ratings: mRatings
+            };
+        }) as any;
     }
 
     async findAll(): Promise<Database['public']['Tables']['malfunctions']['Row'][]> {
@@ -73,6 +93,20 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
 
         if (error) throw new Error(error.message);
         return result;
+    }
+
+    async findInterventionByMalfunctionAndServicer(malfunctionId: string, servicerId: string): Promise<any> {
+        const { data, error } = await this.client
+            .from('interventions')
+            .select('id')
+            .eq('malfunction_id', malfunctionId)
+            .eq('servicer_id', servicerId)
+            .order('created_at', { ascending: false })
+            .limit(1)
+            .single();
+
+        if (error) return null; // Return null if not found
+        return data;
     }
 
     async rate(data: Database['public']['Tables']['ratings']['Insert']): Promise<Database['public']['Tables']['ratings']['Row']> {

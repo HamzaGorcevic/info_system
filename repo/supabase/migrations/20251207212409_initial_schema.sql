@@ -589,24 +589,24 @@ CREATE POLICY "Managers can update events for own buildings" ON events
 -- DOCUMENTS
 ALTER TABLE documents ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Users in building can view documents" ON documents
+CREATE POLICY "Managers can view own building documents" ON documents
+    FOR SELECT USING (is_manager_of_building(building_id));
+
+CREATE POLICY "Tenant Owners can view own building documents" ON documents
     FOR SELECT USING (
-        building_id IN (
-            SELECT building_id FROM tenants WHERE user_id = auth.uid()
-            UNION
-            SELECT building_id FROM building_managers WHERE user_id = auth.uid()
+        EXISTS (
+            SELECT 1 FROM tenants 
+            WHERE user_id = auth.uid() 
+            AND building_id = documents.building_id 
+            AND is_owner = true
         )
     );
 
--- Fix: Managers can only upload documents to THEIR buildings
 CREATE POLICY "Managers can upload documents to own buildings" ON documents
-    FOR INSERT WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM building_managers bm
-            WHERE bm.building_id = documents.building_id
-            AND bm.user_id = auth.uid()
-        )
-    );
+    FOR INSERT WITH CHECK (is_manager_of_building(building_id));
+
+CREATE POLICY "Managers can delete own building documents" ON documents
+    FOR DELETE USING (is_manager_of_building(building_id));
 
 -- AUDIT_LOGS
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
@@ -622,3 +622,73 @@ CREATE POLICY "Managers can manage own tokens" ON guest_access_tokens
     FOR ALL USING (granted_by = auth.uid());
 
 -- Note: Public access is handled via RPC verify_guest_token(), so no SELECT policy needed here.
+
+-- ============================================
+-- 4. STORAGE POLICIES
+-- ============================================
+
+-- Ensure 'documents' bucket exists (idempotent)
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('documents', 'documents', false)
+ON CONFLICT (id) DO NOTHING;
+
+-- STORAGE POLICIES (Bucket: 'documents')
+
+CREATE POLICY "Managers can upload documents"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'documents' AND
+  auth.role() = 'authenticated' AND
+  EXISTS (
+    SELECT 1 FROM building_managers
+    WHERE user_id = auth.uid()
+    AND building_id::text = (storage.foldername(name))[2]
+  )
+);
+
+CREATE POLICY "Managers can view documents"
+ON storage.objects FOR SELECT
+USING (
+  bucket_id = 'documents' AND
+  auth.role() = 'authenticated' AND
+  EXISTS (
+    SELECT 1 FROM building_managers
+    WHERE user_id = auth.uid()
+    AND building_id::text = (storage.foldername(name))[2]
+  )
+);
+
+CREATE POLICY "Tenant Owners can view documents"
+ON storage.objects FOR SELECT
+USING (
+  bucket_id = 'documents' AND
+  auth.role() = 'authenticated' AND
+  EXISTS (
+    SELECT 1 FROM tenants
+    WHERE user_id = auth.uid()
+    AND building_id::text = (storage.foldername(name))[2]
+  )
+);
+
+-- STORAGE POLICIES (Bucket: 'malfunctions')
+
+-- Ensure 'malfunctions' bucket exists and is PUBLIC
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('malfunctions', 'malfunctions', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
+
+CREATE POLICY "Users can upload own malfunctions"
+ON storage.objects FOR INSERT
+WITH CHECK (
+  bucket_id = 'malfunctions' AND
+  auth.role() = 'authenticated' AND
+  (storage.foldername(name))[2] = auth.uid()::text
+);
+
+CREATE POLICY "Users can view own malfunctions"
+ON storage.objects FOR SELECT
+USING (
+  bucket_id = 'malfunctions' AND
+  auth.role() = 'authenticated' AND
+  (storage.foldername(name))[2] = auth.uid()::text
+);

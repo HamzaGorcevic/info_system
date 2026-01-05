@@ -6,15 +6,15 @@ import { BuildingService } from '../../../services/building.service';
 import { AuthService } from '../../../services/auth.service';
 import { Event, Message } from '@repo/domain';
 import { TenantData } from '../../../models/domain.models';
-import { TenantNavComponent } from '../../../shared/ui/tenant-nav/tenant-nav.component';
+
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
-    selector: 'app-announcements-list',
-    standalone: true,
-    imports: [CommonModule, TenantNavComponent, BackButtonComponent],
-    template: `
-    <app-tenant-nav></app-tenant-nav>
+  selector: 'app-announcements-list',
+  standalone: true,
+  imports: [CommonModule, BackButtonComponent],
+  template: `
+
     <div class="min-h-screen bg-mesh p-6 md:p-12 pt-0">
       <div class="max-w-5xl mx-auto">
         <app-back-button></app-back-button>
@@ -100,40 +100,40 @@ import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.
   `
 })
 export class AnnouncementsListComponent implements OnInit {
-    events: Event[] = [];
-    messages: Message[] = [];
+  events: Event[] = [];
+  messages: Message[] = [];
 
-    private eventService = inject(EventService);
-    private messageService = inject(MessageService);
-    private buildingService = inject(BuildingService);
-    private authService = inject(AuthService);
-    private cdr = inject(ChangeDetectorRef);
+  private eventService = inject(EventService);
+  private messageService = inject(MessageService);
+  private buildingService = inject(BuildingService);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
-    ngOnInit() {
-        const user = this.authService.currentUser();
-        if (user) {
-            this.buildingService.getTenantData(user.id).subscribe({
-                next: (data: TenantData) => {
-                    if (data && data.building_id) {
-                        this.loadEvents(data.building_id);
-                        this.loadMessages(data.building_id);
-                    }
-                }
-            });
+  ngOnInit() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.buildingService.getTenantData(user.id).subscribe({
+        next: (data: TenantData) => {
+          if (data && data.building_id) {
+            this.loadEvents(data.building_id);
+            this.loadMessages(data.building_id);
+          }
         }
+      });
     }
+  }
 
-    loadEvents(buildingId: string) {
-        this.eventService.getEventsByBuilding(buildingId).subscribe(events => {
-            this.events = events;
-            this.cdr.detectChanges();
-        });
-    }
+  loadEvents(buildingId: string) {
+    this.eventService.getEventsByBuilding(buildingId).subscribe(events => {
+      this.events = events;
+      this.cdr.detectChanges();
+    });
+  }
 
-    loadMessages(buildingId: string) {
-        this.messageService.getMessagesByBuilding(buildingId).subscribe(messages => {
-            this.messages = messages;
-            this.cdr.detectChanges();
-        });
-    }
+  loadMessages(buildingId: string) {
+    this.messageService.getMessagesByBuilding(buildingId).subscribe(messages => {
+      this.messages = messages;
+      this.cdr.detectChanges();
+    });
+  }
 }

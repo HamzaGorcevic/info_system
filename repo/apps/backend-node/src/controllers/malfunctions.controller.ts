@@ -6,11 +6,15 @@ export class MalfunctionsController {
     async reportMalfunction(req: Request, res: Response, next: NextFunction) {
         const malfunctionsService = ServiceFactory.getMalfunctionsService(req.context);
 
-        const { tenant_id, reporter_id, title, description, category } = req.body;
+        const { tenant_id, title, description, category } = req.body;
+
+        if (!req.context.currentUser) {
+            throw new Error('Unauthorized');
+        }
 
         const malfunctionData: CreateMalfunctionInput = {
             tenant_id,
-            reporter_id,
+            reporter_id: req.context.currentUser.id,
             title,
             description,
             category,

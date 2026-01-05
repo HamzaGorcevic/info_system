@@ -4,15 +4,15 @@ import { BuildingService } from '../../../services/building.service';
 import { AuthService } from '../../../services/auth.service';
 import { UiButton } from '../../../shared/ui/button/button';
 import { RouterModule } from '@angular/router';
-import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
+
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
   selector: 'app-tenant-management',
   standalone: true,
-  imports: [CommonModule, UiButton, RouterModule, AdminNavComponent, BackButtonComponent],
+  imports: [CommonModule, UiButton, RouterModule, BackButtonComponent],
   template: `
-    <app-admin-nav></app-admin-nav>
+
     <div class="min-h-screen bg-mesh p-6 md:p-12 pt-0">
       <div class="max-w-5xl mx-auto">
         <div class="mb-6">

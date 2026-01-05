@@ -3,15 +3,15 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
 import { SuggestionService } from '../../../services/suggestion.service';
 import { SuggestionWithVote } from '@repo/domain';
-import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
+
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
-    selector: 'app-manager-suggestions',
-    standalone: true,
-    imports: [CommonModule, AdminNavComponent, BackButtonComponent],
-    template: `
-    <app-admin-nav></app-admin-nav>
+  selector: 'app-manager-suggestions',
+  standalone: true,
+  imports: [CommonModule, BackButtonComponent],
+  template: `
+
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
       <div class="max-w-4xl mx-auto">
         <app-back-button></app-back-button>
@@ -74,33 +74,33 @@ import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.
     `
 })
 export class ManagerSuggestionsComponent implements OnInit {
-    suggestions: SuggestionWithVote[] = [];
-    buildingId: string = '';
+  suggestions: SuggestionWithVote[] = [];
+  buildingId: string = '';
 
-    private suggestionService = inject(SuggestionService);
-    private route = inject(ActivatedRoute);
-    private cdr = inject(ChangeDetectorRef);
+  private suggestionService = inject(SuggestionService);
+  private route = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
 
-    ngOnInit() {
-        this.route.params.subscribe(params => {
-            this.buildingId = params['buildingId'];
-            if (this.buildingId) {
-                this.loadSuggestions();
-            }
-        });
+  ngOnInit() {
+    this.route.params.subscribe(params => {
+      this.buildingId = params['buildingId'];
+      if (this.buildingId) {
+        this.loadSuggestions();
+      }
+    });
+  }
+
+  loadSuggestions() {
+    this.suggestionService.getSuggestionsByBuilding(this.buildingId).subscribe(suggestions => {
+      this.suggestions = suggestions;
+    });
+  }
+
+  deleteSuggestion(id: string) {
+    if (confirm('Are you sure you want to remove this suggestion?')) {
+      this.suggestionService.deleteSuggestion(id).subscribe(() => {
+        this.suggestions = this.suggestions.filter(s => s.id !== id);
+      });
     }
-
-    loadSuggestions() {
-        this.suggestionService.getSuggestionsByBuilding(this.buildingId).subscribe(suggestions => {
-            this.suggestions = suggestions;
-        });
-    }
-
-    deleteSuggestion(id: string) {
-        if (confirm('Are you sure you want to remove this suggestion?')) {
-            this.suggestionService.deleteSuggestion(id).subscribe(() => {
-                this.suggestions = this.suggestions.filter(s => s.id !== id);
-            });
-        }
-    }
+  }
 }

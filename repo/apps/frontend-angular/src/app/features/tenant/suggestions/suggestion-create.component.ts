@@ -7,14 +7,13 @@ import { AuthService } from '../../../services/auth.service';
 import { BuildingService } from '../../../services/building.service';
 import { CreateSuggestionInput } from '@repo/domain';
 import { TenantData } from '../../../models/domain.models';
-import { TenantNavComponent } from '../../../shared/ui/tenant-nav/tenant-nav.component';
 
 @Component({
-    selector: 'app-suggestion-create',
-    standalone: true,
-    imports: [CommonModule, FormsModule, TenantNavComponent],
-    template: `
-    <app-tenant-nav></app-tenant-nav>
+  selector: 'app-suggestion-create',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
+
     <div class="min-h-screen bg-gradient-to-br from-[#F0F2F5] via-[#E8EAF0] to-[#DFE3F0] p-8">
       <div class="max-w-4xl mx-auto">
         
@@ -174,56 +173,56 @@ import { TenantNavComponent } from '../../../shared/ui/tenant-nav/tenant-nav.com
   `
 })
 export class SuggestionCreateComponent implements OnInit {
-    newSuggestion: Partial<CreateSuggestionInput> = {};
-    buildingId: string = '';
+  newSuggestion: Partial<CreateSuggestionInput> = {};
+  buildingId: string = '';
 
-    private suggestionService = inject(SuggestionService);
-    private authService = inject(AuthService);
-    private buildingService = inject(BuildingService);
-    private router = inject(Router);
+  private suggestionService = inject(SuggestionService);
+  private authService = inject(AuthService);
+  private buildingService = inject(BuildingService);
+  private router = inject(Router);
 
-    ngOnInit() {
-        this.loadBuildingId();
-    }
+  ngOnInit() {
+    this.loadBuildingId();
+  }
 
-    loadBuildingId() {
-        const user = this.authService.currentUser();
-        if (user) {
-            this.buildingService.getTenantData(user.id).subscribe({
-                next: (data: TenantData) => {
-                    if (data && data.building_id) {
-                        this.buildingId = data.building_id;
-                    }
-                }
-            });
+  loadBuildingId() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.buildingService.getTenantData(user.id).subscribe({
+        next: (data: TenantData) => {
+          if (data && data.building_id) {
+            this.buildingId = data.building_id;
+          }
         }
+      });
+    }
+  }
+
+  createSuggestion() {
+    const user = this.authService.currentUser();
+    if (!user || !this.buildingId || !this.newSuggestion.title || !this.newSuggestion.content) {
+      return;
     }
 
-    createSuggestion() {
-        const user = this.authService.currentUser();
-        if (!user || !this.buildingId || !this.newSuggestion.title || !this.newSuggestion.content) {
-            return;
-        }
+    const input: CreateSuggestionInput = {
+      building_id: this.buildingId,
+      title: this.newSuggestion.title!,
+      content: this.newSuggestion.content!,
+      created_by: user.id
+    };
 
-        const input: CreateSuggestionInput = {
-            building_id: this.buildingId,
-            title: this.newSuggestion.title!,
-            content: this.newSuggestion.content!,
-            created_by: user.id
-        };
+    this.suggestionService.createSuggestion(input).subscribe({
+      next: () => {
+        this.navigateBack();
+      },
+      error: err => {
+        console.error('Failed to create suggestion', err);
+        alert('Failed to create suggestion. Please try again.');
+      }
+    });
+  }
 
-        this.suggestionService.createSuggestion(input).subscribe({
-            next: () => {
-                this.navigateBack();
-            },
-            error: err => {
-                console.error('Failed to create suggestion', err);
-                alert('Failed to create suggestion. Please try again.');
-            }
-        });
-    }
-
-    navigateBack() {
-        this.router.navigate(['/tenant/suggestions']);
-    }
+  navigateBack() {
+    this.router.navigate(['/tenant/suggestions']);
+  }
 }

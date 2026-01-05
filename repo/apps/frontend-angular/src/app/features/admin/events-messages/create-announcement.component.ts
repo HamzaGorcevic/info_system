@@ -8,15 +8,15 @@ import { ActivatedRoute } from '@angular/router';
 import { CreateEventInput, CreateMessageInput } from '@repo/domain';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
-import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
+
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
-    selector: 'app-create-announcement',
-    standalone: true,
-    imports: [CommonModule, FormsModule, UiCard, UiButton, AdminNavComponent, BackButtonComponent],
-    template: `
-    <app-admin-nav></app-admin-nav>
+  selector: 'app-create-announcement',
+  standalone: true,
+  imports: [CommonModule, FormsModule, UiCard, UiButton, BackButtonComponent],
+  template: `
+
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
       <div class="max-w-4xl mx-auto">
         <div class="mb-6">
@@ -197,104 +197,104 @@ import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.
   `
 })
 export class CreateAnnouncementComponent implements OnInit {
-    activeTab: 'event' | 'message' = 'event';
-    buildingId: string = '';
+  activeTab: 'event' | 'message' = 'event';
+  buildingId: string = '';
 
-    eventData: Partial<CreateEventInput> = {};
-    messageData: Partial<CreateMessageInput> = { message_type: 'info' };
+  eventData: Partial<CreateEventInput> = {};
+  messageData: Partial<CreateMessageInput> = { message_type: 'info' };
 
-    events: any[] = [];
-    messages: any[] = [];
+  events: any[] = [];
+  messages: any[] = [];
 
-    private eventService = inject(EventService);
-    private messageService = inject(MessageService);
-    private authService = inject(AuthService);
-    private route = inject(ActivatedRoute);
-    private cdr = inject(ChangeDetectorRef);
+  private eventService = inject(EventService);
+  private messageService = inject(MessageService);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private cdr = inject(ChangeDetectorRef);
 
-    constructor() {
-        this.route.params.subscribe(params => {
-            this.buildingId = params['buildingId'];
-        });
+  constructor() {
+    this.route.params.subscribe(params => {
+      this.buildingId = params['buildingId'];
+    });
+  }
+
+  ngOnInit() {
+    if (this.buildingId) {
+      this.loadEvents();
+      this.loadMessages();
     }
+  }
 
-    ngOnInit() {
-        if (this.buildingId) {
-            this.loadEvents();
-            this.loadMessages();
-        }
+  loadEvents() {
+    this.eventService.getEventsByBuilding(this.buildingId).subscribe(events => {
+      this.events = events;
+      this.cdr.detectChanges();
+    });
+  }
+
+  loadMessages() {
+    this.messageService.getMessagesByBuilding(this.buildingId).subscribe(messages => {
+      this.messages = messages;
+      this.cdr.detectChanges();
+    });
+  }
+
+  createEvent() {
+    if (!this.buildingId) return;
+
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    const input: CreateEventInput = {
+      building_id: this.buildingId,
+      title: this.eventData.title!,
+      scheduled_at: new Date(this.eventData.scheduled_at!).toISOString(),
+      content: this.eventData.content,
+      created_by: user.id
+    };
+
+    this.eventService.createEvent(input).subscribe(() => {
+      alert('Event created successfully!');
+      this.eventData = {};
+      this.loadEvents();
+    });
+  }
+
+  createMessage() {
+    if (!this.buildingId) return;
+
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    const input: CreateMessageInput = {
+      building_id: this.buildingId,
+      content: this.messageData.content!,
+      message_type: this.messageData.message_type,
+      posted_by: user.id
+    };
+
+    this.messageService.createMessage(input).subscribe(() => {
+      alert('Message posted successfully!');
+      this.messageData = { message_type: 'info' };
+      this.loadMessages();
+    });
+  }
+
+  deleteEvent(id: string) {
+    if (confirm('Are you sure you want to delete this event?')) {
+      this.eventService.deleteEvent(id).subscribe(() => {
+        this.events = this.events.filter(e => e.id !== id);
+        this.cdr.detectChanges();
+      });
     }
+  }
 
-    loadEvents() {
-        this.eventService.getEventsByBuilding(this.buildingId).subscribe(events => {
-            this.events = events;
-            this.cdr.detectChanges();
-        });
+  deleteMessage(id: string) {
+    if (confirm('Are you sure you want to delete this message?')) {
+      this.messageService.deleteMessage(id).subscribe(() => {
+        this.messages = this.messages.filter(m => m.id !== id);
+        this.cdr.detectChanges();
+      });
     }
-
-    loadMessages() {
-        this.messageService.getMessagesByBuilding(this.buildingId).subscribe(messages => {
-            this.messages = messages;
-            this.cdr.detectChanges();
-        });
-    }
-
-    createEvent() {
-        if (!this.buildingId) return;
-
-        const user = this.authService.currentUser();
-        if (!user) return;
-
-        const input: CreateEventInput = {
-            building_id: this.buildingId,
-            title: this.eventData.title!,
-            scheduled_at: new Date(this.eventData.scheduled_at!).toISOString(),
-            content: this.eventData.content,
-            created_by: user.id
-        };
-
-        this.eventService.createEvent(input).subscribe(() => {
-            alert('Event created successfully!');
-            this.eventData = {};
-            this.loadEvents();
-        });
-    }
-
-    createMessage() {
-        if (!this.buildingId) return;
-
-        const user = this.authService.currentUser();
-        if (!user) return;
-
-        const input: CreateMessageInput = {
-            building_id: this.buildingId,
-            content: this.messageData.content!,
-            message_type: this.messageData.message_type,
-            posted_by: user.id
-        };
-
-        this.messageService.createMessage(input).subscribe(() => {
-            alert('Message posted successfully!');
-            this.messageData = { message_type: 'info' };
-            this.loadMessages();
-        });
-    }
-
-    deleteEvent(id: string) {
-        if (confirm('Are you sure you want to delete this event?')) {
-            this.eventService.deleteEvent(id).subscribe(() => {
-                this.events = this.events.filter(e => e.id !== id);
-                this.cdr.detectChanges();
-            });
-        }
-    }
-
-    deleteMessage(id: string) {
-        if (confirm('Are you sure you want to delete this message?')) {
-            this.messageService.deleteMessage(id).subscribe(() => {
-                this.messages = this.messages.filter(m => m.id !== id);
-                this.cdr.detectChanges();
-            });
-        }
-    }
+  }
 }

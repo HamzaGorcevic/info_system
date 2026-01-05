@@ -7,6 +7,7 @@ import { ServicersRepository } from "../repositories/servicers.repository.js";
 import { EventsRepository } from "../repositories/events.repository.js";
 import { MessagesRepository } from "../repositories/messages.repository.js";
 import { SuggestionsRepository } from "../repositories/suggestions.repository.js";
+import { DocumentsRepository } from "../repositories/documents.repository.js";
 import { SupabaseStorageService } from "../services/storage.service.js";
 
 export class RepositoryFactory {
@@ -36,6 +37,10 @@ export class RepositoryFactory {
 
     static getSuggestionsRepository(context: IContext): ISuggestionRepository {
         return new SuggestionsRepository(context.db);
+    }
+
+    static getDocumentsRepository(context: IContext): DocumentsRepository {
+        return new DocumentsRepository(context.db);
     }
 
     static getStorageService(context: IContext): IStorageService {

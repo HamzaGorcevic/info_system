@@ -8,13 +8,13 @@ import { UiCard } from '../../../../shared/ui/card/card';
 import { UiButton } from '../../../../shared/ui/button/button';
 import { Malfunction, TenantData } from '../../../../models/domain.models';
 import { switchMap, of } from 'rxjs';
-import { TenantNavComponent } from '../../../../shared/ui/tenant-nav/tenant-nav.component';
+
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
 
 @Component({
     selector: 'app-malfunction-list',
     standalone: true,
-    imports: [CommonModule, RouterLink, UiCard, UiButton, TenantNavComponent, BackButtonComponent],
+    imports: [CommonModule, RouterLink, UiCard, UiButton, BackButtonComponent],
     templateUrl: './malfunction-list.component.html'
 })
 export class MalfunctionListComponent implements OnInit {

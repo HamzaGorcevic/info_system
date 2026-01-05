@@ -24,6 +24,13 @@ import { SuggestionListComponent } from './features/tenant/suggestions/suggestio
 import { SuggestionCreateComponent } from './features/tenant/suggestions/suggestion-create.component';
 import { SuggestionsBuildingListComponent } from './features/admin/suggestions/suggestions-building-list.component';
 import { ManagerSuggestionsComponent } from './features/admin/suggestions/manager-suggestions.component';
+import { TenantLayoutComponent } from './layout/tenant-layout/tenant-layout.component';
+import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
+import { AnalyticsDashboardComponent } from './features/admin/analytics/analytics-dashboard.component';
+import { AdminDocumentsComponent } from './features/admin/documents/admin-documents.component';
+import { TenantDocumentsComponent } from './features/tenant/documents/tenant-documents.component';
+import { TenantStatsComponent } from './features/tenant/stats/tenant-stats.component';
+import { TenantExpensesComponent } from './features/tenant/expenses/tenant-expenses.component';
 
 export const routes: Routes = [
     {
@@ -41,54 +48,59 @@ export const routes: Routes = [
         canActivate: [guestGuard]
     },
     {
-        path: 'dashboard',
-        component: Dashboard,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/qr',
-        component: BuildingQR,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/tenants',
-        component: TenantManagement,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/servicers',
-        component: ServicerManagementComponent,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/tokens',
-        component: AccessTokensComponent,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/malfunctions',
-        component: AdminMalfunctionListComponent,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/announcements',
-        component: AnnouncementsBuildingListComponent,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/announcements/:buildingId',
-        component: CreateAnnouncementComponent,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/suggestions',
-        component: SuggestionsBuildingListComponent,
-        canActivate: [roleGuard(['manager'])]
-    },
-    {
-        path: 'admin/suggestions/:buildingId',
-        component: ManagerSuggestionsComponent,
-        canActivate: [roleGuard(['manager'])]
+        path: '',
+        component: AdminLayoutComponent,
+        canActivate: [roleGuard(['manager'])],
+        children: [
+            {
+                path: 'dashboard',
+                component: Dashboard
+            },
+            {
+                path: 'admin/qr',
+                component: BuildingQR
+            },
+            {
+                path: 'admin/tenants',
+                component: TenantManagement
+            },
+            {
+                path: 'admin/servicers',
+                component: ServicerManagementComponent
+            },
+            {
+                path: 'admin/tokens',
+                component: AccessTokensComponent
+            },
+            {
+                path: 'admin/malfunctions',
+                component: AdminMalfunctionListComponent
+            },
+            {
+                path: 'admin/announcements',
+                component: AnnouncementsBuildingListComponent
+            },
+            {
+                path: 'admin/announcements/:buildingId',
+                component: CreateAnnouncementComponent
+            },
+            {
+                path: 'admin/suggestions',
+                component: SuggestionsBuildingListComponent
+            },
+            {
+                path: 'admin/suggestions/:buildingId',
+                component: ManagerSuggestionsComponent
+            },
+            {
+                path: 'admin/analytics',
+                component: AnalyticsDashboardComponent
+            },
+            {
+                path: 'admin/documents',
+                component: AdminDocumentsComponent
+            }
+        ]
     },
     {
         path: 'tenant/register',
@@ -101,34 +113,52 @@ export const routes: Routes = [
         pathMatch: 'full'
     },
     {
-        path: 'tenant/dashboard',
-        component: TenantDashboard,
-        canActivate: [roleGuard(['tenant'])]
-    },
-    {
-        path: 'tenant/malfunctions',
-        component: MalfunctionListComponent,
-        canActivate: [roleGuard(['tenant'])]
-    },
-    {
-        path: 'tenant/malfunctions/report',
-        component: ReportMalfunctionComponent,
-        canActivate: [roleGuard(['tenant'])]
-    },
-    {
-        path: 'tenant/announcements',
-        component: AnnouncementsListComponent,
-        canActivate: [roleGuard(['tenant'])]
-    },
-    {
-        path: 'tenant/suggestions',
-        component: SuggestionListComponent,
-        canActivate: [roleGuard(['tenant'])]
-    },
-    {
-        path: 'tenant/suggestions/new',
-        component: SuggestionCreateComponent,
-        canActivate: [roleGuard(['tenant'])]
+        path: 'tenant',
+        component: TenantLayoutComponent,
+        canActivate: [roleGuard(['tenant'])],
+        children: [
+            {
+                path: 'dashboard',
+                component: TenantDashboard
+            },
+            {
+                path: 'malfunctions',
+                component: MalfunctionListComponent
+            },
+            {
+                path: 'malfunctions/report',
+                component: ReportMalfunctionComponent
+            },
+            {
+                path: 'announcements',
+                component: AnnouncementsListComponent
+            },
+            {
+                path: 'suggestions',
+                component: SuggestionListComponent
+            },
+            {
+                path: 'suggestions/new',
+                component: SuggestionCreateComponent
+            },
+            {
+                path: 'documents',
+                component: TenantDocumentsComponent
+            },
+            {
+                path: 'stats',
+                component: TenantStatsComponent
+            },
+            {
+                path: 'expenses',
+                component: TenantExpensesComponent
+            },
+            {
+                path: '',
+                redirectTo: 'dashboard',
+                pathMatch: 'full'
+            }
+        ]
     },
     {
         path: 'servicer/access',

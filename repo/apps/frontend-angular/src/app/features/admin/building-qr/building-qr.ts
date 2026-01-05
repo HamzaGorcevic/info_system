@@ -5,15 +5,15 @@ import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 import { RouterModule } from '@angular/router';
 import * as QRCode from 'qrcode';
-import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
+
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
   selector: 'app-building-qr',
   standalone: true,
-  imports: [CommonModule, UiCard, UiButton, RouterModule, AdminNavComponent, BackButtonComponent],
+  imports: [CommonModule, UiCard, UiButton, RouterModule, BackButtonComponent],
   template: `
-    <app-admin-nav></app-admin-nav>
+
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
       <div class="max-w-4xl mx-auto">
         <div class="mb-6">

@@ -4,15 +4,15 @@ import { AuthService } from '../../../services/auth.service';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 import { RouterModule, Router } from '@angular/router';
-import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
+
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
 @Component({
-    selector: 'app-suggestions-building-list',
-    standalone: true,
-    imports: [CommonModule, UiCard, UiButton, RouterModule, AdminNavComponent, BackButtonComponent],
-    template: `
-    <app-admin-nav></app-admin-nav>
+  selector: 'app-suggestions-building-list',
+  standalone: true,
+  imports: [CommonModule, UiCard, UiButton, RouterModule, BackButtonComponent],
+  template: `
+
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
       <div class="max-w-4xl mx-auto">
         <div class="mb-6">
@@ -56,26 +56,26 @@ import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.
   `
 })
 export class SuggestionsBuildingListComponent implements OnInit {
-    buildings: any[] = [];
+  buildings: any[] = [];
 
-    private authService = inject(AuthService);
-    private cdr = inject(ChangeDetectorRef);
-    private router = inject(Router);
+  private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
-    ngOnInit() {
-        const sessionStr = localStorage.getItem('sb-session');
-        if (sessionStr) {
-            const session = JSON.parse(sessionStr);
-            if (session.user) {
-                this.authService.getAdminBuildings(session.user.id).subscribe((res: any[]) => {
-                    this.buildings = res;
-                    this.cdr.detectChanges();
-                });
-            }
-        }
+  ngOnInit() {
+    const sessionStr = localStorage.getItem('sb-session');
+    if (sessionStr) {
+      const session = JSON.parse(sessionStr);
+      if (session.user) {
+        this.authService.getAdminBuildings(session.user.id).subscribe((res: any[]) => {
+          this.buildings = res;
+          this.cdr.detectChanges();
+        });
+      }
     }
+  }
 
-    manageSuggestions(buildingId: string) {
-        this.router.navigate(['/admin/suggestions', buildingId]);
-    }
+  manageSuggestions(buildingId: string) {
+    this.router.navigate(['/admin/suggestions', buildingId]);
+  }
 }

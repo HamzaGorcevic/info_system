@@ -12,21 +12,8 @@ import { UiButton } from '../../../shared/ui/button/button';
   template: `
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12">
       <div class="max-w-7xl mx-auto">
-        <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-16 animate-fade-in-up">
-          <div>
-            <h1 class="text-5xl md:text-6xl font-black tracking-tighter text-[#1B3C53] mb-2">
-              COMMAND <span class="text-gradient">CENTER</span>
-            </h1>
-            <p class="text-[#456882] font-bold uppercase tracking-[0.3em] text-xs">System Administration Dashboard</p>
-          </div>
-          <div class="mt-6 md:mt-0 flex items-center gap-4">
-            <div class="text-right hidden md:block">
-              <p class="text-[10px] font-black text-[#456882] uppercase tracking-widest">Active Session</p>
-              <p class="text-sm font-bold text-[#1B3C53]">Administrator</p>
-            </div>
-            <app-ui-button variant="outline" (btnClick)="logout()" class="!rounded-full px-8">LOGOUT</app-ui-button>
-          </div>
-        </header>
+        <h1 class="text-4xl font-black text-[#1B3C53] mb-8 animate-fade-in-up">Dashboard</h1>
+
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
           <div class="animate-fade-in-up stagger-1">
@@ -146,8 +133,5 @@ export class Dashboard implements OnInit {
 
   ngOnInit() { }
 
-  logout() {
-    this.authService.logout();
-    window.location.href = '/login';
-  }
+
 }

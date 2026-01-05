@@ -6,14 +6,14 @@ import { AuthService } from '../../../services/auth.service';
 import { BuildingService } from '../../../services/building.service';
 import { SuggestionWithVote } from '@repo/domain';
 import { TenantData } from '../../../models/domain.models';
-import { TenantNavComponent } from '../../../shared/ui/tenant-nav/tenant-nav.component';
+
 
 @Component({
-    selector: 'app-suggestion-list',
-    standalone: true,
-    imports: [CommonModule, TenantNavComponent],
-    template: `
-    <app-tenant-nav></app-tenant-nav>
+  selector: 'app-suggestion-list',
+  standalone: true,
+  imports: [CommonModule],
+  template: `
+
     <div class="min-h-screen bg-gradient-to-br from-[#F0F2F5] via-[#E8EAF0] to-[#DFE3F0] p-8">
       <div class="max-w-7xl mx-auto">
         
@@ -180,85 +180,85 @@ import { TenantNavComponent } from '../../../shared/ui/tenant-nav/tenant-nav.com
   `
 })
 export class SuggestionListComponent implements OnInit {
-    suggestions: SuggestionWithVote[] = [];
-    buildingId: string = '';
+  suggestions: SuggestionWithVote[] = [];
+  buildingId: string = '';
 
-    private suggestionService = inject(SuggestionService);
-    private authService = inject(AuthService);
-    private buildingService = inject(BuildingService);
-    private cdr = inject(ChangeDetectorRef);
-    private router = inject(Router);
+  private suggestionService = inject(SuggestionService);
+  private authService = inject(AuthService);
+  private buildingService = inject(BuildingService);
+  private cdr = inject(ChangeDetectorRef);
+  private router = inject(Router);
 
-    ngOnInit() {
-        this.loadBuildingAndSuggestions();
-    }
+  ngOnInit() {
+    this.loadBuildingAndSuggestions();
+  }
 
-    loadBuildingAndSuggestions() {
-        const user = this.authService.currentUser();
-        if (user) {
-            this.buildingService.getTenantData(user.id).subscribe({
-                next: (data: TenantData) => {
-                    if (data && data.building_id) {
-                        this.buildingId = data.building_id;
-                        this.loadSuggestions();
-                    }
-                }
-            });
+  loadBuildingAndSuggestions() {
+    const user = this.authService.currentUser();
+    if (user) {
+      this.buildingService.getTenantData(user.id).subscribe({
+        next: (data: TenantData) => {
+          if (data && data.building_id) {
+            this.buildingId = data.building_id;
+            this.loadSuggestions();
+          }
         }
+      });
     }
+  }
 
-    loadSuggestions() {
-        if (!this.buildingId) return;
-        this.suggestionService.getSuggestionsByBuilding(this.buildingId).subscribe(suggestions => {
-            this.suggestions = suggestions;
-            this.cdr.detectChanges();
-        });
-    }
+  loadSuggestions() {
+    if (!this.buildingId) return;
+    this.suggestionService.getSuggestionsByBuilding(this.buildingId).subscribe(suggestions => {
+      this.suggestions = suggestions;
+      this.cdr.detectChanges();
+    });
+  }
 
-    vote(suggestion: SuggestionWithVote, vote: boolean) {
-        const user = this.authService.currentUser();
-        if (!user) return;
+  vote(suggestion: SuggestionWithVote, vote: boolean) {
+    const user = this.authService.currentUser();
+    if (!user) return;
 
-        this.suggestionService.voteSuggestion({
-            suggestion_id: suggestion.id,
-            voted_by: user.id,
-            vote: vote
-        }).subscribe({
-            next: () => this.loadSuggestions(),
-            error: err => {
-                console.error('Vote failed', err);
-                const errorMessage = err.error?.message || err.message || 'Failed to vote.';
-                alert(errorMessage);
-            }
-        });
-    }
+    this.suggestionService.voteSuggestion({
+      suggestion_id: suggestion.id,
+      voted_by: user.id,
+      vote: vote
+    }).subscribe({
+      next: () => this.loadSuggestions(),
+      error: err => {
+        console.error('Vote failed', err);
+        const errorMessage = err.error?.message || err.message || 'Failed to vote.';
+        alert(errorMessage);
+      }
+    });
+  }
 
-    isCreator(suggestion: SuggestionWithVote): boolean {
-        const user = this.authService.currentUser();
-        return !!user && user.id === suggestion.created_by;
-    }
+  isCreator(suggestion: SuggestionWithVote): boolean {
+    const user = this.authService.currentUser();
+    return !!user && user.id === suggestion.created_by;
+  }
 
-    deleteSuggestion(id: string) {
-        if (confirm('Are you sure you want to remove this suggestion?')) {
-            this.suggestionService.deleteSuggestion(id).subscribe({
-                next: () => {
-                    this.suggestions = this.suggestions.filter(s => s.id !== id);
-                    this.cdr.detectChanges();
-                },
-                error: err => {
-                    console.error('Delete failed', err);
-                    const errorMessage = err.error?.message || err.message || 'Failed to delete suggestion.';
-                    alert(errorMessage);
-                }
-            });
+  deleteSuggestion(id: string) {
+    if (confirm('Are you sure you want to remove this suggestion?')) {
+      this.suggestionService.deleteSuggestion(id).subscribe({
+        next: () => {
+          this.suggestions = this.suggestions.filter(s => s.id !== id);
+          this.cdr.detectChanges();
+        },
+        error: err => {
+          console.error('Delete failed', err);
+          const errorMessage = err.error?.message || err.message || 'Failed to delete suggestion.';
+          alert(errorMessage);
         }
+      });
     }
+  }
 
-    navigateToCreate() {
-        this.router.navigate(['/tenant/suggestions/new']);
-    }
+  navigateToCreate() {
+    this.router.navigate(['/tenant/suggestions/new']);
+  }
 
-    trackById(index: number, item: SuggestionWithVote): string {
-        return item.id;
-    }
+  trackById(index: number, item: SuggestionWithVote): string {
+    return item.id;
+  }
 }

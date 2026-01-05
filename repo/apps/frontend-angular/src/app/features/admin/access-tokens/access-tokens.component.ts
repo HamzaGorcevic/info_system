@@ -4,12 +4,11 @@ import { ServicerService } from '../../../services/servicer.service';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
-import { AdminNavComponent } from '../../../shared/ui/admin-nav/admin-nav.component';
 
 @Component({
     selector: 'app-access-tokens',
     standalone: true,
-    imports: [CommonModule, UiCard, UiButton, BackButtonComponent, AdminNavComponent],
+    imports: [CommonModule, UiCard, UiButton, BackButtonComponent],
     templateUrl: './access-tokens.component.html'
 })
 export class AccessTokensComponent implements OnInit {

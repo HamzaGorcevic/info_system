@@ -8,13 +8,13 @@ import { UiButton } from '../../../../shared/ui/button/button';
 import { UiModal } from '../../../../shared/ui/modal/modal';
 import { TokenSuccessModalComponent } from '../../../../shared/ui/token-success-modal/token-success-modal.component';
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
-import { AdminNavComponent } from '../../../../shared/ui/admin-nav/admin-nav.component';
+
 import { Servicer, Malfunction } from '../../../../models/domain.models';
 
 @Component({
     selector: 'app-servicer-management',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, UiCard, UiButton, UiModal, TokenSuccessModalComponent, BackButtonComponent, AdminNavComponent],
+    imports: [CommonModule, ReactiveFormsModule, UiCard, UiButton, UiModal, TokenSuccessModalComponent, BackButtonComponent],
     templateUrl: './servicer-management.component.html'
 })
 export class ServicerManagementComponent implements OnInit {

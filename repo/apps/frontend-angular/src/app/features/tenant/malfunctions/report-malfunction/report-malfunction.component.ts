@@ -8,13 +8,13 @@ import { Router } from '@angular/router';
 import { UiCard } from '../../../../shared/ui/card/card';
 import { UiButton } from '../../../../shared/ui/button/button';
 import { TenantData } from '../../../../models/domain.models';
-import { TenantNavComponent } from '../../../../shared/ui/tenant-nav/tenant-nav.component';
+
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
 
 @Component({
     selector: 'app-report-malfunction',
     standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, UiCard, UiButton, TenantNavComponent, BackButtonComponent],
+    imports: [CommonModule, ReactiveFormsModule, UiCard, UiButton, BackButtonComponent],
     templateUrl: './report-malfunction.component.html'
 })
 export class ReportMalfunctionComponent {

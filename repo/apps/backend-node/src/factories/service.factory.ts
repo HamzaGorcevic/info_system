@@ -6,7 +6,10 @@ import { ServicersService } from "../services/servicers.service.js";
 import { EventsService } from "../services/events.service.js";
 import { MessagesService } from "../services/messages.service.js";
 import { SuggestionsService } from "../services/suggestions.service.js";
+import { DocumentsService } from "../services/documents.service.js";
 import { RepositoryFactory } from "./repository.factory.js";
+
+
 
 export class ServiceFactory {
     static getAuthService(context: IContext): AuthService {
@@ -45,5 +48,11 @@ export class ServiceFactory {
     static getSuggestionsService(context: IContext): SuggestionsService {
         const suggestionsRepository = RepositoryFactory.getSuggestionsRepository(context);
         return new SuggestionsService(suggestionsRepository);
+    }
+
+    static getDocumentsService(context: IContext): DocumentsService {
+        const documentsRepository = RepositoryFactory.getDocumentsRepository(context);
+        const storageService = RepositoryFactory.getStorageService(context);
+        return new DocumentsService(documentsRepository, storageService as any);
     }
 }

@@ -53,14 +53,17 @@ export class BuildingRepository implements IBuildingRepository {
 
 
 
-    async findBuildingsByManagerId(userId: string): Promise<Database['public']['Tables']['buildings']['Row'][]> {
+    async findBuildingsByManagerId(userId: string): Promise<any[]> {
         const { data, error } = await this.client
             .from('building_managers')
-            .select('building_id, buildings(*)')
+            .select('building_id, buildings(*, tenants(id))')
             .eq('user_id', userId);
 
         if (error) throw new Error(error.message);
 
-        return data?.map((item: any) => item.buildings) || [];
+        return data?.map((item: any) => ({
+            ...item.buildings,
+            tenants_count: item.buildings.tenants?.length || 0
+        })) || [];
     }
 }

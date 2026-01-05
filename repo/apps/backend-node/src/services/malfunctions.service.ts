@@ -14,7 +14,7 @@ export class MalfunctionsService {
         let imageUrl = data.image_url;
 
         if (imageFile) {
-            const path = `malfunctions/${Date.now()}_${imageFile.originalname}`;
+            const path = `malfunctions/${data.reporter_id}/${Date.now()}_${imageFile.originalname}`;
             imageUrl = await this.storageService.uploadImage('malfunctions', path, imageFile.buffer, imageFile.mimetype);
         }
 
@@ -41,8 +41,21 @@ export class MalfunctionsService {
     }
 
     async rateMalfunction(
-        data: Database['public']['Tables']['ratings']['Insert']
+        data: any
     ): Promise<Database['public']['Tables']['ratings']['Row']> {
-        return this.malfunctionRepository.rate(data);
+        const { malfunction_id, servicer_id, ...ratingData } = data;
+
+        // Find intervention
+        const intervention = await this.malfunctionRepository.findInterventionByMalfunctionAndServicer(malfunction_id, servicer_id);
+
+        if (!intervention) {
+            throw new Error('Intervention not found for this malfunction and servicer');
+        }
+
+        return this.malfunctionRepository.rate({
+            ...ratingData,
+            servicer_id,
+            intervention_id: intervention.id
+        });
     }
 }
