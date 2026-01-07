@@ -32,16 +32,28 @@ export class AuthService {
     login(data: any): Observable<any> {
         return this.http.post(`${this.apiUrl}/login`, data).pipe(
             tap((res: any) => {
-                if (res.session) {
-                    const session = { ...res.session };
-                    if (res.user) {
-                        session.user = { ...session.user, profile: res.user };
-                    }
-                    localStorage.setItem('sb-session', JSON.stringify(session));
-                    this._user.set(res.user);
-                }
+                this.saveSession(res);
             })
         );
+    }
+
+    refreshToken(refreshToken: string): Observable<any> {
+        return this.http.post(`${this.apiUrl}/refresh`, { refreshToken }).pipe(
+            tap((res: any) => {
+                this.saveSession(res);
+            })
+        );
+    }
+
+    private saveSession(res: any) {
+        if (res.session) {
+            const session = { ...res.session };
+            if (res.user) {
+                session.user = { ...session.user, profile: res.user };
+            }
+            localStorage.setItem('sb-session', JSON.stringify(session));
+            this._user.set(res.user);
+        }
     }
 
     registerTenant(data: any): Observable<any> {

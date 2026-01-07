@@ -213,4 +213,23 @@ export class AuthService {
         console.log(`Found ${buildings.length} buildings for admin ${userId}`);
         return buildings;
     }
+
+    async refreshToken(refreshToken: string) {
+        const { data, error } = await supabase.auth.refreshSession({ refresh_token: refreshToken });
+
+        if (error) {
+            throw new Error(error.message);
+        }
+
+        const { data: profile, error: profileError } = await supabase
+            .from('users')
+            .select('*')
+            .eq('id', data.user?.id)
+            .single();
+
+        return {
+            session: data.session,
+            user: profile
+        };
+    }
 }

@@ -45,6 +45,20 @@ export class AuthController {
         const result = await authService.getAdminBuildings(userId);
         res.status(200).json(result);
     }
+
+    async refreshToken(req: Request, res: Response, next: NextFunction) {
+        const context = { db: supabaseAdmin, currentUser: null };
+        const authService = ServiceFactory.getAuthService(context);
+
+        const { refreshToken } = req.body;
+        if (!refreshToken) throw new Error("Refresh token required");
+
+        const result = await authService.refreshToken(refreshToken);
+        res.status(200).json({
+            message: 'Token refreshed successfully',
+            ...result
+        });
+    }
 }
 
 export const authController = new AuthController();

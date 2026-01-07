@@ -10,6 +10,7 @@ const router = Router();
 router.post('/register-admin', validate({ body: registerAdminSchema }), authController.registerAdmin);
 router.post('/register-tenant', validate({ body: registerTenantSchema }), authController.registerTenant);
 router.post('/login', validate({ body: loginSchema }), authController.login);
+router.post('/refresh', authController.refreshToken);
 router.get('/buildings', authMiddleware, authController.getAdminBuildings);
 
 export default router;
