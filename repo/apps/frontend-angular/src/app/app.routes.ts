@@ -31,6 +31,7 @@ import { AdminDocumentsComponent } from './features/admin/documents/admin-docume
 import { TenantDocumentsComponent } from './features/tenant/documents/tenant-documents.component';
 import { TenantStatsComponent } from './features/tenant/stats/tenant-stats.component';
 import { TenantExpensesComponent } from './features/tenant/expenses/tenant-expenses.component';
+import { AdminExpensesComponent } from './features/admin/expenses/admin-expenses.component';
 
 export const routes: Routes = [
     {
@@ -99,6 +100,10 @@ export const routes: Routes = [
             {
                 path: 'admin/documents',
                 component: AdminDocumentsComponent
+            },
+            {
+                path: 'admin/expenses',
+                component: AdminExpensesComponent
             }
         ]
     },

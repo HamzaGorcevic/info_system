@@ -7,6 +7,7 @@ const router = Router();
 router.use(authMiddleware);
 
 router.get('/:buildingId/unverified-tenants', buildingController.findUnverifiedTenants);
+router.get('/:buildingId/tenants', buildingController.getBuildingTenants);
 router.post('/verify-tenant/:userId', buildingController.verifyTenant);
 router.get('/tenant/:userId', buildingController.getTenantData);
 

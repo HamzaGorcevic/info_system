@@ -27,6 +27,12 @@ export class BuildingController {
         res.status(200).json(result);
     }
 
+    async getBuildingTenants(req: Request, res: Response, next: NextFunction) {
+        const buildingService = ServiceFactory.getBuildingService(req.context);
+        const { buildingId } = req.params;
+        const result = await buildingService.getBuildingTenants(buildingId);
+        res.status(200).json(result);
+    }
 }
 
 export const buildingController = new BuildingController();

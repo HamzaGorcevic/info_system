@@ -14,3 +14,4 @@ export * from './entities/suggestion.entity.js';
 export * from './repositories/events.repository.interface.js';
 export * from './repositories/messages.repository.interface.js';
 export * from './repositories/suggestions.repository.interface.js';
+export * from './repositories/expenses.repository.interface.js';

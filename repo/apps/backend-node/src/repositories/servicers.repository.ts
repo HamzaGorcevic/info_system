@@ -80,28 +80,64 @@ export class ServicersRepository implements IServicerRepository {
         return tenant.building_id;
     }
     async validateGuestToken(token: string): Promise<Database['public']['Tables']['guest_access_tokens']['Row'] | null> {
-        const { data, error } = await this.client.rpc('verify_guest_token', { token_param: token });
+        // Use supabaseAdmin to bypass RLS and avoid anon key JWT parsing issues
+        const { supabaseAdmin } = await import('@repo/supabase');
 
-        if (error) throw new Error(error.message);
+        const { data: tokenData, error: tokenError } = await supabaseAdmin
+            .from('guest_access_tokens')
+            .select('*')
+            .eq('token', token)
+            .eq('is_active', true)
+            .gt('expires_at', new Date().toISOString())
+            .maybeSingle();
 
-        if (!data || data.length === 0) return null;
+        if (tokenError) throw new Error(tokenError.message);
+        if (!tokenData) return null;
 
-        return data[0] as unknown as Database['public']['Tables']['guest_access_tokens']['Row'];
+        const { data: malfunctionData, error: malfunctionError } = await supabaseAdmin
+            .from('malfunctions')
+            .select('*')
+            .eq('id', tokenData.malfunction_id)
+            .single();
+
+        if (malfunctionError) throw new Error(malfunctionError.message);
+
+        return {
+            ...tokenData,
+            malfunctions: malfunctionData
+        } as any;
     }
 
     async updateMalfunctionStatus(malfunctionId: string, status: string, token: string): Promise<void> {
-        await this.client.rpc('set_config', {
-            setting: 'request.guest_token',
-            value: token,
-            is_local: true
-        });
+        const { supabaseAdmin } = await import('@repo/supabase');
+        const { data: tokenValid, error: verifyError } = await supabaseAdmin
+            .from('guest_access_tokens')
+            .select('id')
+            .eq('token', token)
+            .eq('malfunction_id', malfunctionId)
+            .eq('is_active', true)
+            .gt('expires_at', new Date().toISOString())
+            .maybeSingle();
 
-        const { error } = await this.client
+        if (verifyError || !tokenValid) {
+            throw new Error('Unauthorized: Invalid or expired guest token');
+        }
+
+        const { error } = await supabaseAdmin
             .from('malfunctions')
-            .update({ status })
+            .update({
+                status,
+                started_at: status === 'in_progress' ? new Date().toISOString() : undefined,
+                resolved_at: status === 'resolved' ? new Date().toISOString() : undefined
+            })
             .eq('id', malfunctionId);
 
         if (error) throw new Error(error.message);
+
+        await supabaseAdmin
+            .from('guest_access_tokens')
+            .update({ last_used_at: new Date().toISOString() })
+            .eq('token', token);
     }
 
     async assignServicerToMalfunction(malfunctionId: string, servicerId: string): Promise<void> {

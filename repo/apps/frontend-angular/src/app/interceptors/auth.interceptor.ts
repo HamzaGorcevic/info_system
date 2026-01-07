@@ -1,6 +1,14 @@
 import { HttpInterceptorFn } from '@angular/common/http';
 
 export const authInterceptor: HttpInterceptorFn = (req, next) => {
+    // Skip auth for servicer public endpoints
+    const publicEndpoints = ['/servicers/verify-token', '/servicers/update-status'];
+    const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
+
+    if (isPublicEndpoint) {
+        return next(req);
+    }
+
     const sessionStr = localStorage.getItem('sb-session');
     if (sessionStr) {
         try {

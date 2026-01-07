@@ -22,4 +22,8 @@ export class BuildingService {
     getTenantData(userId: string): Observable<TenantData> {
         return this.http.get<TenantData>(`${this.apiUrl}/tenant/${userId}`);
     }
+
+    getBuildingTenants(buildingId: string): Observable<any[]> {
+        return this.http.get<any[]>(`${this.apiUrl}/${buildingId}/tenants`);
+    }
 }

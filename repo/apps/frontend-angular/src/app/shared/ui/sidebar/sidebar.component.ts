@@ -110,6 +110,7 @@ export class SidebarComponent implements OnInit, OnChanges {
         { label: 'Suggestions', icon: 'lightbulb', route: '/admin/suggestions' },
         { label: 'Announcements', icon: 'campaign', route: '/admin/announcements' },
         { label: 'Documents', icon: 'folder', route: '/admin/documents' },
+        { label: 'Expenses', icon: 'receipt_long', route: '/admin/expenses' },
       ];
     } else {
       this.navItems = [

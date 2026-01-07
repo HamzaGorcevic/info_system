@@ -7,6 +7,7 @@ import { EventsService } from "../services/events.service.js";
 import { MessagesService } from "../services/messages.service.js";
 import { SuggestionsService } from "../services/suggestions.service.js";
 import { DocumentsService } from "../services/documents.service.js";
+import { ExpensesService } from "../services/expenses.service.js";
 import { RepositoryFactory } from "./repository.factory.js";
 
 
@@ -54,5 +55,10 @@ export class ServiceFactory {
         const documentsRepository = RepositoryFactory.getDocumentsRepository(context);
         const storageService = RepositoryFactory.getStorageService(context);
         return new DocumentsService(documentsRepository, storageService as any);
+    }
+
+    static getExpensesService(context: IContext): ExpensesService {
+        const expensesRepository = RepositoryFactory.getExpensesRepository(context);
+        return new ExpensesService(expensesRepository);
     }
 }

@@ -60,6 +60,8 @@ CREATE TABLE tenant_expenses (
     expense_type VARCHAR(100) NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     description TEXT,
+    status VARCHAR(50) DEFAULT 'unpaid' CHECK (status IN ('unpaid', 'paid', 'cancelled')),
+    paid_at TIMESTAMP WITH TIME ZONE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -398,6 +400,15 @@ CREATE POLICY "Managers can view all expenses" ON tenant_expenses
 
 CREATE POLICY "Managers can create expenses" ON tenant_expenses
     FOR INSERT WITH CHECK (is_manager());
+
+CREATE POLICY "Tenants can update their expenses" ON tenant_expenses
+    FOR UPDATE USING (is_tenant_owner(tenant_id));
+
+CREATE POLICY "Managers can update all expenses" ON tenant_expenses
+    FOR UPDATE USING (is_manager());
+
+CREATE POLICY "Managers can delete expenses" ON tenant_expenses
+    FOR DELETE USING (is_manager());
 
 -- SERVICERS
 ALTER TABLE servicers ENABLE ROW LEVEL SECURITY;

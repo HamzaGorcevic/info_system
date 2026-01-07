@@ -16,6 +16,16 @@ export class BuildingRepository implements IBuildingRepository {
         return data || [];
     }
 
+    async findBuildingTenants(buildingId: string): Promise<Database['public']['Tables']['tenants']['Row'][]> {
+        const { data, error } = await this.client
+            .from('tenants')
+            .select('*, users!inner(*)')
+            .eq('building_id', buildingId);
+
+        if (error) throw new Error(error.message);
+        return data || [];
+    }
+
     async findTenantByUserId(userId: string): Promise<Database['public']['Tables']['tenants']['Row'] | null> {
         const { data, error } = await this.client
             .from('tenants')

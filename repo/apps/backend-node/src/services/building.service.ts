@@ -48,4 +48,8 @@ export class BuildingService {
 
         return data;
     }
+
+    async getBuildingTenants(buildingId: string): Promise<Database['public']['Tables']['tenants']['Row'][]> {
+        return this.buildingRepository.findBuildingTenants(buildingId);
+    }
 }

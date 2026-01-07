@@ -7,6 +7,7 @@ import eventRoutes from './events.routes.js';
 import messageRoutes from './messages.routes.js';
 import suggestionRoutes from './suggestions.routes.js';
 import documentsRoutes from './documents.routes.js';
+import expensesRoutes from './expenses.routes.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.use('/events', eventRoutes);
 router.use('/messages', messageRoutes);
 router.use('/suggestions', suggestionRoutes);
 router.use('/documents', documentsRoutes);
+router.use('/expenses', expensesRoutes);
 
 export default router;
