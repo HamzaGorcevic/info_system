@@ -1,12 +1,34 @@
 import { ZodTypeAny } from "zod";
 import { NextFunction, Request, Response } from "express";
 
-export const validate = (schemas: { body?: ZodTypeAny, query?: ZodTypeAny, params?: ZodTypeAny }) =>
+/**
+ * Robust validation middleware.
+ * Handles read-only request properties (query, params) via Object.assign
+ * and strips undefined values to ensure database safety.
+ */
+export const validate = (schemas: { body?: ZodTypeAny; query?: ZodTypeAny; params?: ZodTypeAny }) =>
     (req: Request, res: Response, next: NextFunction) => {
         try {
-            if (schemas.body) req.body = schemas.body.parse(req.body);
-            if (schemas.query) req.query = schemas.query.parse(req.query) as any;
-            if (schemas.params) req.params = schemas.params.parse(req.params) as any;
+            const processData = (schema: ZodTypeAny, target: any, isBody: boolean) => {
+                const parsed = schema.parse(target) as Record<string, any>;
+
+                const cleaned = Object.fromEntries(
+                    Object.entries(parsed).filter(([_, value]) => value !== undefined)
+                );
+
+                if (isBody) {
+                    return cleaned;
+                } else {
+                    Object.keys(target).forEach(key => delete target[key]);
+                    Object.assign(target, cleaned);
+                    return target;
+                }
+            };
+
+            if (schemas.body) req.body = processData(schemas.body, req.body, true);
+            if (schemas.query) processData(schemas.query, req.query, false);
+            if (schemas.params) processData(schemas.params, req.params, false);
+
             next();
         } catch (error) {
             next(error);
