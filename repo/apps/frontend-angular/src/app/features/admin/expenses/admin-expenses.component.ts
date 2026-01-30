@@ -8,10 +8,10 @@ import { EventsService } from '../../../services/events.service';
 import { Database } from '@repo/types';
 
 @Component({
-    selector: 'app-admin-expenses',
-    standalone: true,
-    imports: [CommonModule, FormsModule],
-    template: `
+  selector: 'app-admin-expenses',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  template: `
     <div class="p-6">
       <div class="flex justify-between items-center mb-8">
         <h1 class="text-3xl font-black text-[#1B3C53]">Tenant Expenses</h1>
@@ -156,150 +156,147 @@ import { Database } from '@repo/types';
   `
 })
 export class AdminExpensesComponent implements OnInit {
-    expenses: Database['public']['Tables']['tenant_expenses']['Row'][] = [];
-    tenants: any[] = [];
-    showAddModal = false;
-    isSubmitting = false;
-    isLoading = true;
-    showNotifyModal = false;
-    isSendingNotification = false;
-    selectedExpense: Database['public']['Tables']['tenant_expenses']['Row'] | null = null;
-    notificationMessage = '';
+  expenses: Database['public']['Tables']['tenant_expenses']['Row'][] = [];
+  tenants: any[] = [];
+  showAddModal = false;
+  isSubmitting = false;
+  isLoading = true;
+  showNotifyModal = false;
+  isSendingNotification = false;
+  selectedExpense: Database['public']['Tables']['tenant_expenses']['Row'] | null = null;
+  notificationMessage = '';
 
-    newExpense = {
-        tenant_id: '',
-        expense_type: 'Rent',
-        amount: 0,
-        description: ''
+  newExpense = {
+    tenant_id: '',
+    expense_type: 'Rent',
+    amount: 0,
+    description: ''
+  };
+
+  constructor(
+    private expensesService: ExpensesService,
+    private buildingService: BuildingService,
+    private authService: AuthService,
+    private eventsService: EventsService,
+    private cdr: ChangeDetectorRef
+  ) { }
+
+  ngOnInit() {
+    this.loadData();
+  }
+
+  loadData() {
+    const user = this.authService.currentUser();
+    if (!user) return;
+
+    this.expensesService.getAllExpenses().subscribe({
+      next: (data) => {
+        this.expenses = data;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading expenses:', err);
+        this.isLoading = false;
+        this.cdr.detectChanges();
+      }
+    });
+
+    this.loadTenants(user.id);
+  }
+
+  loadTenants(userId: string) {
+    this.authService.getAdminBuildings(userId).subscribe(buildings => {
+      buildings.forEach(b => {
+        this.buildingService.getBuildingTenants(b.id).subscribe(t => {
+          this.tenants = [...this.tenants, ...t.map(tenant => ({ ...tenant, building_name: b.building_name }))];
+          this.cdr.detectChanges();
+        });
+      });
+    });
+  }
+
+  getTenantName(tenantId: string): string {
+    const tenant = this.tenants.find(t => t.id === tenantId);
+    return tenant ? `${tenant.tenant_number} - ${tenant.apartment_number} (${tenant.building_name})` : 'Unknown';
+  }
+
+  createExpense() {
+    if (!this.newExpense.tenant_id || this.newExpense.amount <= 0) return;
+
+    this.isSubmitting = true;
+    this.expensesService.createExpense(this.newExpense).subscribe({
+      next: (expense) => {
+        this.expenses.unshift(expense);
+        this.showAddModal = false;
+        this.isSubmitting = false;
+        this.resetForm();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error creating expense:', err);
+        this.isSubmitting = false;
+      }
+    });
+  }
+
+  deleteExpense(id: string) {
+    if (!confirm('Are you sure you want to delete this expense?')) return;
+
+    this.expensesService.deleteExpense(id).subscribe({
+      next: () => {
+        this.expenses = this.expenses.filter(e => e.id !== id);
+        this.cdr.detectChanges();
+      },
+      error: (err) => console.error('Error deleting expense:', err)
+    });
+  }
+
+  resetForm() {
+    this.newExpense = {
+      tenant_id: '',
+      expense_type: 'Rent',
+      amount: 0,
+      description: ''
     };
+  }
 
-    constructor(
-        private expensesService: ExpensesService,
-        private buildingService: BuildingService,
-        private authService: AuthService,
-        private eventsService: EventsService,
-        private cdr: ChangeDetectorRef
-    ) { }
+  openNotifyModal(expense: Database['public']['Tables']['tenant_expenses']['Row']) {
+    this.selectedExpense = expense;
+    const tenant = this.tenants.find(t => t.id === expense.tenant_id);
+    this.notificationMessage = `Payment Reminder: Please pay your ${expense.expense_type} expense of $${expense.amount}. ${expense.description || ''}`.trim();
+    this.showNotifyModal = true;
+  }
 
-    ngOnInit() {
-        this.loadData();
-    }
+  sendNotification() {
+    if (!this.selectedExpense || !this.notificationMessage) return;
 
-    loadData() {
-        const user = this.authService.currentUser();
-        if (!user) return;
+    this.isSendingNotification = true;
 
-        this.expensesService.getAllExpenses().subscribe({
-            next: (data) => {
-                this.expenses = data;
-                this.isLoading = false;
-                this.cdr.detectChanges();
-            },
-            error: (err) => {
-                console.error('Error loading expenses:', err);
-                this.isLoading = false;
-                this.cdr.detectChanges();
-            }
-        });
+    this.expensesService.notifyTenant(this.selectedExpense.id, this.notificationMessage).subscribe({
+      next: (res) => {
+        this.showNotifyModal = false;
+        this.isSendingNotification = false;
+        this.selectedExpense = null;
+        this.notificationMessage = '';
 
-        this.loadTenants(user.id);
-    }
-
-    loadTenants(userId: string) {
-        this.authService.getAdminBuildings(userId).subscribe(buildings => {
-            buildings.forEach(b => {
-                this.buildingService.getBuildingTenants(b.id).subscribe(t => {
-                    this.tenants = [...this.tenants, ...t.map(tenant => ({ ...tenant, building_name: b.building_name }))];
-                    this.cdr.detectChanges();
-                });
-            });
-        });
-    }
-
-    getTenantName(tenantId: string): string {
-        const tenant = this.tenants.find(t => t.id === tenantId);
-        return tenant ? `${tenant.tenant_number} - ${tenant.apartment_number} (${tenant.building_name})` : 'Unknown';
-    }
-
-    createExpense() {
-        if (!this.newExpense.tenant_id || this.newExpense.amount <= 0) return;
-
-        this.isSubmitting = true;
-        this.expensesService.createExpense(this.newExpense).subscribe({
-            next: (expense) => {
-                this.expenses.unshift(expense);
-                this.showAddModal = false;
-                this.isSubmitting = false;
-                this.resetForm();
-                this.cdr.detectChanges();
-            },
-            error: (err) => {
-                console.error('Error creating expense:', err);
-                this.isSubmitting = false;
-            }
-        });
-    }
-
-    deleteExpense(id: string) {
-        if (!confirm('Are you sure you want to delete this expense?')) return;
-
-        this.expensesService.deleteExpense(id).subscribe({
-            next: () => {
-                this.expenses = this.expenses.filter(e => e.id !== id);
-                this.cdr.detectChanges();
-            },
-            error: (err) => console.error('Error deleting expense:', err)
-        });
-    }
-
-    resetForm() {
-        this.newExpense = {
-            tenant_id: '',
-            expense_type: 'Rent',
-            amount: 0,
-            description: ''
-        };
-    }
-
-    openNotifyModal(expense: Database['public']['Tables']['tenant_expenses']['Row']) {
-        this.selectedExpense = expense;
-        const tenant = this.tenants.find(t => t.id === expense.tenant_id);
-        this.notificationMessage = `Payment Reminder: Please pay your ${expense.expense_type} expense of $${expense.amount}. ${expense.description || ''}`.trim();
-        this.showNotifyModal = true;
-    }
-
-    sendNotification() {
-        if (!this.selectedExpense || !this.notificationMessage) return;
-
-        const tenant = this.tenants.find(t => t.id === this.selectedExpense!.tenant_id);
-        if (!tenant || !tenant.building_id) {
-            alert('Unable to find tenant building information');
-            return;
+        if (res.status === 'already_paid') {
+          alert('Tenant has already paid this expense! The status has been updated.');
+          const index = this.expenses.findIndex(e => e.id === res.expense.id);
+          if (index !== -1) {
+            this.expenses[index] = res.expense;
+          }
+        } else {
+          alert('Notification sent successfully!');
         }
-
-        this.isSendingNotification = true;
-        const eventData = {
-            building_id: tenant.building_id,
-            title: 'Payment Reminder',
-            scheduled_at: new Date().toISOString(),
-            content: this.notificationMessage
-        };
-
-        this.eventsService.createEvent(eventData).subscribe({
-            next: () => {
-                this.showNotifyModal = false;
-                this.isSendingNotification = false;
-                this.selectedExpense = null;
-                this.notificationMessage = '';
-                alert('Notification sent successfully!');
-                this.cdr.detectChanges();
-            },
-            error: (err) => {
-                console.error('Error sending notification:', err);
-                alert('Failed to send notification');
-                this.isSendingNotification = false;
-                this.cdr.detectChanges();
-            }
-        });
-    }
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error sending notification:', err);
+        alert('Failed to send notification. ' + (err.error?.message || ''));
+        this.isSendingNotification = false;
+        this.cdr.detectChanges();
+      }
+    });
+  }
 }

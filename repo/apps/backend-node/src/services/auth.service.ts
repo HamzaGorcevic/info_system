@@ -208,9 +208,7 @@ export class AuthService {
         userId: string
     ) {
         if (!this.buildingRepository) throw new Error("BuildingRepository is required for getAdminBuildings");
-        console.log('Fetching buildings for admin:', userId);
         const buildings = await this.buildingRepository.findBuildingsByManagerId(userId);
-        console.log(`Found ${buildings.length} buildings for admin ${userId}`);
         return buildings;
     }
 

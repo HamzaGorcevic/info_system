@@ -76,4 +76,14 @@ export class BuildingRepository implements IBuildingRepository {
             tenants_count: item.buildings.tenants?.length || 0
         })) || [];
     }
+    async findTenantById(id: string): Promise<Database['public']['Tables']['tenants']['Row'] | null> {
+        const { data, error } = await this.client
+            .from('tenants')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) return null;
+        return data;
+    }
 }

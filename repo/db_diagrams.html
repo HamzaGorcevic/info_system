@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="sr">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Database Schema Tables</title>
+    <title>Rečnik Podataka - Sistem za Upravljanje Zgradama</title>
     <style>
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -34,7 +34,6 @@
             font-size: 14px;
         }
 
-        /* Main Header Style */
         .main-header {
             background-color: #808080;
             color: white;
@@ -43,14 +42,12 @@
             padding: 8px;
         }
 
-        /* Column Headers Style */
         .col-header {
             background-color: #f2f2f2;
             text-align: center;
             font-weight: bold;
         }
 
-        /* Cell Styles */
         td {
             vertical-align: top;
         }
@@ -72,874 +69,687 @@
 
 <body>
 
-    <!-- buildings -->
+    <!-- ZGRADA -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">buildings&lt;id, location, number_apartments, building_name,
-                        created_at&gt;</th>
+                    <th colspan="3" class="main-header">Zgrada</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Naziv zgrade</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Ime ili naziv zgrade</td>
                 </tr>
                 <tr>
-                    <td class="field-col">location</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Lokacija</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Puna adresa zgrade (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">number_apartments</td>
-                    <td class="type-col">integer</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">building_name</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Broj apartmana</td>
+                    <td class="type-col">Broj</td>
+                    <td class="constraint-col">Ukupan broj stanova u zgradi (obavezno)</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- users -->
+    <!-- KORISNIK -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">users&lt;id, email, full_name, role, is_verified, verified_by,
-                        verified_at, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Korisnik</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, Strani ključ (auth.users)</td>
+                    <td class="field-col">Email adresa</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Jedinstvena email adresa za pristup sistemu (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">email</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null, jedinstveno</td>
+                    <td class="field-col">Puno ime</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Ime i prezime korisnika (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">full_name</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Uloga</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Tip korisnika: Menadžer, Vlasnik stana ili Član domaćinstva (obavezno)
+                    </td>
                 </tr>
                 <tr>
-                    <td class="field-col">role</td>
-                    <td class="type-col">varchar(50)</td>
-                    <td class="constraint-col">Not null, check (tenant, manager, household_member)</td>
+                    <td class="field-col">Status verifikacije</td>
+                    <td class="type-col">Da/Ne</td>
+                    <td class="constraint-col">Da li je menadžer odobrio pristup korisniku</td>
                 </tr>
                 <tr>
-                    <td class="field-col">is_verified</td>
-                    <td class="type-col">bool</td>
-                    <td class="constraint-col">default false</td>
+                    <td class="field-col">Verifikovano od strane</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Ime menadžera koji je odobrio pristup</td>
                 </tr>
                 <tr>
-                    <td class="field-col">verified_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Strani ključ (users)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">verified_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Datum verifikacije</td>
+                    <td class="type-col">Datum</td>
+                    <td class="constraint-col">Kada je korisnik verifikovan</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- building_managers -->
+    <!-- STANAR -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">building_managers&lt;id, user_id, building_id, created_at&gt;
-                    </th>
+                    <th colspan="3" class="main-header">Stanar</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Korisnik</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Povezan sa korisnikom sistema (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">user_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                    <td class="field-col">Zgrada</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">U kojoj zgradi stanar živi (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">building_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (buildings)</td>
+                    <td class="field-col">Broj stanara</td>
+                    <td class="type-col">Broj</td>
+                    <td class="constraint-col">Jedinstveni identifikacioni broj stanara u zgradi (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Broj apartmana</td>
+                    <td class="type-col">Broj</td>
+                    <td class="constraint-col">Broj stana u kojem stanar živi (obavezno)</td>
+                </tr>
+                <tr>
+                    <td class="field-col">Vlasnik</td>
+                    <td class="type-col">Da/Ne</td>
+                    <td class="constraint-col">Da li je stanar vlasnik ili podstanar</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- tenants -->
+    <!-- MENADŽER ZGRADE -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">tenants&lt;id, user_id, building_id, tenant_number,
-                        apartment_number, is_owner, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Menadžer Zgrade</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Korisnik</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Koji korisnik je menadžer (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">user_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">building_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (buildings)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">tenant_number</td>
-                    <td class="type-col">integer</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">apartment_number</td>
-                    <td class="type-col">integer</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">is_owner</td>
-                    <td class="type-col">bool</td>
-                    <td class="constraint-col">default false</td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Zgrada</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Kojom zgradom menadžer upravlja (obavezno)</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- tenant_expenses -->
+    <!-- TROŠAK -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">tenant_expenses&lt;id, tenant_id, created_by, expense_type,
-                        amount, description, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Trošak Stanara</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Stanar</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Kome je trošak dodeljen (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">tenant_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (tenants)</td>
+                    <td class="field-col">Kreirao</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je kreirao trošak (obično menadžer) (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                    <td class="field-col">Tip troška</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Kategorija troška: Režije, Održavanje, Grejanje... (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">expense_type</td>
-                    <td class="type-col">varchar(100)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Iznos</td>
+                    <td class="type-col">Novčani iznos</td>
+                    <td class="constraint-col">Iznos u dinarima (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">amount</td>
-                    <td class="type-col">decimal(10, 2)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Opis</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Dodatne napomene o trošku</td>
                 </tr>
                 <tr>
-                    <td class="field-col">description</td>
-                    <td class="type-col">text</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Status</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Plaćeno, Neplaćeno ili Otkazano</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Datum plaćanja</td>
+                    <td class="type-col">Datum</td>
+                    <td class="constraint-col">Kada je trošak plaćen</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- servicers -->
+    <!-- TOKEN PRISTUPA -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">servicers&lt;id, full_name, phone, email, company_name,
-                        profession, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Token Pristupa</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Token</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Jedinstveni kod pristupa za servisera (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">full_name</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Serviser</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Kom serviseru je token dodeljen (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">phone</td>
-                    <td class="type-col">varchar(50)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Kvar</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Za koji kvar serviser može pristupiti (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">email</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Zgrada</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">U kojoj zgradi važi token (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">company_name</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Dodelio</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je dodelio token (menadžer) (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">profession</td>
-                    <td class="type-col">varchar(100)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Važi do</td>
+                    <td class="type-col">Datum i vreme</td>
+                    <td class="constraint-col">Rok važenja tokena (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Aktivan</td>
+                    <td class="type-col">Da/Ne</td>
+                    <td class="constraint-col">Da li je token još uvek validan</td>
+                </tr>
+                <tr>
+                    <td class="field-col">Poslednja upotreba</td>
+                    <td class="type-col">Datum i vreme</td>
+                    <td class="constraint-col">Kada je token poslednji put korišćen</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- malfunctions -->
+    <!-- SERVISER -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">malfunctions&lt;id, tenant_id, reporter_id, servicer_id, title,
-                        description, category, status, assigned_at, started_at, resolved_at, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Serviser</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Puno ime</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Ime i prezime servisera (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">tenant_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (tenants)</td>
+                    <td class="field-col">Telefon</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Kontakt telefon servisera (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">reporter_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                    <td class="field-col">Email</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Email adresa servisera</td>
                 </tr>
                 <tr>
-                    <td class="field-col">servicer_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Strani ključ (servicers)</td>
+                    <td class="field-col">Kompanija</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Naziv firme u kojoj radi</td>
                 </tr>
                 <tr>
-                    <td class="field-col">title</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">description</td>
-                    <td class="type-col">text</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">category</td>
-                    <td class="type-col">varchar(100)</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">status</td>
-                    <td class="type-col">varchar(50)</td>
-                    <td class="constraint-col">default 'reported'</td>
-                </tr>
-                <tr>
-                    <td class="field-col">assigned_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">started_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">resolved_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Profesija</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Oblast stručnosti: Električar, Vodoinstalater... (obavezno)</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- interventions -->
+    <!-- KVAR -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">interventions&lt;id, malfunction_id, servicer_id, tenant_id,
-                        scheduled_at, started_at, completed_at, status, notes, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Kvar</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Stanar</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Koji stanar je prijavio kvar (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">malfunction_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (malfunctions)</td>
+                    <td class="field-col">Prijavio</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Korisnik koji je prijavio (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">servicer_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (servicers)</td>
+                    <td class="field-col">Serviser</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Kom serviseru je kvar dodeljen</td>
                 </tr>
                 <tr>
-                    <td class="field-col">tenant_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (tenants)</td>
+                    <td class="field-col">Slika kvara</td>
+                    <td class="type-col">Fajl</td>
+                    <td class="constraint-col">Fotografija problema</td>
                 </tr>
                 <tr>
-                    <td class="field-col">scheduled_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Naslov</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Kratka oznaka problema (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">started_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Opis</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Detaljan opis problema (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">completed_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Kategorija</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Tip kvara: Elektrika, Vodoinstalacija, Grejanje...</td>
                 </tr>
                 <tr>
-                    <td class="field-col">status</td>
-                    <td class="type-col">varchar(50)</td>
-                    <td class="constraint-col">default 'scheduled'</td>
+                    <td class="field-col">Status</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Prijavljen, Dodeljen, U toku ili Rešen</td>
                 </tr>
                 <tr>
-                    <td class="field-col">notes</td>
-                    <td class="type-col">text</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Datum dodele</td>
+                    <td class="type-col">Datum</td>
+                    <td class="constraint-col">Kada je kvar dodeljen serviseru</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Datum početka</td>
+                    <td class="type-col">Datum</td>
+                    <td class="constraint-col">Kada je serviser počeo rad</td>
+                </tr>
+                <tr>
+                    <td class="field-col">Datum rešavanja</td>
+                    <td class="type-col">Datum</td>
+                    <td class="constraint-col">Kada je kvar rešen</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- ratings -->
+    <!-- INTERVENCIJA -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">ratings&lt;id, intervention_id, servicer_id, rated_by,
-                        rating_score, comment, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Servisna Intervencija</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Kvar</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Za koji kvar je intervencija (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">intervention_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (interventions)</td>
+                    <td class="field-col">Serviser</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko izvodi intervenciju (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">servicer_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (servicers)</td>
+                    <td class="field-col">Stanar</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Kod kog stanara se vrši intervencija (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">rated_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                    <td class="field-col">Zakazano vreme</td>
+                    <td class="type-col">Datum i vreme</td>
+                    <td class="constraint-col">Kada je intervencija planirana</td>
                 </tr>
                 <tr>
-                    <td class="field-col">rating_score</td>
-                    <td class="type-col">integer</td>
-                    <td class="constraint-col">Not null, check (1-5)</td>
+                    <td class="field-col">Vreme početka</td>
+                    <td class="type-col">Datum i vreme</td>
+                    <td class="constraint-col">Kada je serviser započeo rad</td>
                 </tr>
                 <tr>
-                    <td class="field-col">comment</td>
-                    <td class="type-col">text</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Vreme završetka</td>
+                    <td class="type-col">Datum i vreme</td>
+                    <td class="constraint-col">Kada je intervencija završena</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Status</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Zakazano, U toku ili Završeno</td>
+                </tr>
+                <tr>
+                    <td class="field-col">Napomene</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Dodatne informacije o radu</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- events -->
+    <!-- OCENA -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">events&lt;id, building_id, title, scheduled_at, content,
-                        created_by, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Ocena Servisera</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Intervencija</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Za koju intervenciju je ocena (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">building_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Strani ključ (buildings)</td>
+                    <td class="field-col">Serviser</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je ocenjen (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">title</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Ocenio</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je dao ocenu (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">scheduled_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Ocena</td>
+                    <td class="type-col">Broj</td>
+                    <td class="constraint-col">Ocena od 1 do 5 zvezda (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">content</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Komentar</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Pisana povratna informacija</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- messages -->
+    <!-- DOGAĐAJ -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">messages&lt;id, building_id, posted_by, content, message_type,
-                        created_at&gt;</th>
+                    <th colspan="3" class="main-header">Događaj</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Zgrada</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">U kojoj zgradi je događaj</td>
                 </tr>
                 <tr>
-                    <td class="field-col">building_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Strani ključ (buildings)</td>
+                    <td class="field-col">Naslov</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Naziv događaja (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">posted_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                    <td class="field-col">Zakazano vreme</td>
+                    <td class="type-col">Datum i vreme</td>
+                    <td class="constraint-col">Kada se događaj održava (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">content</td>
-                    <td class="type-col">text</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Sadržaj</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Detaljan opis događaja</td>
                 </tr>
                 <tr>
-                    <td class="field-col">message_type</td>
-                    <td class="type-col">varchar(50)</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Kreirao</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je kreirao događaj (obavezno)</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- suggestions -->
+    <!-- PORUKA -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">suggestions&lt;id, building_id, created_by, title, content,
-                        status, percentage_of_votes, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Obaveštenje/Poruka</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Zgrada</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Za koju zgradu je poruka</td>
                 </tr>
                 <tr>
-                    <td class="field-col">building_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Strani ključ (buildings)</td>
+                    <td class="field-col">Poslao</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je poslao poruku (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                    <td class="field-col">Sadržaj</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Tekst poruke (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">title</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">content</td>
-                    <td class="type-col">text</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">status</td>
-                    <td class="type-col">varchar(50)</td>
-                    <td class="constraint-col">default 'draft'</td>
-                </tr>
-                <tr>
-                    <td class="field-col">percentage_of_votes</td>
-                    <td class="type-col">integer</td>
-                    <td class="constraint-col">default 0</td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Tip poruke</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Opšte obaveštenje, Hitno ili Podsetnik</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- suggestion_votes -->
+    <!-- PREDLOG -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">suggestion_votes&lt;id, suggestion_id, voted_by, vote,
-                        created_at&gt;</th>
+                    <th colspan="3" class="main-header">Predlog Stanara</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Zgrada</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Za koju zgradu je predlog</td>
                 </tr>
                 <tr>
-                    <td class="field-col">suggestion_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (suggestions)</td>
+                    <td class="field-col">Kreirao</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je podneo predlog (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">voted_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
+                    <td class="field-col">Naslov</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Kratka oznaka predloga (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">vote</td>
-                    <td class="type-col">bool</td>
-                    <td class="constraint-col"></td>
+                    <td class="field-col">Sadržaj</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Detaljan opis predloga (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Status</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Na glasanju, Prihvaćen ili Odbijen</td>
+                </tr>
+                <tr>
+                    <td class="field-col">Procenat glasova</td>
+                    <td class="type-col">Broj</td>
+                    <td class="constraint-col">Koliko procenata stanara podržava</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- documents -->
+    <!-- GLAS -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">documents&lt;id, building_id, uploaded_by, title, file_url,
-                        document_type, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Glas za Predlog</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Predlog</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Za koji predlog se glasa (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">building_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Strani ključ (buildings)</td>
+                    <td class="field-col">Glasao</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je glasao (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">uploaded_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">title</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">file_url</td>
-                    <td class="type-col">text</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">document_type</td>
-                    <td class="type-col">varchar(100)</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Glas</td>
+                    <td class="type-col">Da/Ne</td>
+                    <td class="constraint-col">ZA (Da) ili PROTIV (Ne)</td>
                 </tr>
             </tbody>
         </table>
     </div>
 
-    <!-- audit_logs -->
+    <!-- DOKUMENT -->
     <div class="table-container">
         <table>
             <thead>
                 <tr>
-                    <th colspan="3" class="main-header">audit_logs&lt;id, user_id, action_type, created_at&gt;</th>
+                    <th colspan="3" class="main-header">Dokument</th>
                 </tr>
                 <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
+                    <td>Podatak</td>
+                    <td>Tip</td>
+                    <td>Opis</td>
                 </tr>
             </thead>
             <tbody>
                 <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Zgrada</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Za koju zgradu je dokument</td>
                 </tr>
                 <tr>
-                    <td class="field-col">user_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Strani ključ (users)</td>
+                    <td class="field-col">Uploadovao</td>
+                    <td class="type-col">Veza</td>
+                    <td class="constraint-col">Ko je dodao dokument (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">action_type</td>
-                    <td class="type-col">varchar(100)</td>
-                    <td class="constraint-col">Not null</td>
+                    <td class="field-col">Naslov</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Naziv dokumenta (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- guest_access_tokens -->
-    <div class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th colspan="3" class="main-header">guest_access_tokens&lt;id, token, servicer_id, malfunction_id,
-                        building_id, granted_by, expires_at, is_active, last_used_at, created_at&gt;</th>
-                </tr>
-                <tr class="col-header">
-                    <td>Polje</td>
-                    <td>Tip podatka</td>
-                    <td>Ograničenje</td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td class="field-col">id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Primarni ključ, default uuid_generate_v4()</td>
+                    <td class="field-col">Fajl</td>
+                    <td class="type-col">Fajl</td>
+                    <td class="constraint-col">Elektronska verzija dokumenta (obavezno)</td>
                 </tr>
                 <tr>
-                    <td class="field-col">token</td>
-                    <td class="type-col">varchar(255)</td>
-                    <td class="constraint-col">Not null, jedinstveno</td>
-                </tr>
-                <tr>
-                    <td class="field-col">servicer_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (servicers)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">malfunction_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (malfunctions)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">building_id</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (buildings)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">granted_by</td>
-                    <td class="type-col">uuid</td>
-                    <td class="constraint-col">Not null, Strani ključ (users)</td>
-                </tr>
-                <tr>
-                    <td class="field-col">expires_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">Not null</td>
-                </tr>
-                <tr>
-                    <td class="field-col">is_active</td>
-                    <td class="type-col">bool</td>
-                    <td class="constraint-col">default true</td>
-                </tr>
-                <tr>
-                    <td class="field-col">last_used_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col"></td>
-                </tr>
-                <tr>
-                    <td class="field-col">created_at</td>
-                    <td class="type-col">timestamp</td>
-                    <td class="constraint-col">default NOW()</td>
+                    <td class="field-col">Tip dokumenta</td>
+                    <td class="type-col">Tekst</td>
+                    <td class="constraint-col">Pravilnik, Zapisnik, Finansijski izveštaj...</td>
                 </tr>
             </tbody>
         </table>

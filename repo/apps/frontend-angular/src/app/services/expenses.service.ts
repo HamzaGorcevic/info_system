@@ -30,4 +30,8 @@ export class ExpensesService {
     getAllExpenses(): Observable<Database['public']['Tables']['tenant_expenses']['Row'][]> {
         return this.http.get<Database['public']['Tables']['tenant_expenses']['Row'][]>(this.apiUrl);
     }
+
+    notifyTenant(id: string, message: string): Observable<{ status: string; expense: Database['public']['Tables']['tenant_expenses']['Row'] }> {
+        return this.http.post<{ status: string; expense: Database['public']['Tables']['tenant_expenses']['Row'] }>(`${this.apiUrl}/${id}/notify`, { message });
+    }
 }

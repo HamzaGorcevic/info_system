@@ -19,11 +19,13 @@ export class AuthService {
         if (!sessionStr) return null;
         try {
             const session = JSON.parse(sessionStr);
-            return session.user?.profile || session.user || null;
+            const user = session.user?.profile || session.user || null;
+            return user;
         } catch {
             return null;
         }
     }
+
 
     registerAdmin(data: any): Observable<any> {
         return this.http.post(`${this.apiUrl}/register-admin`, data);
@@ -73,9 +75,33 @@ export class AuthService {
         return !!this._user();
     }
 
+
     hasRole(roles: string[]): boolean {
         const user = this._user();
-        return user && roles.includes(user.role);
+        if (!user) return false;
+
+        // Check explicit role from our DB profile
+        if (roles.includes(user.role)) {
+            return true;
+        }
+
+        // Handle Supabase default 'authenticated' role
+        if (user.role === 'authenticated') {
+            const metadataRole = user.user_metadata?.role;
+
+            // If checking for manager, require explicit manager role in metadata
+            if (roles.includes('manager')) {
+                return metadataRole === 'manager';
+            }
+
+            // If checking for tenant, allow if NOT a manager (failed manager check check above covers explicit manager)
+            // primarily: if no metadata role is set, it's a tenant
+            if (roles.includes('tenant')) {
+                return metadataRole !== 'manager';
+            }
+        }
+
+        return false;
     }
 
     isVerified(): boolean {

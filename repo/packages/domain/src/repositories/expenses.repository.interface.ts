@@ -6,5 +6,5 @@ export interface IExpensesRepository {
     findByTenantId(tenantId: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]>;
     update(id: string, data: Database['public']['Tables']['tenant_expenses']['Update']): Promise<Database['public']['Tables']['tenant_expenses']['Row']>;
     delete(id: string): Promise<void>;
-    findAll(): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]>;
+    findByCreator(userId: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]>;
 }

@@ -30,25 +30,36 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
 
                 return next(authReq).pipe(
                     catchError((error: HttpErrorResponse) => {
-                        if (error.status === 401 && refreshToken) {
-                            // Token might be expired, try to refresh
+                        const isRetry = req.headers.has('X-Retry-Attempt');
+
+                        if (error.status === 401 && refreshToken && !isRetry) {
+                            console.log(`[AuthInterceptor] 401 received for ${req.url}. Attempting token refresh...`);
                             return authService.refreshToken(refreshToken).pipe(
                                 switchMap((res: any) => {
+                                    console.log('[AuthInterceptor] Token refreshed successfully. Retrying request.');
                                     const newToken = res.session.access_token;
                                     const retryReq = req.clone({
                                         setHeaders: {
-                                            Authorization: `Bearer ${newToken}`
+                                            Authorization: `Bearer ${newToken}`,
+                                            'X-Retry-Attempt': '1'
                                         }
                                     });
                                     return next(retryReq);
                                 }),
                                 catchError((refreshError) => {
+                                    console.error('[AuthInterceptor] Token refresh failed:', refreshError);
                                     // Refresh failed, logout
                                     authService.logout();
                                     return throwError(() => refreshError);
                                 })
                             );
                         }
+
+                        if (isRetry && error.status === 401) {
+                            console.error(`[AuthInterceptor] Retry failed with 401 for ${req.url}. Logging out.`);
+                            authService.logout();
+                        }
+
                         return throwError(() => error);
                     })
                 );

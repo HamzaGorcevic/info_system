@@ -42,7 +42,25 @@ export class ExpensesController {
 
     async getAllExpenses(req: Request, res: Response, next: NextFunction) {
         const expensesService = ServiceFactory.getExpensesService(req.context);
-        const result = await expensesService.getAllExpenses();
+
+        if (!req.context.currentUser) {
+            throw new Error('Unauthorized');
+        }
+
+        const result = await expensesService.getAllExpenses(req.context.currentUser.id);
+        res.status(200).json(result);
+    }
+
+    async notifyTenant(req: Request, res: Response, next: NextFunction) {
+        const expensesService = ServiceFactory.getExpensesService(req.context);
+        const { id } = req.params;
+        const { message } = req.body;
+
+        if (!req.context.currentUser) {
+            throw new Error('Unauthorized');
+        }
+
+        const result = await expensesService.notifyTenant(id, message, req.context.currentUser.id);
         res.status(200).json(result);
     }
 }

@@ -21,7 +21,7 @@ interface NavItem {
           <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
             <span class="material-icons text-white text-xl">apartment</span>
           </div>
-          <h1 class="text-2xl font-black tracking-tighter">
+          <h1 class="text-2xl font-black tracking-tighter !text-white">
             BUILDING<span class="text-blue-400">APP</span>
           </h1>
         </div>

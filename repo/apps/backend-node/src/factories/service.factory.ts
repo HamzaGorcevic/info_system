@@ -59,6 +59,8 @@ export class ServiceFactory {
 
     static getExpensesService(context: IContext): ExpensesService {
         const expensesRepository = RepositoryFactory.getExpensesRepository(context);
-        return new ExpensesService(expensesRepository);
+        const eventsRepository = RepositoryFactory.getEventsRepository(context);
+        const buildingRepository = RepositoryFactory.getBuildingRepository(context);
+        return new ExpensesService(expensesRepository, eventsRepository, buildingRepository);
     }
 }

@@ -11,5 +11,6 @@ router.get('/', expensesController.getAllExpenses);
 router.get('/tenant/:tenantId', expensesController.getTenantExpenses);
 router.patch('/:id', expensesController.updateExpense);
 router.delete('/:id', expensesController.deleteExpense);
+router.post('/:id/notify', expensesController.notifyTenant);
 
 export default router;

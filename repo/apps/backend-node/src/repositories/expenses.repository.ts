@@ -59,13 +59,17 @@ export class ExpensesRepository implements IExpensesRepository {
         if (error) throw error;
     }
 
-    async findAll(): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]> {
+    async findByCreator(userId: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]> {
         const { data: expenses, error } = await this.db
             .from('tenant_expenses')
-            .select('*')
+            .select('*, tenants!inner(buildings!inner(manager_id))')
+            .eq('tenants.buildings.manager_id', userId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return expenses;
+        return expenses.map((e: any) => {
+            const { tenants, ...expense } = e;
+            return expense;
+        }) as Database['public']['Tables']['tenant_expenses']['Row'][];
     }
 }

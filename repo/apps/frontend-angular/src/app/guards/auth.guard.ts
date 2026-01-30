@@ -12,7 +12,7 @@ import { AuthService } from '../services/auth.service';
  * }
  */
 export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
-    return () => {
+    return (route, state) => {
         const authService = inject(AuthService);
         const router = inject(Router);
 
@@ -20,22 +20,31 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
             if (authService.isVerified()) {
                 return true;
             }
-            router.navigate(['/verification-pending']);
-            return false;
+            if (state.url === '/verification-pending') {
+                return true;
+            }
+            return router.createUrlTree(['/verification-pending']);
         }
 
         if (authService.isLoggedIn()) {
             const user = authService.currentUser();
-            if (user?.role === 'manager') {
-                router.navigate(['/dashboard']);
-            } else {
-                router.navigate(['/tenant/dashboard']);
+            const targetRoute = user?.role === 'manager' ? '/dashboard' : '/tenant/dashboard';
+
+            // Prevent infinite loop if we are already trying to access the target route
+            if (state.url === targetRoute) {
+                // If we are here, it means we are logged in, at the dashboard, 
+                // BUT hasRole() returned false. This implies a role mismatch or data issue.
+                // We should probably allow access if the role matches the specific dashboard
+                // or redirect to a generic error/login to be safe.
+                // For now, let's log and return false to stop the loop.
+                console.error('Role Guard: Loop detected or role mismatch on dashboard.', { userRole: user?.role, allowedRoles });
+                return false;
             }
-            return false;
+
+            return router.createUrlTree([targetRoute]);
         }
 
-        router.navigate(['/login']);
-        return false;
+        return router.createUrlTree(['/login']);
     };
 };
 

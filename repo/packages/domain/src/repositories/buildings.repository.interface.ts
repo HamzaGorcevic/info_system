@@ -9,4 +9,5 @@ export interface IBuildingRepository {
     updateTenant(tenantId: string, data: Database['public']['Tables']['tenants']['Update']): Promise<Database['public']['Tables']['tenants']['Row']>;
 
     findBuildingsByManagerId(userId: string): Promise<Database['public']['Tables']['buildings']['Row'][]>;
+    findTenantById(id: string): Promise<Database['public']['Tables']['tenants']['Row'] | null>;
 }

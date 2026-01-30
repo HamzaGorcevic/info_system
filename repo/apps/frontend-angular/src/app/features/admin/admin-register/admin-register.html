@@ -70,32 +70,92 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-                        <section class="space-y-6">
+                        <section class="space-y-8">
                             <h3 class="text-[10px] font-black tracking-[0.3em] text-[#456882] uppercase ml-1">
                                 Administrator Identity</h3>
-                            <div class="space-y-4">
-                                <input type="text" formControlName="fullName" placeholder="FULL NAME"
-                                    class="input-field">
-                                <input type="email" formControlName="email" placeholder="EMAIL ADDRESS"
-                                    class="input-field">
-                                <input type="password" formControlName="password" placeholder="SECURE PASSWORD"
-                                    class="input-field">
+                            <div class="space-y-6">
+                                <!-- Full Name -->
+                                <div class="relative">
+                                    <input type="text" id="fullName" formControlName="fullName"
+                                        class="peer input-field placeholder-transparent" placeholder=" ">
+                                    <label for="fullName"
+                                        class="absolute left-6 top-5 z-10 origin-[0] -translate-y-0 scale-100 transform px-2 text-sm font-bold text-[#456882]/60 duration-300 bg-transparent
+                                        peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent
+                                        peer-focus:-top-3 peer-focus:-translate-y-0 peer-focus:scale-90 peer-focus:bg-white peer-focus:text-[#1B3C53]
+                                        peer-not-placeholder-shown:-top-3 peer-not-placeholder-shown:-translate-y-0 peer-not-placeholder-shown:scale-90 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:text-[#1B3C53]">
+                                        FULL NAME
+                                    </label>
+                                </div>
+
+                                <!-- Email -->
+                                <div class="relative">
+                                    <input type="email" id="email" formControlName="email"
+                                        class="peer input-field placeholder-transparent" placeholder=" ">
+                                    <label for="email"
+                                        class="absolute left-6 top-5 z-10 origin-[0] -translate-y-0 scale-100 transform px-2 text-sm font-bold text-[#456882]/60 duration-300 bg-transparent
+                                        peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent
+                                        peer-focus:-top-3 peer-focus:-translate-y-0 peer-focus:scale-90 peer-focus:bg-white peer-focus:text-[#1B3C53]
+                                        peer-not-placeholder-shown:-top-3 peer-not-placeholder-shown:-translate-y-0 peer-not-placeholder-shown:scale-90 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:text-[#1B3C53]">
+                                        EMAIL ADDRESS
+                                    </label>
+                                </div>
+
+                                <!-- Password -->
+                                <div class="relative">
+                                    <input type="password" id="password" formControlName="password"
+                                        class="peer input-field placeholder-transparent" placeholder=" ">
+                                    <label for="password"
+                                        class="absolute left-6 top-5 z-10 origin-[0] -translate-y-0 scale-100 transform px-2 text-sm font-bold text-[#456882]/60 duration-300 bg-transparent
+                                        peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent
+                                        peer-focus:-top-3 peer-focus:-translate-y-0 peer-focus:scale-90 peer-focus:bg-white peer-focus:text-[#1B3C53]
+                                        peer-not-placeholder-shown:-top-3 peer-not-placeholder-shown:-translate-y-0 peer-not-placeholder-shown:scale-90 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:text-[#1B3C53]">
+                                        SECURE PASSWORD
+                                    </label>
+                                </div>
                             </div>
                         </section>
 
-                        <section class="space-y-6">
+                        <section class="space-y-8">
                             <h3 class="text-[10px] font-black tracking-[0.3em] text-[#456882] uppercase ml-1">Asset
                                 Configuration</h3>
-                            <div class="space-y-4">
-                                <input type="text" formControlName="buildingName" placeholder="BUILDING NAME"
-                                    class="input-field">
-                                <input type="text" formControlName="location" placeholder="LOCATION / ADDRESS"
-                                    class="input-field">
-                                <div class="relative group">
-                                    <label
-                                        class="absolute -top-2 left-4 bg-white px-2 text-[9px] font-black text-[#456882] tracking-widest uppercase transition-colors group-focus-within:text-[#1B3C53]">Total
-                                        Units</label>
-                                    <input type="number" formControlName="numberApartments" class="input-field">
+                            <div class="space-y-6">
+                                <!-- Building Name -->
+                                <div class="relative">
+                                    <input type="text" id="buildingName" formControlName="buildingName"
+                                        class="peer input-field placeholder-transparent" placeholder=" ">
+                                    <label for="buildingName"
+                                        class="absolute left-6 top-5 z-10 origin-[0] -translate-y-0 scale-100 transform px-2 text-sm font-bold text-[#456882]/60 duration-300 bg-transparent
+                                        peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent
+                                        peer-focus:-top-3 peer-focus:-translate-y-0 peer-focus:scale-90 peer-focus:bg-white peer-focus:text-[#1B3C53]
+                                        peer-not-placeholder-shown:-top-3 peer-not-placeholder-shown:-translate-y-0 peer-not-placeholder-shown:scale-90 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:text-[#1B3C53]">
+                                        BUILDING NAME
+                                    </label>
+                                </div>
+
+                                <!-- Location -->
+                                <div class="relative">
+                                    <input type="text" id="location" formControlName="location"
+                                        class="peer input-field placeholder-transparent" placeholder=" ">
+                                    <label for="location"
+                                        class="absolute left-6 top-5 z-10 origin-[0] -translate-y-0 scale-100 transform px-2 text-sm font-bold text-[#456882]/60 duration-300 bg-transparent
+                                        peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent
+                                        peer-focus:-top-3 peer-focus:-translate-y-0 peer-focus:scale-90 peer-focus:bg-white peer-focus:text-[#1B3C53]
+                                        peer-not-placeholder-shown:-top-3 peer-not-placeholder-shown:-translate-y-0 peer-not-placeholder-shown:scale-90 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:text-[#1B3C53]">
+                                        LOCATION / ADDRESS
+                                    </label>
+                                </div>
+
+                                <!-- Number of Apartments -->
+                                <div class="relative">
+                                    <input type="number" id="numberApartments" formControlName="numberApartments"
+                                        class="peer input-field placeholder-transparent" placeholder=" ">
+                                    <label for="numberApartments"
+                                        class="absolute left-6 top-5 z-10 origin-[0] -translate-y-0 scale-100 transform px-2 text-sm font-bold text-[#456882]/60 duration-300 bg-transparent
+                                        peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent
+                                        peer-focus:-top-3 peer-focus:-translate-y-0 peer-focus:scale-90 peer-focus:bg-white peer-focus:text-[#1B3C53]
+                                        peer-not-placeholder-shown:-top-3 peer-not-placeholder-shown:-translate-y-0 peer-not-placeholder-shown:scale-90 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:text-[#1B3C53]">
+                                        TOTAL UNITS
+                                    </label>
                                 </div>
                             </div>
                         </section>

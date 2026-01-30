@@ -4,298 +4,323 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EER Model Diagram</title>
+    <title>EER Diagram</title>
     <script type="module">
         import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
         mermaid.initialize({
             startOnLoad: true,
             flowchart: {
                 curve: 'basis',
-                defaultRenderer: 'elk'
+                rankSpacing: 350,
+                nodeSpacing: 15,
+                padding: 60
+            },
+            theme: 'default',
+            themeVariables: {
+                fontSize: '100px',
+                fontFamily: 'Arial, sans-serif'
             }
         });
     </script>
     <style>
         body {
-            font-family: sans-serif;
-            padding: 20px;
-            background-color: #fff;
-        }
-
-        .diagram-container {
-            width: 100%;
-            overflow: auto;
+            margin: 0;
+            padding: 0;
             background: white;
-            padding: 20px;
+            overflow: auto;
         }
 
-        h1 {
-            text-align: center;
+        .mermaid {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
         }
     </style>
 </head>
 
 <body>
-    <h1>EER Model (Chen Notation Style)</h1>
-    <div class="diagram-container">
-        <pre class="mermaid">
-        flowchart TD
-            %% Styles
-            classDef entity fill:#fff,stroke:#000,stroke-width:2px;
-            classDef relation fill:#fff,stroke:#000,stroke-width:2px,shape:diamond;
-            classDef attribute fill:#fff,stroke:#000,stroke-width:1px,stroke-dasharray: 5 5;
-            classDef attributeKey fill:#fff,stroke:#000,stroke-width:1px,text-decoration:underline;
+    <pre class="mermaid">
+        graph TB
+            %% STILOVI
+            classDef entity fill:#E3F2FD,stroke:#1976D2,stroke-width:12px,color:#000;
+            classDef weakEntity fill:#FFF9C4,stroke:#F57C00,stroke-width:12px,stroke-dasharray:24,color:#000;
+            classDef relation fill:#FFE0B2,stroke:#E65100,stroke-width:11px,color:#000;
+            classDef attribute fill:#C8E6C9,stroke:#388E3C,stroke-width:9px,color:#000;
+            classDef keyAttr fill:#A5D6A7,stroke:#2E7D32,stroke-width:11px,color:#000;
+            classDef specialization fill:#F8BBD0,stroke:#C2185B,stroke-width:12px,color:#000;
 
-            %% ================= USERS =================
-            USER[USERS]:::entity
-            userId([<u>id</u>]):::attributeKey
-            userEmail([email]):::attribute
-            userRole([role]):::attribute
-            userFullname([full_name]):::attribute
-            userVerified([is_verified]):::attribute
+            %% KORISNIK
+            KORISNIK[KORISNIK]:::entity
+            korID([<u>id</u>]):::keyAttr
+            korEmail([email]):::attribute
+            korIme([puno_ime]):::attribute
+            korVerifikovan([je_verifikovan]):::attribute
+
+            KORISNIK --- korID
+            KORISNIK --- korEmail
+            KORISNIK --- korIme
+            KORISNIK --- korVerifikovan
+
+            %% ISA
+            ISA{ISA<br/>d, o}:::specialization
+            KORISNIK ---|ISA| ISA
+
+            %% MENADŽER
+            MENADZER[MENADŽER]:::entity
+            ISA ---|upravlja| MENADZER
+
+            %% STANAR
+            STANAR[STANAR]:::entity
+            ISA ---|stanuje| STANAR
+            stanBroj([broj_stanara]):::attribute
+            stanApartman([broj_apartmana]):::attribute
+            stanVlasnik([je_vlasnik]):::attribute
             
-            USER --- userId
-            USER --- userEmail
-            USER --- userRole
-            USER --- userFullname
-            USER --- userVerified
+            STANAR --- stanBroj
+            STANAR --- stanApartman
+            STANAR --- stanVlasnik
 
-            %% ================= BUILDINGS =================
-            BUILDING[BUILDINGS]:::entity
-            buildId([<u>id</u>]):::attributeKey
-            buildLoc([location]):::attribute
-            buildName([building_name]):::attribute
-            buildApts([number_apartments]):::attribute
-            
-            BUILDING --- buildId
-            BUILDING --- buildLoc
-            BUILDING --- buildName
-            BUILDING --- buildApts
+            %% ČLAN DOMAĆINSTVA
+            CLAN[ČLAN DOMAĆINSTVA]:::entity
+            ISA ---|pripada| CLAN
 
-            %% REL: MANAGES (User - Building)
-            MANAGES{MANAGES}:::relation
-            USER ---|1,N| MANAGES
-            MANAGES ---|1,N| BUILDING
+            %% ZGRADA
+            ZGRADA[ZGRADA]:::entity
+            zgrID([<u>id</u>]):::keyAttr
+            zgrLokacija([lokacija]):::attribute
+            zgrNaziv([naziv_zgrade]):::attribute
+            zgrBrApartmana([broj_apartmana]):::attribute
 
-            %% ================= TENANTS =================
-            TENANT[TENANTS]:::entity
-            tenantId([<u>id</u>]):::attributeKey
-            tenantNum([tenant_number]):::attribute
-            aptNum([apartment_number]):::attribute
-            isOwner([is_owner]):::attribute
-            
-            TENANT --- tenantId
-            TENANT --- tenantNum
-            TENANT --- aptNum
-            TENANT --- isOwner
+            ZGRADA --- zgrID
+            ZGRADA --- zgrLokacija
+            ZGRADA --- zgrNaziv
+            ZGRADA --- zgrBrApartmana
 
-            %% REL: IS_TENANT (User - Tenant)
-            IS_TENANT{IS_TENANT}:::relation
-            USER ---|1,1| IS_TENANT
-            IS_TENANT ---|0,1| TENANT
-            
-            %% REL: LOCATED_IN (Tenant - Building)
-            LOCATED_IN{LOCATED_IN}:::relation
-            TENANT ---|1,1| LOCATED_IN
-            LOCATED_IN ---|0,N| BUILDING
+            %% UPRAVLJA
+            UPRAVLJA{UPRAVLJA}:::relation
+            MENADZER ---|1,N| UPRAVLJA
+            UPRAVLJA ---|1,N| ZGRADA
 
-            %% ================= EXPENSES =================
-            EXPENSE[TENANT_EXPENSES]:::entity
-            expId([<u>id</u>]):::attributeKey
-            expType([expense_type]):::attribute
-            expAmount([amount]):::attribute
-            expStatus([status]):::attribute
-            expPaidAt([paid_at]):::attribute
-            
-            EXPENSE --- expId
-            EXPENSE --- expType
-            EXPENSE --- expAmount
-            EXPENSE --- expStatus
-            EXPENSE --- expPaidAt
+            %% STANUJE_U
+            STANUJE{STANUJE U}:::relation
+            STANAR ---|1,1| STANUJE
+            STANUJE ---|0,N| ZGRADA
 
-            %% REL: HAS_EXPENSE (Tenant - Expense)
-            HAS_EXPENSE{HAS_EXPENSE}:::relation
-            TENANT ---|1,N| HAS_EXPENSE
-            HAS_EXPENSE ---|1,1| EXPENSE
+            %% TROŠAK
+            TROSAK[TROŠAK]:::weakEntity
+            trosID([<u>id</u>]):::keyAttr
+            trosTip([tip_troška]):::attribute
+            trosIznos([iznos]):::attribute
+            trosStatus([status]):::attribute
 
-            %% REL: CREATED_BY (User - Expense)
-            EXP_CREATED{CREATED_BY}:::relation
-            USER ---|1,N| EXP_CREATED
-            EXP_CREATED ---|1,1| EXPENSE
+            TROSAK --- trosID
+            TROSAK --- trosTip
+            TROSAK --- trosIznos
+            TROSAK --- trosStatus
 
-            %% ================= SERVICERS =================
-            SERVICER[SERVICERS]:::entity
-            servId([<u>id</u>]):::attributeKey
-            servName([full_name]):::attribute
-            servProf([profession]):::attribute
-            servPhone([phone]):::attribute
-            servEmail([email]):::attribute
-            
-            SERVICER --- servId
-            SERVICER --- servName
-            SERVICER --- servProf
-            SERVICER --- servPhone
-            SERVICER --- servEmail
+            %% IMA_TROŠAK
+            IMA_TROSAK{IMA}:::relation
+            STANAR ---|1,N| IMA_TROSAK
+            IMA_TROSAK ---|1,1| TROSAK
 
-            %% ================= MALFUNCTIONS =================
-            MALFUNCTION[MALFUNCTIONS]:::entity
-            malId([<u>id</u>]):::attributeKey
-            malTitle([title]):::attribute
-            malStatus([status]):::attribute
-            malCat([category]):::attribute
-            malStart([started_at]):::attribute
-            malRes([resolved_at]):::attribute
-            
-            MALFUNCTION --- malId
-            MALFUNCTION --- malTitle
-            MALFUNCTION --- malStatus
-            MALFUNCTION --- malCat
-            MALFUNCTION --- malStart
-            MALFUNCTION --- malRes
+            %% SERVISER
+            SERVISER[SERVISER]:::entity
+            servID([<u>id</u>]):::keyAttr
+            servIme([puno_ime]):::attribute
+            servProfesija([profesija]):::attribute
+            servTelefon([telefon]):::attribute
 
-            %% REL: REPORTS (Tenant reports Malfunction)
-            REPORTS{REPORTS}:::relation
-            TENANT ---|1,N| REPORTS
-            REPORTS ---|1,1| MALFUNCTION
+            SERVISER --- servID
+            SERVISER --- servIme
+            SERVISER --- servProfesija
+            SERVISER --- servTelefon
 
-            %% REL: REPORTER (User reports Malfunction)
-            REPORTER{REPORTER}:::relation
-            USER ---|1,N| REPORTER
-            REPORTER ---|1,1| MALFUNCTION
+            %% KVAR
+            KVAR[KVAR]:::entity
+            kvarID([<u>id</u>]):::keyAttr
+            kvarNaslov([naslov]):::attribute
+            kvarOpis([opis]):::attribute
+            kvarKategorija([kategorija]):::attribute
+            kvarSlika([url_slike]):::attribute
 
-            %% REL: ASSIGNED_TO (Servicer assigned to Malfunction)
-            ASSIGNED{ASSIGNED}:::relation
-            SERVICER ---|0,N| ASSIGNED
-            ASSIGNED ---|0,N| MALFUNCTION
+            KVAR --- kvarID
+            KVAR --- kvarNaslov
+            KVAR --- kvarOpis
+            KVAR --- kvarKategorija
+            KVAR --- kvarSlika
 
-            %% ================= GUEST TOKENS =================
-            TOKEN[GUEST_TOKENS]:::entity
-            tokId([<u>id</u>]):::attributeKey
-            tokVal([token]):::attribute
-            tokExp([expires_at]):::attribute
-            tokActive([is_active]):::attribute
-            
-            TOKEN --- tokId
-            TOKEN --- tokVal
-            TOKEN --- tokExp
-            TOKEN --- tokActive
+            %% PRIJAVLJUJE
+            PRIJAVLJUJE{PRIJAVLJUJE}:::relation
+            STANAR ---|1,N| PRIJAVLJUJE
+            PRIJAVLJUJE ---|1,1| KVAR
 
-            %% REL: ACCESS_FOR (Token for Malfunction)
-            ACCESS_FOR{ACCESS_FOR}:::relation
-            TOKEN ---|1,1| ACCESS_FOR
-            ACCESS_FOR ---|1,1| MALFUNCTION
+            %% RADNI NALOG
+            RADNI_NALOG[RADNI NALOG]:::entity
+            rnID([<u>id</u>]):::keyAttr
+            rnStatus([status_naloga]):::attribute
+            rnDatum([datum_dodele]):::attribute
 
-            %% REL: GRANTED_TO (Token for Servicer)
-            GRANTED_TO{GRANTED_TO}:::relation
-            TOKEN ---|1,1| GRANTED_TO
-            GRANTED_TO ---|1,1| SERVICER
+            RADNI_NALOG --- rnID
+            RADNI_NALOG --- rnStatus
+            RADNI_NALOG --- rnDatum
 
-            %% REL: GRANTED_BY (User grants Token)
-            GRANTED_BY{GRANTED_BY}:::relation
-            USER ---|1,N| GRANTED_BY
-            GRANTED_BY ---|1,1| TOKEN
+            %% GENERIŠE
+            DODELJUJE{GENERIŠE}:::relation
+            KVAR ---|1,N| DODELJUJE
+            DODELJUJE ---|1,1| RADNI_NALOG
 
-            %% ================= INTERVENTIONS =================
-            INTERVENTION[INTERVENTIONS]:::entity
-            intId([<u>id</u>]):::attributeKey
+            %% PRIMA
+            PRIMA{PRIMA}:::relation
+            SERVISER ---|1,N| PRIMA
+            PRIMA ---|0,N| RADNI_NALOG
+
+            %% INTERVENCIJA
+            INTERVENCIJA[INTERVENCIJA]:::entity
+            intID([<u>id</u>]):::keyAttr
             intStatus([status]):::attribute
-            intDate([scheduled_at]):::attribute
-            
-            INTERVENTION --- intId
-            INTERVENTION --- intStatus
-            INTERVENTION --- intDate
+            intNapomene([napomene]):::attribute
 
-            %% REL: HAS_INTERVENTION (Malfunction has Intervention)
-            HAS_INT{HAS_INT}:::relation
-            MALFUNCTION ---|1,N| HAS_INT
-            HAS_INT ---|1,1| INTERVENTION
+            INTERVENCIJA --- intID
+            INTERVENCIJA --- intStatus
+            INTERVENCIJA --- intNapomene
 
-            %% REL: PERFORMS (Servicer performs Intervention)
-            PERFORMS{PERFORMS}:::relation
-            SERVICER ---|1,N| PERFORMS
-            PERFORMS ---|0,N| INTERVENTION
+            %% IZVRŠAVA
+            IZVRSAVA{IZVRŠAVA}:::relation
+            RADNI_NALOG ---|1,N| IZVRSAVA
+            IZVRSAVA ---|1,1| INTERVENCIJA
 
-            %% ================= RATINGS =================
-            RATING[RATINGS]:::entity
-            rateId([<u>id</u>]):::attributeKey
-            rateScore([rating_score]):::attribute
-            rateComment([comment]):::attribute
-            
-            RATING --- rateId
-            RATING --- rateScore
-            RATING --- rateComment
+            %% IZVODI
+            IZVODJI{IZVODI}:::relation
+            SERVISER ---|1,N| IZVODJI
+            IZVODJI ---|0,N| INTERVENCIJA
 
-            %% REL: GIVES_RATING (User rates Intervention)
-            GIVES_RATING{GIVES}:::relation
-            USER ---|1,N| GIVES_RATING
-            GIVES_RATING ---|1,1| RATING
+            %% OCENA
+            OCENA[OCENA]:::entity
+            ocenaID([<u>id</u>]):::keyAttr
+            ocenaBroj([ocena_broj]):::attribute
+            ocenaKomentar([komentar]):::attribute
 
-            %% REL: RATES_INT (Rating for Intervention)
-            RATES_INT{RATES}:::relation
-            RATING ---|1,1| RATES_INT
-            RATES_INT ---|1,1| INTERVENTION
+            OCENA --- ocenaID
+            OCENA --- ocenaBroj
+            OCENA --- ocenaKomentar
 
-            %% ================= EVENTS =================
-            EVENT[EVENTS]:::entity
-            evtId([<u>id</u>]):::attributeKey
-            evtTitle([title]):::attribute
-            evtDate([scheduled_at]):::attribute
-            
-            EVENT --- evtId
-            EVENT --- evtTitle
-            EVENT --- evtDate
+            %% OCENJUJE
+            OCENJUJE{OCENJUJE}:::relation
+            KORISNIK ---|1,N| OCENJUJE
+            OCENJUJE ---|1,1| OCENA
 
-            %% REL: OCCURS_IN (Event in Building)
-            OCCURS_IN{OCCURS_IN}:::relation
-            EVENT ---|1,1| OCCURS_IN
-            OCCURS_IN ---|0,N| BUILDING
+            %% ODNOSI_SE_NA
+            ODNOSI_SE{ODNOSI SE NA}:::relation
+            OCENA ---|1,1| ODNOSI_SE
+            ODNOSI_SE ---|0,N| INTERVENCIJA
 
-            %% REL: CREATED_BY_USER (User creates Event)
-            EVT_CREATED{CREATED_BY}:::relation
-            USER ---|1,N| EVT_CREATED
-            EVT_CREATED ---|1,1| EVENT
+            %% DOGAĐAJ
+            DOGADJAJ[DOGAĐAJ]:::entity
+            dogID([<u>id</u>]):::keyAttr
+            dogNaslov([naslov]):::attribute
+            dogDatum([zakazan_datum]):::attribute
+            dogSadrzaj([sadržaj]):::attribute
 
-            %% ================= MESSAGES =================
-            MESSAGE[MESSAGES]:::entity
-            msgId([<u>id</u>]):::attributeKey
-            msgContent([content]):::attribute
-            msgType([message_type]):::attribute
-            
-            MESSAGE --- msgId
-            MESSAGE --- msgContent
-            MESSAGE --- msgType
+            DOGADJAJ --- dogID
+            DOGADJAJ --- dogNaslov
+            DOGADJAJ --- dogDatum
+            DOGADJAJ --- dogSadrzaj
 
-            %% REL: POSTED_IN (Message in Building)
-            POSTED_IN{POSTED_IN}:::relation
-            MESSAGE ---|1,1| POSTED_IN
-            POSTED_IN ---|0,N| BUILDING
+            %% DEŠAVA_SE_U
+            DESAVA_SE{DEŠAVA SE U}:::relation
+            DOGADJAJ ---|1,1| DESAVA_SE
+            DESAVA_SE ---|0,N| ZGRADA
 
-            %% REL: POSTED_BY (User posts Message)
-            POSTED_BY{POSTED_BY}:::relation
-            USER ---|1,N| POSTED_BY
-            POSTED_BY ---|1,1| MESSAGE
+            %% KREIRA_DOG
+            KREIRA_DOG{KREIRA}:::relation
+            MENADZER ---|1,N| KREIRA_DOG
+            KREIRA_DOG ---|1,1| DOGADJAJ
 
-            %% ================= SUGGESTIONS =================
-            SUGGESTION[SUGGESTIONS]:::entity
-            sugId([<u>id</u>]):::attributeKey
-            sugTitle([title]):::attribute
-            sugStatus([status]):::attribute
-            
-            SUGGESTION --- sugId
-            SUGGESTION --- sugTitle
-            SUGGESTION --- sugStatus
+            %% PORUKA
+            PORUKA[PORUKA]:::entity
+            porID([<u>id</u>]):::keyAttr
+            porSadrzaj([sadržaj]):::attribute
+            porTip([tip_poruke]):::attribute
 
-            %% REL: PROPOSED_IN (Suggestion in Building)
-            PROPOSED_IN{PROPOSED_IN}:::relation
-            SUGGESTION ---|1,1| PROPOSED_IN
-            PROPOSED_IN ---|0,N| BUILDING
+            PORUKA --- porID
+            PORUKA --- porSadrzaj
+            PORUKA --- porTip
 
-            %% REL: PROPOSED_BY (User proposes Suggestion)
-            PROPOSED_BY{PROPOSED_BY}:::relation
-            USER ---|1,N| PROPOSED_BY
-            PROPOSED_BY ---|1,1| SUGGESTION
-        </pre>
-    </div>
+            %% OBJAVLJUJE_SE
+            OBJAVLJUJE_SE{OBJAVLJUJE SE}:::relation
+            PORUKA ---|1,1| OBJAVLJUJE_SE
+            OBJAVLJUJE_SE ---|0,N| ZGRADA
+
+            %% POSTAVLJA
+            POSTAVLJA{POSTAVLJA}:::relation
+            MENADZER ---|1,N| POSTAVLJA
+            POSTAVLJA ---|1,1| PORUKA
+
+            %% PREDLOG
+            PREDLOG[PREDLOG]:::entity
+            predID([<u>id</u>]):::keyAttr
+            predNaslov([naslov]):::attribute
+            predSadrzaj([sadržaj]):::attribute
+            predStatus([status]):::attribute
+
+            PREDLOG --- predID
+            PREDLOG --- predNaslov
+            PREDLOG --- predSadrzaj
+            PREDLOG --- predStatus
+
+            %% PREDLAŽE_U
+            PREDLAZE_U{PREDLAŽE U}:::relation
+            PREDLOG ---|1,1| PREDLAZE_U
+            PREDLAZE_U ---|0,N| ZGRADA
+
+            %% KREIRA_PRED
+            KREIRA_PRED{KREIRA}:::relation
+            STANAR ---|1,N| KREIRA_PRED
+            KREIRA_PRED ---|1,1| PREDLOG
+
+            %% GLAS
+            GLAS[GLAS]:::weakEntity
+            glasID([<u>id</u>]):::keyAttr
+            glasVrednost([glas_za]):::attribute
+
+            GLAS --- glasID
+            GLAS --- glasVrednost
+
+            %% IMA_GLAS
+            IMA_GLAS{IMA}:::relation
+            PREDLOG ---|1,N| IMA_GLAS
+            IMA_GLAS ---|1,1| GLAS
+
+            %% DAJE_GLAS
+            DAJE_GLAS{GLASA}:::relation
+            STANAR ---|1,N| DAJE_GLAS
+            DAJE_GLAS ---|1,1| GLAS
+
+            %% DOKUMENT
+            DOKUMENT[DOKUMENT]:::entity
+            dokID([<u>id</u>]):::keyAttr
+            dokNaslov([naslov]):::attribute
+            dokURL([url_fajla]):::attribute
+            dokTip([tip_dokumenta]):::attribute
+
+            DOKUMENT --- dokID
+            DOKUMENT --- dokNaslov
+            DOKUMENT --- dokURL
+            DOKUMENT --- dokTip
+
+            %% ČUVA_U
+            CUVA_U{ČUVA U}:::relation
+            DOKUMENT ---|1,1| CUVA_U
+            CUVA_U ---|0,N| ZGRADA
+
+            %% UPLOADUJE
+            UPLOAD{UPLOADUJE}:::relation
+            MENADZER ---|1,N| UPLOAD
+            UPLOAD ---|1,1| DOKUMENT
+    </pre>
 </body>
 
 </html>
