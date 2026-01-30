@@ -11,8 +11,8 @@ export class MessageService {
 
     constructor(private http: HttpClient) { }
 
-    createMessage(message: CreateMessageInput): Observable<Message> {
-        return this.http.post<Message>(this.apiUrl, message);
+    createMessage(message: CreateMessageInput): Observable<CreateMessageInput> {
+        return this.http.post<CreateMessageInput>(this.apiUrl, message);
     }
 
     getMessagesByBuilding(buildingId: string): Observable<Message[]> {
