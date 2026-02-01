@@ -8,7 +8,7 @@ import { BuildingService } from '../../../services/building.service';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 import { SidebarComponent } from '../../../shared/ui/sidebar/sidebar.component';
-import { TenantData } from '../../../models/domain.models';
+import { Tenant } from '@repo/domain';
 
 @Component({
   selector: 'app-tenant-dashboard',
@@ -98,7 +98,7 @@ import { TenantData } from '../../../models/domain.models';
 })
 export class TenantDashboard implements OnInit, OnDestroy {
   isVerified = false;
-  tenantData: TenantData | null = null;
+  tenantData: Tenant | null = null;
   error: string | null = null;
   isLoading = true;
   private subscription: Subscription | null = null;

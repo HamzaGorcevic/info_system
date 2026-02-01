@@ -638,10 +638,10 @@ CREATE POLICY "Managers can manage own tokens" ON guest_access_tokens
 -- 4. STORAGE POLICIES
 -- ============================================
 
--- Ensure 'documents' bucket exists (idempotent)
+-- Ensure 'documents' bucket exists and is PUBLIC
 INSERT INTO storage.buckets (id, name, public)
-VALUES ('documents', 'documents', false)
-ON CONFLICT (id) DO NOTHING;
+VALUES ('documents', 'documents', true)
+ON CONFLICT (id) DO UPDATE SET public = true;
 
 -- STORAGE POLICIES (Bucket: 'documents')
 
@@ -653,7 +653,7 @@ WITH CHECK (
   EXISTS (
     SELECT 1 FROM building_managers
     WHERE user_id = auth.uid()
-    AND building_id::text = (storage.foldername(name))[2]
+    AND building_id::text = (storage.foldername(name))[1]
   )
 );
 
@@ -665,7 +665,7 @@ USING (
   EXISTS (
     SELECT 1 FROM building_managers
     WHERE user_id = auth.uid()
-    AND building_id::text = (storage.foldername(name))[2]
+    AND building_id::text = (storage.foldername(name))[1]
   )
 );
 
@@ -677,7 +677,7 @@ USING (
   EXISTS (
     SELECT 1 FROM tenants
     WHERE user_id = auth.uid()
-    AND building_id::text = (storage.foldername(name))[2]
+    AND building_id::text = (storage.foldername(name))[1]
   )
 );
 
@@ -693,7 +693,7 @@ ON storage.objects FOR INSERT
 WITH CHECK (
   bucket_id = 'malfunctions' AND
   auth.role() = 'authenticated' AND
-  (storage.foldername(name))[2] = auth.uid()::text
+  (storage.foldername(name))[1] = auth.uid()::text
 );
 
 CREATE POLICY "Users can view own malfunctions"
@@ -701,5 +701,5 @@ ON storage.objects FOR SELECT
 USING (
   bucket_id = 'malfunctions' AND
   auth.role() = 'authenticated' AND
-  (storage.foldername(name))[2] = auth.uid()::text
+  (storage.foldername(name))[1] = auth.uid()::text
 );

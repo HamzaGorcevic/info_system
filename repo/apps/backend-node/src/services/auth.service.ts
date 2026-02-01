@@ -52,9 +52,9 @@ export class AuthService {
             await this.userRepository.create({
                 id: userId,
                 email,
-                fullName,
+                full_name: fullName,
                 role: 'manager',
-                isVerified: true
+                is_verified: true
             });
         } catch (userError: any) {
             await supabaseAdmin.auth.admin.deleteUser(userId);
@@ -77,7 +77,7 @@ export class AuthService {
         }
 
         return {
-            user: { id: userId, email, fullName, role: 'manager' },
+            user: { id: userId, email, full_name: fullName, role: 'manager' },
             building
         };
     }
@@ -200,7 +200,7 @@ export class AuthService {
         }
 
         return {
-            user: { id: userId, email, fullName, role: 'tenant' }
+            user: { id: userId, email, full_name: fullName, role: 'tenant' }
         };
     }
 

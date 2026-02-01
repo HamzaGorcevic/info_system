@@ -7,7 +7,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { Router } from '@angular/router';
 import { UiCard } from '../../../../shared/ui/card/card';
 import { UiButton } from '../../../../shared/ui/button/button';
-import { TenantData } from '../../../../models/domain.models';
+import { Tenant } from '@repo/domain';
 
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
 
@@ -69,7 +69,7 @@ export class ReportMalfunctionComponent {
 
         try {
             // Fetch tenant data to get tenant_id
-            const tenantData = await new Promise<TenantData>((resolve, reject) => {
+            const tenantData = await new Promise<Tenant | null>((resolve, reject) => {
                 this.buildingService.getTenantData(user.id).subscribe({
                     next: (data) => resolve(data),
                     error: (err) => reject(err)

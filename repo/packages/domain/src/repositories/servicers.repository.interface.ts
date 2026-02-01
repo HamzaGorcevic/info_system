@@ -1,14 +1,17 @@
-import { Database } from "@repo/types";
+import { CreateServicerDto } from "../dto/servicer.dto.js";
+import { Servicer } from "../entities/servicer.entity.js";
+import { GuestAccessToken } from "../entities/guest-access-token.entity.js";
+import { CreateGuestAccessTokenDto } from "../dto/guest-access-token.dto.js";
 
 export interface IServicerRepository {
-    create(data: Database['public']['Tables']['servicers']['Insert']): Promise<Database['public']['Tables']['servicers']['Row']>;
-    findById(id: string): Promise<Database['public']['Tables']['servicers']['Row'] | null>;
-    findAll(): Promise<Database['public']['Tables']['servicers']['Row'][]>;
-    createGuestToken(data: Database['public']['Tables']['guest_access_tokens']['Insert']): Promise<Database['public']['Tables']['guest_access_tokens']['Row']>;
+    create(data: CreateServicerDto): Promise<Servicer>;
+    findById(id: string): Promise<Servicer | null>;
+    findAll(): Promise<Servicer[]>;
+    createGuestToken(data: CreateGuestAccessTokenDto): Promise<GuestAccessToken>;
     getBuildingIdFromMalfunction(malfunctionId: string): Promise<string>;
-    validateGuestToken(token: string): Promise<Database['public']['Tables']['guest_access_tokens']['Row'] | null>;
+    validateGuestToken(token: string): Promise<GuestAccessToken | null>;
     updateMalfunctionStatus(malfunctionId: string, status: string, token: string): Promise<void>;
     assignServicerToMalfunction(malfunctionId: string, servicerId: string): Promise<void>;
-    getAllTokens(): Promise<Database['public']['Tables']['guest_access_tokens']['Row'][]>;
+    getAllTokens(): Promise<GuestAccessToken[]>;
     revokeToken(tokenId: string): Promise<void>;
 }

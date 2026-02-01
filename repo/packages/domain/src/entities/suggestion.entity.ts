@@ -13,15 +13,6 @@ export const suggestionSchema = z.object({
 
 export type Suggestion = z.infer<typeof suggestionSchema>;
 
-export const createSuggestionInputSchema = suggestionSchema.pick({
-    building_id: true,
-    title: true,
-    content: true,
-    created_by: true,
-});
-
-export type CreateSuggestionInput = z.infer<typeof createSuggestionInputSchema>;
-
 export const suggestionVoteSchema = z.object({
     id: z.string().uuid(),
     suggestion_id: z.string().uuid(),
@@ -31,14 +22,6 @@ export const suggestionVoteSchema = z.object({
 });
 
 export type SuggestionVote = z.infer<typeof suggestionVoteSchema>;
-
-export const createSuggestionVoteInputSchema = suggestionVoteSchema.pick({
-    suggestion_id: true,
-    voted_by: true,
-    vote: true,
-});
-
-export type CreateSuggestionVoteInput = z.infer<typeof createSuggestionVoteInputSchema>;
 
 export interface SuggestionWithVote extends Suggestion {
     upvotes: number;

@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ratingSchema } from './rating.entity.js';
 
 export const malfunctionSchema = z.object({
     id: z.string().uuid(),
@@ -14,8 +15,7 @@ export const malfunctionSchema = z.object({
     started_at: z.string().nullable().optional(),
     resolved_at: z.string().nullable().optional(),
     created_at: z.string().optional(),
+    ratings: z.array(ratingSchema).optional(),
 });
 
 export type Malfunction = z.infer<typeof malfunctionSchema>;
-export type CreateMalfunctionInput = Omit<Malfunction, 'id' | 'created_at' | 'status' | 'assigned_at' | 'started_at' | 'resolved_at'>;
-export type UpdateMalfunctionInput = Partial<Omit<Malfunction, 'id' | 'created_at'>>;

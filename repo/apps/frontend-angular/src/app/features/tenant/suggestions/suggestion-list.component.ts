@@ -4,8 +4,7 @@ import { Router } from '@angular/router';
 import { SuggestionService } from '../../../services/suggestion.service';
 import { AuthService } from '../../../services/auth.service';
 import { BuildingService } from '../../../services/building.service';
-import { SuggestionWithVote } from '@repo/domain';
-import { TenantData } from '../../../models/domain.models';
+import { SuggestionWithVote, Tenant } from '@repo/domain';
 
 
 @Component({
@@ -197,7 +196,7 @@ export class SuggestionListComponent implements OnInit {
     const user = this.authService.currentUser();
     if (user) {
       this.buildingService.getTenantData(user.id).subscribe({
-        next: (data: TenantData) => {
+        next: (data: Tenant | null) => {
           if (data && data.building_id) {
             this.buildingId = data.building_id;
             this.loadSuggestions();

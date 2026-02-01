@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ExpensesService } from '../../../services/expenses.service';
 import { AuthService } from '../../../services/auth.service';
 import { BuildingService } from '../../../services/building.service';
-import { Database } from '@repo/types';
+import { Expense } from '@repo/domain';
 
 @Component({
   selector: 'app-tenant-expenses',
@@ -67,7 +67,7 @@ import { Database } from '@repo/types';
   `
 })
 export class TenantExpensesComponent implements OnInit {
-  expenses: Database['public']['Tables']['tenant_expenses']['Row'][] = [];
+  expenses: Expense[] = [];
   isLoading = true;
   isProcessing: string | null = null;
 
@@ -114,7 +114,7 @@ export class TenantExpensesComponent implements OnInit {
     });
   }
 
-  payExpense(expense: Database['public']['Tables']['tenant_expenses']['Row']) {
+  payExpense(expense: Expense) {
     if (!confirm('Are you sure you want to pay this expense?')) return;
 
     this.isProcessing = expense.id;

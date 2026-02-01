@@ -6,7 +6,7 @@ import { AuthService } from '../../../../services/auth.service';
 import { RouterLink } from '@angular/router';
 import { UiCard } from '../../../../shared/ui/card/card';
 import { UiButton } from '../../../../shared/ui/button/button';
-import { Malfunction, TenantData } from '../../../../models/domain.models';
+import { Malfunction, Tenant, Rating } from '@repo/domain';
 import { switchMap, of } from 'rxjs';
 
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
@@ -39,7 +39,7 @@ export class MalfunctionListComponent implements OnInit {
         }
 
         this.buildingService.getTenantData(user.id).pipe(
-            switchMap(tenantData => {
+            switchMap((tenantData: Tenant | null) => {
                 if (!tenantData) {
                     console.error('Tenant data not found');
                     return of([]);
@@ -82,7 +82,6 @@ export class MalfunctionListComponent implements OnInit {
         this.malfunctionService.rateMalfunction({
             malfunction_id: malfunction.id,
             servicer_id: malfunction.servicer_id,
-            rated_by: user.id,
             rating_score: score,
             comment
         }).subscribe({
@@ -94,11 +93,19 @@ export class MalfunctionListComponent implements OnInit {
                     rated_by: user.id,
                     rating_score: score,
                     comment,
-                    created_at: new Date().toISOString()
+                    created_at: new Date().toISOString(),
+                    servicer_id: malfunction.servicer_id ? malfunction.servicer_id : ""
                 });
                 this.cdr.detectChanges();
             },
             error: (err) => {
+                console.log({
+                    malfunction_id: malfunction.id,
+                    servicer_id: malfunction.servicer_id,
+                    rated_by: user.id,
+                    rating_score: score,
+                    comment
+                })
                 console.error('Failed to submit rating', err);
                 alert('Failed to submit rating');
             }
@@ -108,7 +115,7 @@ export class MalfunctionListComponent implements OnInit {
     hasUserRated(malfunction: Malfunction): boolean {
         const user = this.authService.currentUser();
         if (!user || !malfunction.ratings) return false;
-        return malfunction.ratings.some(r => r.rated_by === user.id);
+        return malfunction.ratings.some((r: Rating) => r.rated_by === user.id);
     }
 
     setHoveredStar(malfunctionId: string, star: number) {

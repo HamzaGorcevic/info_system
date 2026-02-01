@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MalfunctionService } from '../../../services/malfunction.service';
 import { AuthService } from '../../../services/auth.service';
-import { Malfunction } from '../../../models/domain.models';
+import { Malfunction } from '@repo/domain';
 
 @Component({
   selector: 'app-analytics-dashboard',

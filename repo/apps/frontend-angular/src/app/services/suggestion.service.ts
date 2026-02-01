@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Suggestion, CreateSuggestionInput, SuggestionWithVote, CreateSuggestionVoteInput } from '@repo/domain';
+import { CreateSuggestionDto, CreateSuggestionVoteDto, Suggestion, SuggestionWithVote } from '@repo/domain';
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +11,7 @@ export class SuggestionService {
 
     constructor(private http: HttpClient) { }
 
-    createSuggestion(suggestion: CreateSuggestionInput): Observable<Suggestion> {
+    createSuggestion(suggestion: CreateSuggestionDto): Observable<Suggestion> {
         return this.http.post<Suggestion>(this.apiUrl, suggestion);
     }
 
@@ -23,7 +23,7 @@ export class SuggestionService {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    voteSuggestion(vote: CreateSuggestionVoteInput): Observable<void> {
+    voteSuggestion(vote: CreateSuggestionVoteDto): Observable<void> {
         return this.http.post<void>(`${this.apiUrl}/vote`, vote);
     }
 }

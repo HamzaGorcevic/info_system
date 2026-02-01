@@ -2,14 +2,14 @@ import { Component, EventEmitter, Input, Output, inject, OnInit, ChangeDetectorR
 import { CommonModule } from '@angular/common';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ServicerService } from '../../../../services/servicer.service';
-import { Servicer } from '../../../../models/domain.models';
 import { UiButton } from '../../../../shared/ui/button/button';
+import { Servicer } from '@repo/domain';
 
 @Component({
-    selector: 'app-assign-servicer-dialog',
-    standalone: true,
-    imports: [CommonModule, ReactiveFormsModule, UiButton],
-    template: `
+  selector: 'app-assign-servicer-dialog',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, UiButton],
+  template: `
     <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fade-in">
       <div class="bg-white rounded-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto shadow-2xl animate-scale-in">
         <div class="flex justify-between items-center mb-6">
@@ -113,77 +113,77 @@ import { UiButton } from '../../../../shared/ui/button/button';
   `
 })
 export class AssignServicerDialogComponent implements OnInit {
-    @Input() malfunctionId!: string;
-    @Output() close = new EventEmitter<void>();
-    @Output() assigned = new EventEmitter<{ servicer: Servicer, token: string }>();
+  @Input() malfunctionId!: string;
+  @Output() close = new EventEmitter<void>();
+  @Output() assigned = new EventEmitter<{ servicer: Servicer, token: string }>();
 
-    private servicerService = inject(ServicerService);
-    private fb = inject(FormBuilder);
-    private cdf = inject(ChangeDetectorRef);
-    mode: 'select' | 'create' = 'select';
-    servicers: Servicer[] = [];
-    selectedServicer: Servicer | null = null;
-    isLoading = true;
-    isSubmitting = false;
+  private servicerService = inject(ServicerService);
+  private fb = inject(FormBuilder);
+  private cdf = inject(ChangeDetectorRef);
+  mode: 'select' | 'create' = 'select';
+  servicers: Servicer[] = [];
+  selectedServicer: Servicer | null = null;
+  isLoading = true;
+  isSubmitting = false;
 
-    createForm = this.fb.group({
-        full_name: ['', Validators.required],
-        phone: ['', Validators.required],
-        email: ['', [Validators.email]],
-        company_name: [''],
-        profession: ['', Validators.required]
+  createForm = this.fb.group({
+    full_name: ['', Validators.required],
+    phone: ['', Validators.required],
+    email: ['', [Validators.email]],
+    company_name: [''],
+    profession: ['', Validators.required]
+  });
+
+  ngOnInit() {
+    this.loadServicers();
+  }
+
+  loadServicers() {
+    this.servicerService.getAllServicers().subscribe({
+      next: (data) => {
+        this.servicers = data;
+        this.isLoading = false;
+        this.cdf.detectChanges();
+      },
+      error: (err) => {
+        console.error('Error loading servicers', err);
+        this.isLoading = false;
+      }
     });
+  }
 
-    ngOnInit() {
-        this.loadServicers();
-    }
+  confirmAssignment() {
+    this.isSubmitting = true;
 
-    loadServicers() {
-        this.servicerService.getAllServicers().subscribe({
-            next: (data) => {
-                this.servicers = data;
-                this.isLoading = false;
-                this.cdf.detectChanges();
-            },
-            error: (err) => {
-                console.error('Error loading servicers', err);
-                this.isLoading = false;
-            }
-        });
-    }
-
-    confirmAssignment() {
-        this.isSubmitting = true;
-
-        if (this.mode === 'select' && this.selectedServicer) {
-            this.assignToken(this.selectedServicer);
-        } else if (this.mode === 'create' && this.createForm.valid) {
-            const servicerData = this.createForm.value as Partial<Servicer>;
-            this.servicerService.createServicer(servicerData).subscribe({
-                next: (newServicer) => {
-                    this.assignToken(newServicer);
-                },
-                error: (err) => {
-                    console.error('Error creating servicer', err);
-                    this.isSubmitting = false;
-                }
-            });
+    if (this.mode === 'select' && this.selectedServicer) {
+      this.assignToken(this.selectedServicer);
+    } else if (this.mode === 'create' && this.createForm.valid) {
+      const servicerData = this.createForm.value as Partial<Servicer>;
+      this.servicerService.createServicer(servicerData).subscribe({
+        next: (newServicer) => {
+          this.assignToken(newServicer);
+        },
+        error: (err) => {
+          console.error('Error creating servicer', err);
+          this.isSubmitting = false;
         }
+      });
     }
+  }
 
-    private assignToken(servicer: Servicer) {
-        this.servicerService.assignToken({
-            servicerId: servicer.id,
-            malfunctionId: this.malfunctionId
-        }).subscribe({
-            next: (response) => {
-                this.assigned.emit({ servicer, token: response.token });
-                this.close.emit();
-            },
-            error: (err) => {
-                console.error('Error assigning token', err);
-                this.isSubmitting = false;
-            }
-        });
-    }
+  private assignToken(servicer: Servicer) {
+    this.servicerService.assignToken({
+      servicerId: servicer.id,
+      malfunctionId: this.malfunctionId
+    }).subscribe({
+      next: (response) => {
+        this.assigned.emit({ servicer, token: response.token });
+        this.close.emit();
+      },
+      error: (err) => {
+        console.error('Error assigning token', err);
+        this.isSubmitting = false;
+      }
+    });
+  }
 }

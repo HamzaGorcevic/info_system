@@ -1,5 +1,4 @@
-import { IEventRepository, CreateEventInput, UpdateEventInput } from "@repo/domain";
-import { Database } from "@repo/types";
+import { IEventRepository, CreateEventDto, UpdateEventDto, Event } from "@repo/domain";
 
 export class EventsService {
     constructor(
@@ -7,19 +6,19 @@ export class EventsService {
     ) { }
 
     async createEvent(
-        data: CreateEventInput & { created_by: string }
-    ): Promise<Database['public']['Tables']['events']['Row']> {
+        data: CreateEventDto
+    ): Promise<Event> {
         return this.eventsRepository.create(data);
     }
 
-    async getEventsByBuilding(buildingId: string): Promise<Database['public']['Tables']['events']['Row'][]> {
+    async getEventsByBuilding(buildingId: string): Promise<Event[]> {
         return this.eventsRepository.findByBuildingId(buildingId);
     }
 
     async updateEvent(
         id: string,
-        data: UpdateEventInput
-    ): Promise<Database['public']['Tables']['events']['Row']> {
+        data: UpdateEventDto
+    ): Promise<Event> {
         return this.eventsRepository.update(id, data);
     }
 

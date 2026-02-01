@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Event, CreateEventInput, UpdateEventInput } from '@repo/domain';
+import { Event, CreateEventDto, UpdateEventDto } from '@repo/domain';
 
 @Injectable({
     providedIn: 'root'
@@ -11,7 +11,7 @@ export class EventService {
 
     constructor(private http: HttpClient) { }
 
-    createEvent(event: CreateEventInput): Observable<Event> {
+    createEvent(event: CreateEventDto): Observable<Event> {
         return this.http.post<Event>(this.apiUrl, event);
     }
 
@@ -19,7 +19,7 @@ export class EventService {
         return this.http.get<Event[]>(`${this.apiUrl}/building/${buildingId}`);
     }
 
-    updateEvent(id: string, event: UpdateEventInput): Observable<Event> {
+    updateEvent(id: string, event: UpdateEventDto): Observable<Event> {
         return this.http.put<Event>(`${this.apiUrl}/${id}`, event);
     }
 

@@ -5,7 +5,7 @@ import { ExpensesService } from '../../../services/expenses.service';
 import { BuildingService } from '../../../services/building.service';
 import { AuthService } from '../../../services/auth.service';
 import { EventsService } from '../../../services/events.service';
-import { Database } from '@repo/types';
+import { Expense } from '@repo/domain';
 
 @Component({
   selector: 'app-admin-expenses',
@@ -156,14 +156,14 @@ import { Database } from '@repo/types';
   `
 })
 export class AdminExpensesComponent implements OnInit {
-  expenses: Database['public']['Tables']['tenant_expenses']['Row'][] = [];
+  expenses: Expense[] = [];
   tenants: any[] = [];
   showAddModal = false;
   isSubmitting = false;
   isLoading = true;
   showNotifyModal = false;
   isSendingNotification = false;
-  selectedExpense: Database['public']['Tables']['tenant_expenses']['Row'] | null = null;
+  selectedExpense: Expense | null = null;
   notificationMessage = '';
 
   newExpense = {
@@ -261,7 +261,7 @@ export class AdminExpensesComponent implements OnInit {
     };
   }
 
-  openNotifyModal(expense: Database['public']['Tables']['tenant_expenses']['Row']) {
+  openNotifyModal(expense: Expense) {
     this.selectedExpense = expense;
     const tenant = this.tenants.find(t => t.id === expense.tenant_id);
     this.notificationMessage = `Payment Reminder: Please pay your ${expense.expense_type} expense of $${expense.amount}. ${expense.description || ''}`.trim();

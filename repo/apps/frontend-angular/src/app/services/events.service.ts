@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Database } from '@repo/types';
+import { Event, CreateEventDto, UpdateEventDto } from '@repo/domain';
 
 @Injectable({
     providedIn: 'root'
@@ -11,21 +11,16 @@ export class EventsService {
 
     constructor(private http: HttpClient) { }
 
-    createEvent(data: {
-        building_id: string;
-        title: string;
-        scheduled_at: string;
-        content?: string;
-    }): Observable<Database['public']['Tables']['events']['Row']> {
-        return this.http.post<Database['public']['Tables']['events']['Row']>(this.apiUrl, data);
+    createEvent(data: CreateEventDto): Observable<Event> {
+        return this.http.post<Event>(this.apiUrl, data);
     }
 
-    getEventsByBuilding(buildingId: string): Observable<Database['public']['Tables']['events']['Row'][]> {
-        return this.http.get<Database['public']['Tables']['events']['Row'][]>(`${this.apiUrl}/building/${buildingId}`);
+    getEventsByBuilding(buildingId: string): Observable<Event[]> {
+        return this.http.get<Event[]>(`${this.apiUrl}/building/${buildingId}`);
     }
 
-    updateEvent(id: string, data: any): Observable<Database['public']['Tables']['events']['Row']> {
-        return this.http.patch<Database['public']['Tables']['events']['Row']>(`${this.apiUrl}/${id}`, data);
+    updateEvent(id: string, data: UpdateEventDto): Observable<Event> {
+        return this.http.patch<Event>(`${this.apiUrl}/${id}`, data);
     }
 
     deleteEvent(id: string): Observable<void> {

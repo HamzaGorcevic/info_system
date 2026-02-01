@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { ratingSchema } from './rating.entity.js';
 
 export const servicerSchema = z.object({
     id: z.string().uuid(),
@@ -8,8 +9,7 @@ export const servicerSchema = z.object({
     company_name: z.string().nullable().optional(),
     profession: z.string().min(1),
     created_at: z.string().optional(),
+    ratings: z.array(ratingSchema).optional(),
 });
 
 export type Servicer = z.infer<typeof servicerSchema>;
-export type CreateServicerInput = Omit<Servicer, 'id' | 'created_at'>;
-export type UpdateServicerInput = Partial<Omit<Servicer, 'id' | 'created_at'>>;

@@ -18,13 +18,15 @@ export const createMalfunctionRequestSchema = createMalfunctionSchema.omit({
     image_url: z.string().optional()
 });
 
-export const rateMalfunctionSchema = z.object({
-    malfunction_id: z.string().uuid(),
-    servicer_id: z.string().uuid(),
-    rating: z.number().min(1).max(5),
-    comment: z.string().optional()
-});
 
 export type CreateMalfunctionDto = z.infer<typeof createMalfunctionSchema>;
 export type CreateMalfunctionRequestDto = z.infer<typeof createMalfunctionRequestSchema>;
+
+export const rateMalfunctionSchema = z.object({
+    malfunction_id: z.string().uuid(),
+    servicer_id: z.string().uuid(),
+    rating_score: z.number().min(1).max(5),
+    comment: z.string().optional()
+});
+
 export type RateMalfunctionDto = z.infer<typeof rateMalfunctionSchema>;

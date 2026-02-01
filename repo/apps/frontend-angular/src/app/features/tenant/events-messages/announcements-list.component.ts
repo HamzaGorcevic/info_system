@@ -4,8 +4,7 @@ import { EventService } from '../../../services/event.service';
 import { MessageService } from '../../../services/message.service';
 import { BuildingService } from '../../../services/building.service';
 import { AuthService } from '../../../services/auth.service';
-import { Event, Message } from '@repo/domain';
-import { TenantData } from '../../../models/domain.models';
+import { Event, Message, Tenant } from '@repo/domain';
 
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
 
@@ -113,7 +112,7 @@ export class AnnouncementsListComponent implements OnInit {
     const user = this.authService.currentUser();
     if (user) {
       this.buildingService.getTenantData(user.id).subscribe({
-        next: (data: TenantData) => {
+        next: (data: Tenant | null) => {
           if (data && data.building_id) {
             this.loadEvents(data.building_id);
             this.loadMessages(data.building_id);

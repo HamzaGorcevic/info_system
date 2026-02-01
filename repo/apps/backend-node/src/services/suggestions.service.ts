@@ -1,5 +1,4 @@
-import { ISuggestionRepository, CreateSuggestionInput, CreateSuggestionVoteInput, SuggestionWithVote } from "@repo/domain";
-import { Database } from "@repo/types";
+import { ISuggestionRepository, Suggestion, SuggestionWithVote, CreateSuggestionDto, CreateSuggestionVoteDto } from "@repo/domain";
 
 export class SuggestionsService {
     constructor(
@@ -7,8 +6,8 @@ export class SuggestionsService {
     ) { }
 
     async createSuggestion(
-        data: CreateSuggestionInput
-    ): Promise<Database['public']['Tables']['suggestions']['Row']> {
+        data: CreateSuggestionDto
+    ): Promise<Suggestion> {
         return this.suggestionsRepository.create(data);
     }
 
@@ -20,7 +19,7 @@ export class SuggestionsService {
         return this.suggestionsRepository.delete(id);
     }
 
-    async voteSuggestion(data: CreateSuggestionVoteInput): Promise<void> {
+    async voteSuggestion(data: CreateSuggestionVoteDto): Promise<void> {
         return this.suggestionsRepository.vote(data);
     }
 }

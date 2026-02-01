@@ -1,22 +1,22 @@
-import { IExpensesRepository } from "@repo/domain";
-import { Database } from "@repo/types";
+import { IExpensesRepository, Expense, CreateExpenseDto, UpdateExpenseDto } from "@repo/domain";
 import { SupabaseClient } from "@repo/supabase";
+import { Database } from "@repo/types";
 
 export class ExpensesRepository implements IExpensesRepository {
     constructor(private db: SupabaseClient<Database>) { }
 
-    async create(data: Database['public']['Tables']['tenant_expenses']['Insert']): Promise<Database['public']['Tables']['tenant_expenses']['Row']> {
+    async create(data: CreateExpenseDto & { created_by: string }): Promise<Expense> {
         const { data: expense, error } = await this.db
             .from('tenant_expenses')
-            .insert(data)
+            .insert(data as any)
             .select()
             .single();
 
         if (error) throw error;
-        return expense;
+        return expense as Expense;
     }
 
-    async findById(id: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'] | null> {
+    async findById(id: string): Promise<Expense | null> {
         const { data: expense, error } = await this.db
             .from('tenant_expenses')
             .select('*')
@@ -24,10 +24,10 @@ export class ExpensesRepository implements IExpensesRepository {
             .single();
 
         if (error) return null;
-        return expense;
+        return expense as Expense;
     }
 
-    async findByTenantId(tenantId: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]> {
+    async findByTenantId(tenantId: string): Promise<Expense[]> {
         const { data: expenses, error } = await this.db
             .from('tenant_expenses')
             .select('*')
@@ -35,19 +35,19 @@ export class ExpensesRepository implements IExpensesRepository {
             .order('created_at', { ascending: false });
 
         if (error) throw error;
-        return expenses;
+        return expenses as Expense[];
     }
 
-    async update(id: string, data: Database['public']['Tables']['tenant_expenses']['Update']): Promise<Database['public']['Tables']['tenant_expenses']['Row']> {
+    async update(id: string, data: UpdateExpenseDto): Promise<Expense> {
         const { data: expense, error } = await this.db
             .from('tenant_expenses')
-            .update(data)
+            .update(data as any)
             .eq('id', id)
             .select()
             .single();
 
         if (error) throw error;
-        return expense;
+        return expense as Expense;
     }
 
     async delete(id: string): Promise<void> {
@@ -59,7 +59,7 @@ export class ExpensesRepository implements IExpensesRepository {
         if (error) throw error;
     }
 
-    async findByCreator(userId: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]> {
+    async findByCreator(userId: string): Promise<Expense[]> {
         const { data: expenses, error } = await this.db
             .from('tenant_expenses')
             .select('*, tenants!inner(buildings!inner(manager_id))')
@@ -70,6 +70,6 @@ export class ExpensesRepository implements IExpensesRepository {
         return expenses.map((e: any) => {
             const { tenants, ...expense } = e;
             return expense;
-        }) as Database['public']['Tables']['tenant_expenses']['Row'][];
+        }) as Expense[];
     }
 }

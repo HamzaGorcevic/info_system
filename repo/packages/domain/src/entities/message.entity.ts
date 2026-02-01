@@ -10,5 +10,3 @@ export const messageSchema = z.object({
 });
 
 export type Message = z.infer<typeof messageSchema>;
-export type CreateMessageInput = Omit<Message, 'id' | 'created_at'>;
-export type UpdateMessageInput = Partial<Omit<Message, 'id' | 'created_at' | 'posted_by' | 'building_id'>>;

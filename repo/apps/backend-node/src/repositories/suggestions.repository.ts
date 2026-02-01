@@ -1,11 +1,11 @@
 import { SupabaseClient } from "@repo/supabase";
+import { ISuggestionRepository, Suggestion, SuggestionWithVote, CreateSuggestionDto, CreateSuggestionVoteDto } from "@repo/domain";
 import { Database } from "@repo/types";
-import { ISuggestionRepository, CreateSuggestionInput, CreateSuggestionVoteInput, SuggestionWithVote } from "@repo/domain";
 
 export class SuggestionsRepository implements ISuggestionRepository {
-    constructor(private client: SupabaseClient) { }
+    constructor(private client: SupabaseClient<Database>) { }
 
-    async create(data: CreateSuggestionInput): Promise<Database['public']['Tables']['suggestions']['Row']> {
+    async create(data: CreateSuggestionDto): Promise<Suggestion> {
         const { data: result, error } = await this.client
             .from('suggestions')
             .insert(data)
@@ -13,19 +13,19 @@ export class SuggestionsRepository implements ISuggestionRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Suggestion;
     }
 
-    async findByBuildingId(buildingId: string, userId: string): Promise<SuggestionWithVote[]> {
+    async findByBuildingId(building_id: string, userId: string): Promise<SuggestionWithVote[]> {
         const { data, error } = await this.client
             .from('suggestions')
             .select('*, suggestion_votes(vote, voted_by)')
-            .eq('building_id', buildingId)
+            .eq('building_id', building_id)
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
 
-        return data.map((suggestion: any) => {
+        return (data || []).map((suggestion: any) => {
             const votes = suggestion.suggestion_votes || [];
             const upvotes = votes.filter((v: any) => v.vote === true).length;
             const downvotes = votes.filter((v: any) => v.vote === false).length;
@@ -38,7 +38,7 @@ export class SuggestionsRepository implements ISuggestionRepository {
                 upvotes,
                 downvotes,
                 user_vote
-            };
+            } as SuggestionWithVote;
         });
     }
 
@@ -51,7 +51,7 @@ export class SuggestionsRepository implements ISuggestionRepository {
         if (error) throw new Error(error.message);
     }
 
-    async vote(data: CreateSuggestionVoteInput): Promise<void> {
+    async vote(data: CreateSuggestionVoteDto): Promise<void> {
         // Check if user is voting on their own suggestion
         const { data: suggestion, error: suggestionError } = await this.client
             .from('suggestions')

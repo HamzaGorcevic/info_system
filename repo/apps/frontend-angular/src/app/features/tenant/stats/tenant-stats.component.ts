@@ -5,6 +5,7 @@ import { MalfunctionService } from '../../../services/malfunction.service';
 import { SuggestionService } from '../../../services/suggestion.service';
 import { BuildingService } from '../../../services/building.service';
 import { forkJoin } from 'rxjs';
+import { Tenant } from '@repo/domain';
 
 @Component({
   selector: 'app-tenant-stats',
@@ -59,7 +60,7 @@ export class TenantStatsComponent implements OnInit {
     }
 
     this.buildingService.getTenantData(user.id).subscribe({
-      next: (tenantData) => {
+      next: (tenantData: Tenant | null) => {
         if (!tenantData) {
           this.isLoading = false;
           return;

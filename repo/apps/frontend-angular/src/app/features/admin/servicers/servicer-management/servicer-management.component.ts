@@ -8,8 +8,7 @@ import { UiButton } from '../../../../shared/ui/button/button';
 import { UiModal } from '../../../../shared/ui/modal/modal';
 import { TokenSuccessModalComponent } from '../../../../shared/ui/token-success-modal/token-success-modal.component';
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
-
-import { Servicer, Malfunction } from '../../../../models/domain.models';
+import { Servicer, Malfunction, Rating } from '@repo/domain';
 
 @Component({
     selector: 'app-servicer-management',
@@ -140,7 +139,7 @@ export class ServicerManagementComponent implements OnInit {
 
     getAverageRating(servicer: Servicer): number {
         if (!servicer.ratings || servicer.ratings.length === 0) return 0;
-        const sum = servicer.ratings.reduce((acc, curr) => acc + curr.rating_score, 0);
+        const sum = servicer.ratings.reduce((acc: number, curr: Rating) => acc + curr.rating_score, 0);
         return sum / servicer.ratings.length;
     }
 

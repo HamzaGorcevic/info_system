@@ -1,10 +1,11 @@
 import { SupabaseClient } from "@repo/supabase";
+import { IDocumentRepository, Document, CreateDocumentDto } from "@repo/domain";
 import { Database } from "@repo/types";
 
-export class DocumentsRepository {
-    constructor(private client: SupabaseClient) { }
+export class DocumentsRepository implements IDocumentRepository {
+    constructor(private client: SupabaseClient<Database>) { }
 
-    async create(data: any): Promise<any> {
+    async create(data: CreateDocumentDto): Promise<Document> {
         const { data: result, error } = await this.client
             .from('documents')
             .insert(data)
@@ -12,10 +13,10 @@ export class DocumentsRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Document;
     }
 
-    async findByBuildingId(buildingId: string): Promise<any[]> {
+    async findByBuildingId(buildingId: string): Promise<Document[]> {
         const { data, error } = await this.client
             .from('documents')
             .select('*')
@@ -23,7 +24,7 @@ export class DocumentsRepository {
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
-        return data || [];
+        return (data || []) as Document[];
     }
 
     async delete(id: string): Promise<void> {

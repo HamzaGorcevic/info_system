@@ -1,15 +1,23 @@
 import { z } from 'zod';
+import { expenseSchema } from '../entities/expenses.entity';
 
-export const createExpenseSchema = z.object({
-    tenant_id: z.string().uuid(),
-    expense_type: z.string().min(1),
-    amount: z.number().positive(),
-    description: z.string().optional(),
-    status: z.enum(['unpaid', 'paid', 'cancelled']).optional().default('unpaid'),
-    paid_at: z.string().datetime().nullable().optional()
+export const createExpenseSchema = expenseSchema.omit({
+    id: true,
+    created_at: true,
+    updated_at: true,
+    created_by: true,
+    status: true,
 });
 
-export const updateExpenseSchema = createExpenseSchema.partial();
+export const updateExpenseSchema = expenseSchema.omit({
+    id: true,
+    created_at: true,
+    updated_at: true,
+    created_by: true,
+    tenant_id: true,
+    expense_type: true,
+    amount: true
+});
 
 export const notifyTenantSchema = z.object({
     message: z.string().min(1)

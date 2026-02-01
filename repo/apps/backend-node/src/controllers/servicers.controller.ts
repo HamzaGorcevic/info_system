@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { ServiceFactory } from '../factories/service.factory.js';
-import { CreateServicerInput } from '@repo/domain';
+import { CreateServicerDto } from '@repo/domain';
 
 export class ServicersController {
     async createServicer(req: Request, res: Response, next: NextFunction) {
         const context = req.context;
         const servicersService = ServiceFactory.getServicersService(context);
 
-        const servicerData: CreateServicerInput = {
+        const servicerData: CreateServicerDto = {
             ...req.body,
             created_by: context.currentUser?.id
         };

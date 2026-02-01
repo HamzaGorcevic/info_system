@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { TenantData } from '../models/domain.models';
+import { Building, Tenant } from '@repo/domain';
 
 @Injectable({
     providedIn: 'root'
@@ -11,19 +11,19 @@ export class BuildingService {
 
     constructor(private http: HttpClient) { }
 
-    getUnverifiedTenants(buildingId: string): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/${buildingId}/unverified-tenants`);
+    getUnverifiedTenants(buildingId: string): Observable<Tenant[]> {
+        return this.http.get<Tenant[]>(`${this.apiUrl}/${buildingId}/unverified-tenants`);
     }
 
     verifyTenant(userId: string, adminId: string): Observable<any> {
         return this.http.post(`${this.apiUrl}/verify-tenant/${userId}`, { adminId });
     }
 
-    getTenantData(userId: string): Observable<TenantData> {
-        return this.http.get<TenantData>(`${this.apiUrl}/tenant/${userId}`);
+    getTenantData(userId: string): Observable<Tenant | null> {
+        return this.http.get<Tenant | null>(`${this.apiUrl}/tenant/${userId}`);
     }
 
-    getBuildingTenants(buildingId: string): Observable<any[]> {
-        return this.http.get<any[]>(`${this.apiUrl}/${buildingId}/tenants`);
+    getBuildingTenants(buildingId: string): Observable<Tenant[]> {
+        return this.http.get<Tenant[]>(`${this.apiUrl}/${buildingId}/tenants`);
     }
 }

@@ -1,5 +1,4 @@
-import { IMessageRepository, CreateMessageInput } from "@repo/domain";
-import { Database } from "@repo/types";
+import { IMessageRepository, CreateMessageDto, Message } from "@repo/domain";
 
 export class MessagesService {
     constructor(
@@ -7,12 +6,12 @@ export class MessagesService {
     ) { }
 
     async createMessage(
-        data: CreateMessageInput & { posted_by: string }
-    ): Promise<Database['public']['Tables']['messages']['Row']> {
+        data: CreateMessageDto
+    ): Promise<Message> {
         return this.messagesRepository.create(data);
     }
 
-    async getMessagesByBuilding(buildingId: string): Promise<Database['public']['Tables']['messages']['Row'][]> {
+    async getMessagesByBuilding(buildingId: string): Promise<Message[]> {
         return this.messagesRepository.findByBuildingId(buildingId);
     }
 

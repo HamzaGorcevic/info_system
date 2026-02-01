@@ -1,11 +1,6 @@
 import { ZodTypeAny } from "zod";
 import { NextFunction, Request, Response } from "express";
 
-/**
- * Robust validation middleware.
- * Handles read-only request properties (query, params) via Object.assign
- * and strips undefined values to ensure database safety.
- */
 export const validate = (schemas: { body?: ZodTypeAny; query?: ZodTypeAny; params?: ZodTypeAny }) =>
     (req: Request, res: Response, next: NextFunction) => {
         try {

@@ -1,5 +1,4 @@
-import { IExpensesRepository, IEventRepository, IBuildingRepository } from "@repo/domain";
-import { Database } from "@repo/types";
+import { IExpensesRepository, IEventRepository, IBuildingRepository, Expense, CreateExpenseDto, UpdateExpenseDto, CreateEventDto } from "@repo/domain";
 
 export class ExpensesService {
     constructor(
@@ -8,15 +7,15 @@ export class ExpensesService {
         private buildingRepository?: IBuildingRepository
     ) { }
 
-    async createExpense(data: Database['public']['Tables']['tenant_expenses']['Insert']): Promise<Database['public']['Tables']['tenant_expenses']['Row']> {
+    async createExpense(data: CreateExpenseDto & { created_by: string }): Promise<Expense> {
         return this.expensesRepository.create(data);
     }
 
-    async getTenantExpenses(tenantId: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]> {
+    async getTenantExpenses(tenantId: string): Promise<Expense[]> {
         return this.expensesRepository.findByTenantId(tenantId);
     }
 
-    async updateExpense(id: string, data: Database['public']['Tables']['tenant_expenses']['Update']): Promise<Database['public']['Tables']['tenant_expenses']['Row']> {
+    async updateExpense(id: string, data: UpdateExpenseDto): Promise<Expense> {
         return this.expensesRepository.update(id, data);
     }
 
@@ -24,11 +23,11 @@ export class ExpensesService {
         return this.expensesRepository.delete(id);
     }
 
-    async getAllExpenses(userId: string): Promise<Database['public']['Tables']['tenant_expenses']['Row'][]> {
+    async getAllExpenses(userId: string): Promise<Expense[]> {
         return this.expensesRepository.findByCreator(userId);
     }
 
-    async notifyTenant(expenseId: string, message: string, userId: string): Promise<{ status: string, expense: Database['public']['Tables']['tenant_expenses']['Row'] }> {
+    async notifyTenant(expenseId: string, message: string, userId: string): Promise<{ status: string, expense: Expense }> {
         const expense = await this.expensesRepository.findById(expenseId);
         if (!expense) throw new Error("Expense not found");
 
@@ -51,7 +50,7 @@ export class ExpensesService {
             content: message,
             scheduled_at: new Date().toISOString(),
             created_by: userId
-        });
+        } as CreateEventDto);
 
         return { status: 'success', expense };
     }

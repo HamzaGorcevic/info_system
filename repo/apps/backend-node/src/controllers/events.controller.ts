@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { ServiceFactory } from '../factories/service.factory.js';
-import { CreateEventInput, UpdateEventInput } from '@repo/domain';
+import { CreateEventDto, UpdateEventDto } from '@repo/domain';
 
 export class EventsController {
     async createEvent(req: Request, res: Response, next: NextFunction) {
         const context = req.context;
         const eventsService = ServiceFactory.getEventsService(context);
 
-        const eventData: CreateEventInput & { created_by: string } = {
+        const eventData: CreateEventDto = {
             ...req.body,
             created_by: context.currentUser?.id
         };
@@ -25,7 +25,7 @@ export class EventsController {
 
     async updateEvent(req: Request, res: Response, next: NextFunction) {
         const { id } = req.params;
-        const eventData: UpdateEventInput = req.body;
+        const eventData: UpdateEventDto = req.body;
         const eventsService = ServiceFactory.getEventsService(req.context);
 
         const result = await eventsService.updateEvent(id, eventData);

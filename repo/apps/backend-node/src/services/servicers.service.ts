@@ -1,5 +1,4 @@
-import { IServicerRepository, CreateServicerInput } from "@repo/domain";
-import { Database } from "@repo/types";
+import { IServicerRepository, CreateServicerDto, Servicer, GuestAccessToken } from "@repo/domain";
 import crypto from 'crypto';
 
 export class ServicersService {
@@ -8,12 +7,12 @@ export class ServicersService {
     ) { }
 
     async createServicer(
-        data: CreateServicerInput
-    ): Promise<Database['public']['Tables']['servicers']['Row']> {
+        data: CreateServicerDto
+    ): Promise<Servicer> {
         return this.servicersRepository.create(data);
     }
 
-    async getAllServicers(): Promise<Database['public']['Tables']['servicers']['Row'][]> {
+    async getAllServicers(): Promise<Servicer[]> {
         return this.servicersRepository.findAll();
     }
 
@@ -45,7 +44,7 @@ export class ServicersService {
 
     async verifyToken(
         token: string
-    ): Promise<Database['public']['Tables']['guest_access_tokens']['Row']> {
+    ): Promise<GuestAccessToken> {
         const tokenRecord = await this.servicersRepository.validateGuestToken(token);
         if (!tokenRecord) {
             throw new Error('Invalid or expired token');
@@ -62,9 +61,10 @@ export class ServicersService {
         await this.servicersRepository.updateMalfunctionStatus(malfunctionId, status, token);
     }
 
-    async getAllTokens(): Promise<Database['public']['Tables']['guest_access_tokens']['Row'][]> {
+    async getAllTokens(): Promise<GuestAccessToken[]> {
         return this.servicersRepository.getAllTokens();
     }
+
 
     async revokeToken(
         tokenId: string

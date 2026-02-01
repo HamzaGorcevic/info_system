@@ -1,7 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Database } from '@repo/types';
+import { CreateExpenseDto, UpdateExpenseDto } from '@repo/domain';
+import { Expense } from '@repo/domain';
 
 @Injectable({
     providedIn: 'root'
@@ -11,27 +12,27 @@ export class ExpensesService {
 
     constructor(private http: HttpClient) { }
 
-    createExpense(data: any): Observable<Database['public']['Tables']['tenant_expenses']['Row']> {
-        return this.http.post<Database['public']['Tables']['tenant_expenses']['Row']>(this.apiUrl, data);
+    createExpense(data: CreateExpenseDto): Observable<Expense> {
+        return this.http.post<Expense>(this.apiUrl, data);
     }
 
-    getTenantExpenses(tenantId: string): Observable<Database['public']['Tables']['tenant_expenses']['Row'][]> {
-        return this.http.get<Database['public']['Tables']['tenant_expenses']['Row'][]>(`${this.apiUrl}/tenant/${tenantId}`);
+    getTenantExpenses(tenantId: string): Observable<Expense[]> {
+        return this.http.get<Expense[]>(`${this.apiUrl}/tenant/${tenantId}`);
     }
 
-    updateExpense(id: string, data: any): Observable<Database['public']['Tables']['tenant_expenses']['Row']> {
-        return this.http.patch<Database['public']['Tables']['tenant_expenses']['Row']>(`${this.apiUrl}/${id}`, data);
+    updateExpense(id: string, data: UpdateExpenseDto): Observable<Expense> {
+        return this.http.patch<Expense>(`${this.apiUrl}/${id}`, data);
     }
 
     deleteExpense(id: string): Observable<void> {
         return this.http.delete<void>(`${this.apiUrl}/${id}`);
     }
 
-    getAllExpenses(): Observable<Database['public']['Tables']['tenant_expenses']['Row'][]> {
-        return this.http.get<Database['public']['Tables']['tenant_expenses']['Row'][]>(this.apiUrl);
+    getAllExpenses(): Observable<Expense[]> {
+        return this.http.get<Expense[]>(this.apiUrl);
     }
 
-    notifyTenant(id: string, message: string): Observable<{ status: string; expense: Database['public']['Tables']['tenant_expenses']['Row'] }> {
-        return this.http.post<{ status: string; expense: Database['public']['Tables']['tenant_expenses']['Row'] }>(`${this.apiUrl}/${id}/notify`, { message });
+    notifyTenant(id: string, message: string): Observable<{ status: string; expense: Expense }> {
+        return this.http.post<{ status: string; expense: Expense }>(`${this.apiUrl}/${id}/notify`, { message });
     }
 }

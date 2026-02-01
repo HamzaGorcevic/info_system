@@ -1,8 +1,9 @@
-import { Database } from "@repo/types";
+import { Message } from "../entities/message.entity.js";
+import { CreateMessageDto } from "../dto/message.dto.js";
 
 export interface IMessageRepository {
-    create(data: Database['public']['Tables']['messages']['Insert']): Promise<Database['public']['Tables']['messages']['Row']>;
-    findById(id: string): Promise<Database['public']['Tables']['messages']['Row'] | null>;
-    findByBuildingId(buildingId: string): Promise<Database['public']['Tables']['messages']['Row'][]>;
+    create(data: CreateMessageDto): Promise<Message>;
+    findById(id: string): Promise<Message | null>;
+    findByBuildingId(buildingId: string): Promise<Message[]>;
     delete(id: string): Promise<void>;
 }

@@ -1,9 +1,10 @@
-import { User, CreateUserInput, UpdateUserInput } from '../entities/user.entity.js';
+import { CreateUserDto, UpdateUserDto } from '../dto/user.dto.js';
+import { User } from '../entities/user.entity.js';
 
 export interface IUserRepository {
     findById(id: string): Promise<User | null>;
     findByEmail(email: string): Promise<User | null>;
-    create(user: CreateUserInput): Promise<User>;
-    update(id: string, user: UpdateUserInput): Promise<User>;
+    create(user: CreateUserDto): Promise<User>;
+    update(id: string, user: UpdateUserDto): Promise<User>;
     verifyUser(id: string, adminId: string): Promise<void>;
 }

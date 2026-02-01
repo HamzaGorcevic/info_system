@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { ServiceFactory } from '../factories/service.factory.js';
-import { Database } from '@repo/types';
 
 export class ExpensesController {
     async createExpense(req: Request, res: Response, next: NextFunction) {
@@ -10,7 +9,7 @@ export class ExpensesController {
             throw new Error('Unauthorized');
         }
 
-        const expenseData: Database['public']['Tables']['tenant_expenses']['Insert'] = {
+        const expenseData = {
             ...req.body,
             created_by: req.context.currentUser.id
         };

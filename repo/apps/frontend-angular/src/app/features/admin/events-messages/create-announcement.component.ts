@@ -5,7 +5,7 @@ import { EventService } from '../../../services/event.service';
 import { MessageService } from '../../../services/message.service';
 import { AuthService } from '../../../services/auth.service';
 import { ActivatedRoute } from '@angular/router';
-import { CreateEventInput, CreateMessageInput } from '@repo/domain';
+import { CreateEventDto, CreateMessageDto } from '@repo/domain';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 
@@ -200,8 +200,8 @@ export class CreateAnnouncementComponent implements OnInit {
   activeTab: 'event' | 'message' = 'event';
   buildingId: string = '';
 
-  eventData: Partial<CreateEventInput> = {};
-  messageData: Partial<CreateMessageInput> = { message_type: 'info' };
+  eventData: Partial<CreateEventDto> = {};
+  messageData: Partial<CreateMessageDto> = { message_type: 'info' };
 
   events: any[] = [];
   messages: any[] = [];
@@ -245,7 +245,7 @@ export class CreateAnnouncementComponent implements OnInit {
     const user = this.authService.currentUser();
     if (!user) return;
 
-    const input: CreateEventInput = {
+    const input: CreateEventDto = {
       building_id: this.buildingId,
       title: this.eventData.title!,
       scheduled_at: new Date(this.eventData.scheduled_at!).toISOString(),
@@ -266,7 +266,7 @@ export class CreateAnnouncementComponent implements OnInit {
     const user = this.authService.currentUser();
     if (!user) return;
 
-    const input: CreateMessageInput = {
+    const input: CreateMessageDto = {
       building_id: this.buildingId,
       content: this.messageData.content!,
       message_type: this.messageData.message_type,

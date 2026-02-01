@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Malfunction } from '../models/domain.models';
+import { Malfunction } from '@repo/domain';
 
 @Injectable({
     providedIn: 'root'
@@ -23,7 +23,7 @@ export class MalfunctionService {
         return this.http.get<Malfunction[]>(this.apiUrl);
     }
 
-    rateMalfunction(data: { malfunction_id: string, servicer_id: string, rated_by: string, rating_score: number, comment: string }): Observable<any> {
+    rateMalfunction(data: { malfunction_id: string, servicer_id: string, rating_score: number, comment: string }): Observable<any> {
         return this.http.post<any>(`${this.apiUrl}/rate`, data);
     }
 }

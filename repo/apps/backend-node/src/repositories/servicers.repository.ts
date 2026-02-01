@@ -1,11 +1,11 @@
 import { SupabaseClient } from "@repo/supabase";
+import { IServicerRepository, CreateServicerDto, Servicer, GuestAccessToken, CreateGuestAccessTokenDto } from "@repo/domain";
 import { Database } from "@repo/types";
-import { IServicerRepository } from "@repo/domain";
 
 export class ServicersRepository implements IServicerRepository {
-    constructor(private client: SupabaseClient) { }
+    constructor(private client: SupabaseClient<Database>) { }
 
-    async create(data: Database['public']['Tables']['servicers']['Insert']): Promise<Database['public']['Tables']['servicers']['Row']> {
+    async create(data: CreateServicerDto): Promise<Servicer> {
         const { data: result, error } = await this.client
             .from('servicers')
             .insert(data)
@@ -13,10 +13,10 @@ export class ServicersRepository implements IServicerRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Servicer;
     }
 
-    async findById(id: string): Promise<Database['public']['Tables']['servicers']['Row'] | null> {
+    async findById(id: string): Promise<Servicer | null> {
         const { data, error } = await this.client
             .from('servicers')
             .select('*')
@@ -24,10 +24,10 @@ export class ServicersRepository implements IServicerRepository {
             .maybeSingle();
 
         if (error) throw new Error(error.message);
-        return data;
+        return data as Servicer | null;
     }
 
-    async findAll(): Promise<Database['public']['Tables']['servicers']['Row'][]> {
+    async findAll(): Promise<Servicer[]> {
         const { data: servicers, error } = await this.client
             .from('servicers')
             .select('*');
@@ -49,7 +49,7 @@ export class ServicersRepository implements IServicerRepository {
         })) as any;
     }
 
-    async createGuestToken(data: Database['public']['Tables']['guest_access_tokens']['Insert']): Promise<Database['public']['Tables']['guest_access_tokens']['Row']> {
+    async createGuestToken(data: CreateGuestAccessTokenDto): Promise<GuestAccessToken> {
         const { data: result, error } = await this.client
             .from('guest_access_tokens')
             .insert(data)
@@ -57,7 +57,7 @@ export class ServicersRepository implements IServicerRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as GuestAccessToken;
     }
 
     async getBuildingIdFromMalfunction(malfunctionId: string): Promise<string> {
@@ -79,7 +79,8 @@ export class ServicersRepository implements IServicerRepository {
 
         return tenant.building_id;
     }
-    async validateGuestToken(token: string): Promise<Database['public']['Tables']['guest_access_tokens']['Row'] | null> {
+
+    async validateGuestToken(token: string): Promise<GuestAccessToken | null> {
         // Use supabaseAdmin to bypass RLS and avoid anon key JWT parsing issues
         const { supabaseAdmin } = await import('@repo/supabase');
 
@@ -172,14 +173,14 @@ export class ServicersRepository implements IServicerRepository {
         if (interventionError) throw new Error(interventionError.message);
     }
 
-    async getAllTokens(): Promise<Database['public']['Tables']['guest_access_tokens']['Row'][]> {
+    async getAllTokens(): Promise<GuestAccessToken[]> {
         const { data, error } = await this.client
             .from('guest_access_tokens')
             .select('*, servicers(full_name), malfunctions(title, category)')
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
-        return (data || []) as unknown as Database['public']['Tables']['guest_access_tokens']['Row'][];
+        return (data || []) as unknown as GuestAccessToken[];
     }
 
     async revokeToken(tokenId: string): Promise<void> {

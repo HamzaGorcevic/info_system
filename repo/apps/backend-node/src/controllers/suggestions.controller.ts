@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { ServiceFactory } from '../factories/service.factory.js';
-import { CreateSuggestionInput, CreateSuggestionVoteInput } from '@repo/domain';
+import { CreateSuggestionDto, CreateSuggestionVoteDto } from '@repo/domain';
 
 export class SuggestionsController {
     async createSuggestion(req: Request, res: Response, next: NextFunction) {
         const context = req.context;
         const suggestionsService = ServiceFactory.getSuggestionsService(context);
 
-        const suggestionData: CreateSuggestionInput = {
+        const suggestionData: CreateSuggestionDto = {
             ...req.body,
             created_by: context.currentUser?.id
         };
@@ -36,7 +36,7 @@ export class SuggestionsController {
         const context = req.context;
         const suggestionsService = ServiceFactory.getSuggestionsService(context);
 
-        const voteData: CreateSuggestionVoteInput = {
+        const voteData: CreateSuggestionVoteDto = {
             ...req.body,
             voted_by: context.currentUser?.id
         };

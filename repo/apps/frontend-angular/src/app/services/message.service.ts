@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { Message, CreateMessageInput } from '@repo/domain';
+import { Message, CreateMessageDto } from '@repo/domain';
 
 @Injectable({
     providedIn: 'root'
@@ -11,8 +11,8 @@ export class MessageService {
 
     constructor(private http: HttpClient) { }
 
-    createMessage(message: CreateMessageInput): Observable<CreateMessageInput> {
-        return this.http.post<CreateMessageInput>(this.apiUrl, message);
+    createMessage(message: CreateMessageDto): Observable<Message> {
+        return this.http.post<Message>(this.apiUrl, message);
     }
 
     getMessagesByBuilding(buildingId: string): Observable<Message[]> {

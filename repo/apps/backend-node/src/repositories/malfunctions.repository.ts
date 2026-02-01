@@ -1,11 +1,11 @@
 import { SupabaseClient } from "@repo/supabase";
+import { IMalfunctionRepository, Malfunction, CreateMalfunctionDto, Rating } from "@repo/domain";
 import { Database } from "@repo/types";
-import { IMalfunctionRepository } from "@repo/domain";
 
 export class MalfunctionsRepository implements IMalfunctionRepository {
-    constructor(private client: SupabaseClient) { }
+    constructor(private client: SupabaseClient<Database>) { }
 
-    async create(data: Database['public']['Tables']['malfunctions']['Insert']): Promise<Database['public']['Tables']['malfunctions']['Row']> {
+    async create(data: CreateMalfunctionDto): Promise<Malfunction> {
         const { data: result, error } = await this.client
             .from('malfunctions')
             .insert(data)
@@ -13,10 +13,10 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Malfunction;
     }
 
-    async findById(id: string): Promise<Database['public']['Tables']['malfunctions']['Row'] | null> {
+    async findById(id: string): Promise<Malfunction | null> {
         const { data, error } = await this.client
             .from('malfunctions')
             .select('*')
@@ -24,10 +24,10 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
             .maybeSingle();
 
         if (error) throw new Error(error.message);
-        return data;
+        return data as Malfunction | null;
     }
 
-    async findByTenantId(tenantId: string): Promise<Database['public']['Tables']['malfunctions']['Row'][]> {
+    async findByTenantId(tenantId: string): Promise<Malfunction[]> {
         const { data: malfunctions, error } = await this.client
             .from('malfunctions')
             .select('*')
@@ -68,22 +68,20 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
                 ...m,
                 ratings: mRatings
             };
-        }) as any;
+        }) as Malfunction[];
     }
 
-    async findAll(): Promise<Database['public']['Tables']['malfunctions']['Row'][]> {
+    async findAll(): Promise<Malfunction[]> {
         const { data, error } = await this.client
             .from('malfunctions')
             .select('*')
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
-        return data;
+        return (data || []) as Malfunction[];
     }
 
-
-
-    async update(id: string, data: Database['public']['Tables']['malfunctions']['Update']): Promise<Database['public']['Tables']['malfunctions']['Row']> {
+    async update(id: string, data: Partial<CreateMalfunctionDto>): Promise<Malfunction> {
         const { data: result, error } = await this.client
             .from('malfunctions')
             .update(data)
@@ -92,7 +90,7 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Malfunction;
     }
 
     async findInterventionByMalfunctionAndServicer(malfunctionId: string, servicerId: string): Promise<any> {
@@ -109,7 +107,7 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
         return data;
     }
 
-    async rate(data: Database['public']['Tables']['ratings']['Insert']): Promise<Database['public']['Tables']['ratings']['Row']> {
+    async rate(data: Rating): Promise<Rating> {
         const { data: result, error } = await this.client
             .from('ratings')
             .insert(data)
@@ -117,6 +115,6 @@ export class MalfunctionsRepository implements IMalfunctionRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Rating;
     }
 }

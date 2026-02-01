@@ -15,8 +15,24 @@ export * from './repositories/events.repository.interface.js';
 export * from './repositories/messages.repository.interface.js';
 export * from './repositories/suggestions.repository.interface.js';
 export * from './repositories/expenses.repository.interface.js';
+export * from './repositories/documents.repository.interface.js';
 export * from './dto/malfunctions.dto.js';
 export * from './dto/expenses.dto.js';
 export * from './dto/message.dto.js';
+export * from './dto/event.dto.js';
+export * from './dto/building.dto.js';
+export * from './entities/expenses.entity.js';
+export * from './entities/building.entity.js';
+export * from './entities/tenant.entity.js';
+export * from './entities/rating.entity.js';
+export * from './dto/servicer.dto.js';
+export * from './dto/suggestion.dto.js';
+export * from './dto/user.dto.js';
+export * from './dto/tenant.dto.js';
+export * from './dto/rating.dto.js';
+export * from './dto/document.dto.js';
+export * from './entities/document.entity.js';
+export * from './entities/guest-access-token.entity.js';
+export * from './dto/guest-access-token.dto.js';
 
 

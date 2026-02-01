@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { ServiceFactory } from '../factories/service.factory.js';
-import { CreateMessageInput } from '@repo/domain';
+import { CreateMessageDto } from '@repo/domain';
 
 export class MessagesController {
     async createMessage(req: Request, res: Response, next: NextFunction) {
         const context = req.context;
         const messagesService = ServiceFactory.getMessagesService(context);
 
-        const messageData: CreateMessageInput & { posted_by: string } = {
+        const messageData: CreateMessageDto = {
             ...req.body,
             posted_by: context.currentUser?.id
         };

@@ -1,21 +1,20 @@
 import { SupabaseClient } from "@repo/supabase";
-import { IUserRepository, User, CreateUserInput, UpdateUserInput } from "@repo/domain";
+import { IUserRepository, User, CreateUserDto, UpdateUserDto } from "@repo/domain";
 import { Database } from "@repo/types";
 
-type DBUser = Database['public']['Tables']['users']['Row'];
 
 export class UserRepository implements IUserRepository {
-    constructor(private client: SupabaseClient) { }
+    constructor(private client: SupabaseClient<Database>) { }
 
     async findById(id: string): Promise<User | null> {
         const { data, error } = await this.client
             .from('users')
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
         if (error || !data) return null;
-        return this.mapToDomain(data as DBUser);
+        return data as User;
     }
 
     async findByEmail(email: string): Promise<User | null> {
@@ -26,40 +25,30 @@ export class UserRepository implements IUserRepository {
             .maybeSingle();
 
         if (error || !data) return null;
-        return this.mapToDomain(data as DBUser);
+        return data as User;
     }
 
-    async create(user: CreateUserInput): Promise<User> {
+    async create(user: CreateUserDto): Promise<User> {
         const { data, error } = await this.client
             .from('users')
-            .insert({
-                id: user.id,
-                email: user.email,
-                full_name: user.fullName,
-                role: user.role,
-                is_verified: user.isVerified
-            })
+            .insert(user)
             .select()
             .single();
 
         if (error) throw new Error(error.message);
-        return this.mapToDomain(data as DBUser);
+        return data as User;
     }
 
-    async update(id: string, user: UpdateUserInput): Promise<User> {
+    async update(id: string, user: UpdateUserDto): Promise<User> {
         const { data, error } = await this.client
             .from('users')
-            .update({
-                full_name: user.fullName,
-                is_verified: user.isVerified,
-                role: user.role
-            })
+            .update(user)
             .eq('id', id)
             .select()
             .single();
 
         if (error) throw new Error(error.message);
-        return this.mapToDomain(data as DBUser);
+        return data as User;
     }
 
     async verifyUser(id: string, adminId: string): Promise<void> {
@@ -75,14 +64,5 @@ export class UserRepository implements IUserRepository {
         if (error) throw new Error(error.message);
     }
 
-    private mapToDomain(dbUser: DBUser): User {
-        return {
-            id: dbUser.id,
-            email: dbUser.email,
-            fullName: dbUser.full_name,
-            role: dbUser.role as 'manager' | 'tenant',
-            isVerified: dbUser.is_verified ?? false,
-            createdAt: dbUser.created_at ?? undefined
-        };
-    }
+
 }

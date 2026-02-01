@@ -5,8 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { SuggestionService } from '../../../services/suggestion.service';
 import { AuthService } from '../../../services/auth.service';
 import { BuildingService } from '../../../services/building.service';
-import { CreateSuggestionInput, SuggestionWithVote } from '@repo/domain';
-import { TenantData } from '../../../models/domain.models';
+import { CreateSuggestionDto, SuggestionWithVote, Tenant } from '@repo/domain';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
 
@@ -135,7 +134,7 @@ import { UiButton } from '../../../shared/ui/button/button';
 export class TenantSuggestionsComponent {
   suggestions: SuggestionWithVote[] = [];
   showForm = false;
-  newSuggestion: Partial<CreateSuggestionInput> = {};
+  newSuggestion: Partial<CreateSuggestionDto> = {};
   buildingId: string = '';
 
   private suggestionService = inject(SuggestionService);
@@ -153,7 +152,7 @@ export class TenantSuggestionsComponent {
     const user = this.authService.currentUser();
     if (user) {
       this.buildingService.getTenantData(user.id).subscribe({
-        next: (data: TenantData) => {
+        next: (data: Tenant | null) => {
           if (data && data.building_id) {
             this.buildingId = data.building_id;
             this.loadSuggestions();
@@ -175,7 +174,7 @@ export class TenantSuggestionsComponent {
     const user = this.authService.currentUser();
     if (!user || !this.buildingId || !this.newSuggestion.title || !this.newSuggestion.content) return;
 
-    const input: CreateSuggestionInput = {
+    const input: CreateSuggestionDto = {
       building_id: this.buildingId,
       title: this.newSuggestion.title!,
       content: this.newSuggestion.content!,

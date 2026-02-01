@@ -1,5 +1,4 @@
-import { IBuildingRepository, IUserRepository } from "@repo/domain";
-import { Database } from "@repo/types";
+import { IBuildingRepository, IUserRepository, Building, Tenant } from "@repo/domain";
 
 export class BuildingService {
     constructor(
@@ -9,9 +8,8 @@ export class BuildingService {
 
     async findUnverifiedTenants(
         buildingId: string
-    ): Promise<Database['public']['Tables']['tenants']['Row'][]> {
-        const data = await this.buildingRepository.findUnverifiedTenants(buildingId);
-        return data;
+    ): Promise<Tenant[]> {
+        return this.buildingRepository.findUnverifiedTenants(buildingId);
     }
 
     async verifyTenant(
@@ -39,17 +37,15 @@ export class BuildingService {
 
     async getTenantData(
         userId: string
-    ): Promise<Database['public']['Tables']['tenants']['Row'] | null> {
-        const data = await this.buildingRepository.findTenantByUserId(userId);
-
-        if (!data) {
-            return null;
-        }
-
-        return data;
+    ): Promise<Tenant | null> {
+        return this.buildingRepository.findTenantByUserId(userId);
     }
 
-    async getBuildingTenants(buildingId: string): Promise<Database['public']['Tables']['tenants']['Row'][]> {
+    async getBuildingTenants(buildingId: string): Promise<Tenant[]> {
         return this.buildingRepository.findBuildingTenants(buildingId);
+    }
+
+    async findBuildingsByManagerId(userId: string): Promise<Building[]> {
+        return this.buildingRepository.findBuildingsByManagerId(userId);
     }
 }

@@ -1,11 +1,11 @@
 import { SupabaseClient } from "@repo/supabase";
+import { IBuildingRepository, Building, Tenant, UpdateTenantDto } from "@repo/domain";
 import { Database } from "@repo/types";
-import { IBuildingRepository } from "@repo/domain";
 
 export class BuildingRepository implements IBuildingRepository {
-    constructor(private client: SupabaseClient) { }
+    constructor(private client: SupabaseClient<Database>) { }
 
-    async findUnverifiedTenants(buildingId: string): Promise<Database['public']['Tables']['tenants']['Row'][]> {
+    async findUnverifiedTenants(buildingId: string): Promise<Tenant[]> {
         const { data, error } = await this.client
             .from('tenants')
             .select('*, users!inner(*), buildings(*)')
@@ -13,20 +13,20 @@ export class BuildingRepository implements IBuildingRepository {
             .eq('users.is_verified', false);
 
         if (error) throw new Error(error.message);
-        return data || [];
+        return (data || []) as unknown as Tenant[];
     }
 
-    async findBuildingTenants(buildingId: string): Promise<Database['public']['Tables']['tenants']['Row'][]> {
+    async findBuildingTenants(buildingId: string): Promise<Tenant[]> {
         const { data, error } = await this.client
             .from('tenants')
             .select('*, users!inner(*)')
             .eq('building_id', buildingId);
 
         if (error) throw new Error(error.message);
-        return data || [];
+        return (data || []) as unknown as Tenant[];
     }
 
-    async findTenantByUserId(userId: string): Promise<Database['public']['Tables']['tenants']['Row'] | null> {
+    async findTenantByUserId(userId: string): Promise<Tenant | null> {
         const { data, error } = await this.client
             .from('tenants')
             .select('*, buildings(*)')
@@ -34,10 +34,10 @@ export class BuildingRepository implements IBuildingRepository {
             .maybeSingle();
 
         if (error) throw new Error(error.message);
-        return data;
+        return data as unknown as Tenant | null;
     }
 
-    async countOwnersInApartment(buildingId: string, apartmentNumber: string): Promise<number> {
+    async countOwnersInApartment(buildingId: string, apartmentNumber: number): Promise<number> {
         const { count, error } = await this.client
             .from('tenants')
             .select('*', { count: 'exact', head: true })
@@ -49,21 +49,19 @@ export class BuildingRepository implements IBuildingRepository {
         return count || 0;
     }
 
-    async updateTenant(id: string, data: any) {
+    async updateTenant(id: string, data: UpdateTenantDto): Promise<Tenant> {
         const { data: updated, error } = await this.client
             .from('tenants')
-            .update(data)
+            .update(data as any)
             .eq('id', id)
             .select()
             .single();
 
         if (error) throw new Error(error.message);
-        return updated;
+        return updated as unknown as Tenant;
     }
 
-
-
-    async findBuildingsByManagerId(userId: string): Promise<any[]> {
+    async findBuildingsByManagerId(userId: string): Promise<Building[]> {
         const { data, error } = await this.client
             .from('building_managers')
             .select('building_id, buildings(*, tenants(id))')
@@ -71,19 +69,20 @@ export class BuildingRepository implements IBuildingRepository {
 
         if (error) throw new Error(error.message);
 
-        return data?.map((item: any) => ({
+        return (data?.map((item: any) => ({
             ...item.buildings,
             tenants_count: item.buildings.tenants?.length || 0
-        })) || [];
+        })) || []) as unknown as Building[];
     }
-    async findTenantById(id: string): Promise<Database['public']['Tables']['tenants']['Row'] | null> {
+
+    async findTenantById(id: string): Promise<Tenant | null> {
         const { data, error } = await this.client
             .from('tenants')
             .select('*')
             .eq('id', id)
-            .single();
+            .maybeSingle();
 
-        if (error) return null;
-        return data;
+        if (error && error.code !== 'PGRST116') throw new Error(error.message);
+        return data as unknown as Tenant | null;
     }
 }

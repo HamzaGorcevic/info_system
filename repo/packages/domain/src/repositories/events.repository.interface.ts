@@ -1,9 +1,10 @@
-import { Database } from "@repo/types";
+import { Event } from "../entities/event.entity.js";
+import { CreateEventDto, UpdateEventDto } from "../dto/event.dto.js";
 
 export interface IEventRepository {
-    create(data: Database['public']['Tables']['events']['Insert']): Promise<Database['public']['Tables']['events']['Row']>;
-    findById(id: string): Promise<Database['public']['Tables']['events']['Row'] | null>;
-    findByBuildingId(buildingId: string): Promise<Database['public']['Tables']['events']['Row'][]>;
-    update(id: string, data: Database['public']['Tables']['events']['Update']): Promise<Database['public']['Tables']['events']['Row']>;
+    create(data: CreateEventDto): Promise<Event>;
+    findById(id: string): Promise<Event | null>;
+    findByBuildingId(buildingId: string): Promise<Event[]>;
+    update(id: string, data: UpdateEventDto): Promise<Event>;
     delete(id: string): Promise<void>;
 }

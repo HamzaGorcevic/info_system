@@ -1,11 +1,11 @@
 import { SupabaseClient } from "@repo/supabase";
+import { IEventRepository, Event, CreateEventDto, UpdateEventDto } from "@repo/domain";
 import { Database } from "@repo/types";
-import { IEventRepository } from "@repo/domain";
 
 export class EventsRepository implements IEventRepository {
-    constructor(private client: SupabaseClient) { }
+    constructor(private client: SupabaseClient<Database>) { }
 
-    async create(data: Database['public']['Tables']['events']['Insert']): Promise<Database['public']['Tables']['events']['Row']> {
+    async create(data: CreateEventDto): Promise<Event> {
         const { data: result, error } = await this.client
             .from('events')
             .insert(data)
@@ -13,10 +13,10 @@ export class EventsRepository implements IEventRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Event;
     }
 
-    async findById(id: string): Promise<Database['public']['Tables']['events']['Row'] | null> {
+    async findById(id: string): Promise<Event | null> {
         const { data, error } = await this.client
             .from('events')
             .select('*')
@@ -24,21 +24,21 @@ export class EventsRepository implements IEventRepository {
             .maybeSingle();
 
         if (error) throw new Error(error.message);
-        return data;
+        return data as Event | null;
     }
 
-    async findByBuildingId(buildingId: string): Promise<Database['public']['Tables']['events']['Row'][]> {
+    async findByBuildingId(building_id: string): Promise<Event[]> {
         const { data, error } = await this.client
             .from('events')
             .select('*')
-            .eq('building_id', buildingId)
+            .eq('building_id', building_id)
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
-        return data;
+        return (data || []) as Event[];
     }
 
-    async update(id: string, data: Database['public']['Tables']['events']['Update']): Promise<Database['public']['Tables']['events']['Row']> {
+    async update(id: string, data: UpdateEventDto): Promise<Event> {
         const { data: result, error } = await this.client
             .from('events')
             .update(data)
@@ -47,7 +47,7 @@ export class EventsRepository implements IEventRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Event;
     }
 
     async delete(id: string): Promise<void> {

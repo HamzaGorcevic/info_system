@@ -1,5 +1,5 @@
 import { IContext } from "../types/context.interface.js";
-import { IMalfunctionRepository, IBuildingRepository, IUserRepository, IStorageService, IServicerRepository, IEventRepository, IMessageRepository, ISuggestionRepository, IExpensesRepository } from "@repo/domain";
+import { IMalfunctionRepository, IBuildingRepository, IUserRepository, IStorageService, IServicerRepository, IEventRepository, IMessageRepository, ISuggestionRepository, IExpensesRepository, IDocumentRepository } from "@repo/domain";
 import { MalfunctionsRepository } from "../repositories/malfunctions.repository.js";
 import { BuildingRepository } from "../repositories/building.repository.js";
 import { UserRepository } from "../repositories/user.repository.js";
@@ -40,7 +40,7 @@ export class RepositoryFactory {
         return new SuggestionsRepository(context.db);
     }
 
-    static getDocumentsRepository(context: IContext): DocumentsRepository {
+    static getDocumentsRepository(context: IContext): IDocumentRepository {
         return new DocumentsRepository(context.db);
     }
 

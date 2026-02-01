@@ -5,8 +5,7 @@ import { Router } from '@angular/router';
 import { SuggestionService } from '../../../services/suggestion.service';
 import { AuthService } from '../../../services/auth.service';
 import { BuildingService } from '../../../services/building.service';
-import { CreateSuggestionInput } from '@repo/domain';
-import { TenantData } from '../../../models/domain.models';
+import { CreateSuggestionDto, Tenant } from '@repo/domain';
 
 @Component({
   selector: 'app-suggestion-create',
@@ -173,7 +172,7 @@ import { TenantData } from '../../../models/domain.models';
   `
 })
 export class SuggestionCreateComponent implements OnInit {
-  newSuggestion: Partial<CreateSuggestionInput> = {};
+  newSuggestion: Partial<CreateSuggestionDto> = {};
   buildingId: string = '';
 
   private suggestionService = inject(SuggestionService);
@@ -189,7 +188,7 @@ export class SuggestionCreateComponent implements OnInit {
     const user = this.authService.currentUser();
     if (user) {
       this.buildingService.getTenantData(user.id).subscribe({
-        next: (data: TenantData) => {
+        next: (data: Tenant | null) => {
           if (data && data.building_id) {
             this.buildingId = data.building_id;
           }
@@ -204,7 +203,7 @@ export class SuggestionCreateComponent implements OnInit {
       return;
     }
 
-    const input: CreateSuggestionInput = {
+    const input: CreateSuggestionDto = {
       building_id: this.buildingId,
       title: this.newSuggestion.title!,
       content: this.newSuggestion.content!,

@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { MalfunctionService } from '../../../../services/malfunction.service';
 import { UiCard } from '../../../../shared/ui/card/card';
 import { UiButton } from '../../../../shared/ui/button/button';
-import { Malfunction, Servicer } from '../../../../models/domain.models';
+import { Malfunction, Servicer } from '@repo/domain';
 import { AssignServicerDialogComponent } from '../assign-servicer-dialog/assign-servicer-dialog.component';
 import { TokenSuccessModalComponent } from '../../../../shared/ui/token-success-modal/token-success-modal.component';
 import { BackButtonComponent } from '../../../../shared/ui/back-button/back-button.component';
@@ -155,8 +155,13 @@ export class AdminMalfunctionListComponent implements OnInit {
   }
 
   onServicerAssigned(event: { servicer: Servicer, token: string }) {
+    if (this.selectedMalfunction) {
+      this.selectedMalfunction.status = 'assigned';
+      this.selectedMalfunction.servicer_id = event.servicer.id;
+    }
     this.generatedToken = event.token;
     this.assignedServicerName = event.servicer.full_name;
     this.selectedMalfunction = null;
+    this.cdr.detectChanges();
   }
 }

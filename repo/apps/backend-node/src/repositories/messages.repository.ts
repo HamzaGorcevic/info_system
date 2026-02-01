@@ -1,11 +1,11 @@
 import { SupabaseClient } from "@repo/supabase";
+import { IMessageRepository, Message, CreateMessageDto } from "@repo/domain";
 import { Database } from "@repo/types";
-import { IMessageRepository } from "@repo/domain";
 
 export class MessagesRepository implements IMessageRepository {
-    constructor(private client: SupabaseClient) { }
+    constructor(private client: SupabaseClient<Database>) { }
 
-    async create(data: Database['public']['Tables']['messages']['Insert']): Promise<Database['public']['Tables']['messages']['Row']> {
+    async create(data: CreateMessageDto): Promise<Message> {
         const { data: result, error } = await this.client
             .from('messages')
             .insert(data)
@@ -13,10 +13,10 @@ export class MessagesRepository implements IMessageRepository {
             .single();
 
         if (error) throw new Error(error.message);
-        return result;
+        return result as Message;
     }
 
-    async findById(id: string): Promise<Database['public']['Tables']['messages']['Row'] | null> {
+    async findById(id: string): Promise<Message | null> {
         const { data, error } = await this.client
             .from('messages')
             .select('*')
@@ -24,18 +24,18 @@ export class MessagesRepository implements IMessageRepository {
             .maybeSingle();
 
         if (error) throw new Error(error.message);
-        return data;
+        return data as Message | null;
     }
 
-    async findByBuildingId(buildingId: string): Promise<Database['public']['Tables']['messages']['Row'][]> {
+    async findByBuildingId(building_id: string): Promise<Message[]> {
         const { data, error } = await this.client
             .from('messages')
             .select('*')
-            .eq('building_id', buildingId)
+            .eq('building_id', building_id)
             .order('created_at', { ascending: false });
 
         if (error) throw new Error(error.message);
-        return data;
+        return (data || []) as Message[];
     }
 
     async delete(id: string): Promise<void> {

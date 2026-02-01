@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ServiceFactory } from '../factories/service.factory.js';
-import { CreateMalfunctionInput } from '@repo/domain';
+import { CreateMalfunctionDto } from '@repo/domain';
 
 export class MalfunctionsController {
     async reportMalfunction(req: Request, res: Response, next: NextFunction) {
@@ -12,7 +12,7 @@ export class MalfunctionsController {
             throw new Error('Unauthorized');
         }
 
-        const malfunctionData: CreateMalfunctionInput = {
+        const malfunctionData: CreateMalfunctionDto = {
             tenant_id,
             reporter_id: req.context.currentUser.id,
             title,
