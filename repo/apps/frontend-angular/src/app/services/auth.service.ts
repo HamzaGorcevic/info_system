@@ -1,12 +1,13 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, tap } from 'rxjs';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class AuthService {
-    private apiUrl = 'http://localhost:4000/api/auth';
+    private apiUrl = `${environment.apiUrl}/auth`;
 
     // Use a signal for reactive user state
     private _user = signal<any>(this.getStoredUser());

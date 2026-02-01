@@ -1,21 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
-export interface Document {
-    id: string;
-    building_id: string;
-    title: string;
-    file_url: string;
-    created_at: string;
-    uploaded_by: string;
-}
+import { Document } from '@repo/domain';
+export type { Document };
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class DocumentService {
-    private apiUrl = 'http://localhost:4000/api/documents';
+    private apiUrl = `${environment.apiUrl}/documents`;
 
     constructor(private http: HttpClient) { }
 

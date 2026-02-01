@@ -2,12 +2,14 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Malfunction } from '@repo/domain';
+export type { Malfunction };
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class MalfunctionService {
-    private apiUrl = 'http://localhost:4000/api/malfunctions';
+    private apiUrl = `${environment.apiUrl}/malfunctions`;
 
     constructor(private http: HttpClient) { }
 

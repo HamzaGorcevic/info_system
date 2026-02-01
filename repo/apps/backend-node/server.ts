@@ -28,7 +28,7 @@ app.use(errorHandler)
 const port = env.PORT;
 
 const server = app.listen(port, () => {
-    logger.info(`Backend active at http://localhost:${port}`)
+    logger.info(`Backend active on port: ${port}`)
 });
 
 const shutdown = () => {

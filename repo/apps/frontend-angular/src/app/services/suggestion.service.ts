@@ -2,12 +2,13 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { CreateSuggestionDto, CreateSuggestionVoteDto, Suggestion, SuggestionWithVote } from '@repo/domain';
+import { environment } from '../../environments/environment';
 
 @Injectable({
     providedIn: 'root'
 })
 export class SuggestionService {
-    private apiUrl = 'http://localhost:4000/api/suggestions';
+    private apiUrl = `${environment.apiUrl}/suggestions`;
 
     constructor(private http: HttpClient) { }
 
