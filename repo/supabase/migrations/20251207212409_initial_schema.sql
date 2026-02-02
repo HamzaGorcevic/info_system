@@ -7,7 +7,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- BUILDINGS
 CREATE TABLE buildings (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     location VARCHAR(255) NOT NULL,
     number_apartments INT NOT NULL,
     building_name VARCHAR(255),
@@ -28,7 +28,7 @@ CREATE TABLE users (
 
 -- BUILDING_MANAGERS
 CREATE TABLE building_managers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     building_id UUID NOT NULL REFERENCES buildings(id) ON DELETE CASCADE,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -40,7 +40,7 @@ CREATE INDEX idx_building_managers_building ON building_managers(building_id);
 
 -- TENANTS
 CREATE TABLE tenants (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     building_id UUID NOT NULL REFERENCES buildings(id) ON DELETE CASCADE,
     tenant_number INT NOT NULL,
@@ -54,7 +54,7 @@ CREATE INDEX idx_tenants_user ON tenants(user_id);
 
 -- TENANT_EXPENSES
 CREATE TABLE tenant_expenses (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     created_by UUID NOT NULL REFERENCES users(id),
     expense_type VARCHAR(100) NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE tenant_expenses (
 
 -- SERVICERS
 CREATE TABLE servicers (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     full_name VARCHAR(255) NOT NULL,
     phone VARCHAR(50) NOT NULL,
     email VARCHAR(255),
@@ -79,7 +79,7 @@ CREATE TABLE servicers (
 
 -- MALFUNCTIONS
 CREATE TABLE malfunctions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     tenant_id UUID NOT NULL REFERENCES tenants(id) ON DELETE CASCADE,
     reporter_id UUID NOT NULL REFERENCES users(id),
     servicer_id UUID REFERENCES servicers(id),
@@ -99,7 +99,7 @@ CREATE INDEX idx_malfunctions_servicer ON malfunctions(servicer_id);
 
 -- INTERVENTIONS
 CREATE TABLE interventions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     malfunction_id UUID NOT NULL REFERENCES malfunctions(id) ON DELETE CASCADE,
     servicer_id UUID NOT NULL REFERENCES servicers(id),
     tenant_id UUID NOT NULL REFERENCES tenants(id),
@@ -115,7 +115,7 @@ CREATE INDEX idx_interventions_malfunction ON interventions(malfunction_id);
 
 -- RATINGS
 CREATE TABLE ratings (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     intervention_id UUID NOT NULL REFERENCES interventions(id) ON DELETE CASCADE,
     servicer_id UUID NOT NULL REFERENCES servicers(id),
     rated_by UUID NOT NULL REFERENCES users(id),
@@ -126,7 +126,7 @@ CREATE TABLE ratings (
 
 -- EVENTS
 CREATE TABLE events (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     building_id UUID REFERENCES buildings(id) ON DELETE CASCADE,
     title VARCHAR(255) NOT NULL,
     scheduled_at TIMESTAMP WITH TIME ZONE NOT NULL,
@@ -139,7 +139,7 @@ CREATE INDEX idx_events_building ON events(building_id);
 
 -- MESSAGES
 CREATE TABLE messages (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     building_id UUID REFERENCES buildings(id) ON DELETE CASCADE,
     posted_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     content TEXT NOT NULL,
@@ -151,7 +151,7 @@ CREATE INDEX idx_messages_building ON messages(building_id);
 
 -- SUGGESTIONS
 CREATE TABLE suggestions (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     building_id UUID REFERENCES buildings(id) ON DELETE CASCADE,
     created_by UUID NOT NULL REFERENCES users(id),
     title VARCHAR(255) NOT NULL,
@@ -165,7 +165,7 @@ CREATE INDEX idx_suggestions_building ON suggestions(building_id);
 
 -- SUGGESTION_VOTES
 CREATE TABLE suggestion_votes (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     suggestion_id UUID NOT NULL REFERENCES suggestions(id) ON DELETE CASCADE,
     voted_by UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     vote BOOLEAN,
@@ -174,7 +174,7 @@ CREATE TABLE suggestion_votes (
 
 -- DOCUMENTS
 CREATE TABLE documents (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     building_id UUID REFERENCES buildings(id) ON DELETE CASCADE,
     uploaded_by UUID NOT NULL REFERENCES users(id),
     title VARCHAR(255) NOT NULL,
@@ -187,7 +187,7 @@ CREATE INDEX idx_documents_building ON documents(building_id);
 
 -- AUDIT_LOGS
 CREATE TABLE audit_logs (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE SET NULL,
     action_type VARCHAR(100) NOT NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -195,7 +195,7 @@ CREATE TABLE audit_logs (
 
 -- GUEST_ACCESS_TOKENS
 CREATE TABLE guest_access_tokens (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id UUID PRIMARY KEY DEFAULT extensions.uuid_generate_v4(),
     token VARCHAR(255) UNIQUE NOT NULL,
     servicer_id UUID NOT NULL REFERENCES servicers(id) ON DELETE CASCADE,
     malfunction_id UUID NOT NULL REFERENCES malfunctions(id) ON DELETE CASCADE,

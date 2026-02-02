@@ -2,7 +2,8 @@
   "extends": "../../tsconfig.json",
   "include": [
     "src",
-    "server.ts"
+    "server.ts",
+    "../../packages/*/src/**/*"
   ],
   "compilerOptions": {
     "module": "NodeNext",

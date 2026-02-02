@@ -1,0 +1,46 @@
+# Ignore node_modules from the build context (we install fresh in Docker)
+node_modules
+
+# Ignore build outputs
+dist
+.angular
+*.tsbuildinfo
+
+# Ignore environment files (use env vars instead)
+.env
+.env.local
+.env.*.local
+
+# Ignore git
+.git
+.gitignore
+
+# Ignore documentation
+README.md
+*.md
+!RAILWAY_DEPLOYMENT.md
+!RAILWAY_QUICKSTART.md
+!README_DEPLOYMENT.md
+
+# Ignore IDE files
+.vscode
+.idea
+*.swp
+*.swo
+
+# Ignore logs
+npm-debug.log
+yarn-error.log
+pnpm-debug.log
+
+# Ignore test coverage
+coverage
+
+# Ignore OS files
+.DS_Store
+Thumbs.db
+
+# Ignore Docker files themselves
+Dockerfile
+.dockerignore
+docker-compose.yml
