@@ -1,9 +1,0 @@
-{
-    "build": {
-        "builder": "DOCKERFILE",
-        "dockerfilePath": "apps/frontend-angular/Dockerfile"
-    },
-    "deploy": {
-        "startCommand": ""
-    }
-}
