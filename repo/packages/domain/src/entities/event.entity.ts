@@ -11,5 +11,3 @@ export const eventSchema = z.object({
 });
 
 export type Event = z.infer<typeof eventSchema>;
-export type CreateEventInput = Omit<Event, 'id' | 'created_at'>;
-export type UpdateEventInput = Partial<Omit<Event, 'id' | 'created_at' | 'created_by' | 'building_id'>>;

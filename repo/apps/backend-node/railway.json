@@ -1,0 +1,9 @@
+{
+    "build": {
+        "builder": "DOCKERFILE",
+        "dockerfilePath": "apps/backend-node/Dockerfile"
+    },
+    "deploy": {
+        "startCommand": ""
+    }
+}
