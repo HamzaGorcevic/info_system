@@ -42,8 +42,6 @@ COPY apps/frontend-angular/nginx.conf.template /etc/nginx/conf.d/default.conf.te
 # Copy built Angular app from builder
 COPY --from=builder /app/apps/frontend-angular/dist/frontend-angular/browser /usr/share/nginx/html
 
-# Default backend URL (overridden by Railway)
-ENV BACKEND_URL=http://backend.railway.internal:3000
 
 # Expose port (Railway will map this)
 EXPOSE 80
