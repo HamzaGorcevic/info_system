@@ -12,7 +12,6 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/frontend-angular/package.json ./apps/frontend-angular/
 COPY packages/domain/package.json ./packages/domain/
 COPY packages/supabase/package.json ./packages/supabase/
-COPY packages/types/package.json ./packages/types/
 
 # Install all dependencies with --shamefully-hoist to flatten dependencies
 RUN pnpm install --frozen-lockfile --shamefully-hoist
@@ -34,14 +33,20 @@ RUN ../../node_modules/.bin/ng build --configuration production
 # Stage 4: Production runtime with nginx
 FROM nginx:alpine AS runner
 
-# Copy custom nginx configuration
-COPY apps/frontend-angular/nginx.conf /etc/nginx/conf.d/default.conf
+# Install envsubst (comes with gettext, which is usually in alpine)
+RUN apk add --no-cache gettext
+
+# Copy custom nginx configuration template
+COPY apps/frontend-angular/nginx.conf.template /etc/nginx/conf.d/default.conf.template
 
 # Copy built Angular app from builder
 COPY --from=builder /app/apps/frontend-angular/dist/frontend-angular/browser /usr/share/nginx/html
 
+# Default backend URL (overridden by Railway)
+ENV BACKEND_URL=http://backend.railway.internal:3000
+
 # Expose port (Railway will map this)
 EXPOSE 80
 
-# Start nginx
-CMD ["nginx", "-g", "daemon off;"]
+# Use envsubst to replace ${BACKEND_URL} in the template and then start nginx
+CMD ["/bin/sh", "-c", "envsubst '${BACKEND_URL}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]

@@ -12,7 +12,6 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/backend-node/package.json ./apps/backend-node/
 COPY packages/domain/package.json ./packages/domain/
 COPY packages/supabase/package.json ./packages/supabase/
-COPY packages/types/package.json ./packages/types/
 
 # Install all dependencies with --shamefully-hoist to flatten dependencies
 # This ensures all packages can find their dependencies in node_modules
