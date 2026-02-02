@@ -12,6 +12,7 @@ COPY pnpm-lock.yaml pnpm-workspace.yaml package.json ./
 COPY apps/frontend-angular/package.json ./apps/frontend-angular/
 COPY packages/domain/package.json ./packages/domain/
 COPY packages/supabase/package.json ./packages/supabase/
+COPY packages/types/package.json ./packages/types/
 
 # Install all dependencies with --shamefully-hoist to flatten dependencies
 RUN pnpm install --frozen-lockfile --shamefully-hoist

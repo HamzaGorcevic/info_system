@@ -40,7 +40,7 @@ coverage
 .DS_Store
 Thumbs.db
 
-# Ignore Docker files themselves
-Dockerfile
-.dockerignore
+# Ignore Docker files themselves (Optional, but included by default by most builders)
+# Dockerfile
+# .dockerignore
 docker-compose.yml
