@@ -1,4 +1,4 @@
-import { Component, Input, inject, OnChanges, SimpleChanges, OnInit } from '@angular/core';
+import { Component, Input, Output, EventEmitter, inject, OnChanges, SimpleChanges, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { AuthService } from '../../../services/auth.service';
@@ -14,16 +14,30 @@ interface NavItem {
   standalone: true,
   imports: [CommonModule, RouterModule],
   template: `
-    <aside class="h-screen w-72 bg-[#1B3C53] text-white flex flex-col fixed left-0 top-0 shadow-2xl z-50 overflow-hidden">
+    <!-- Mobile Backdrop -->
+    <div *ngIf="isOpen" 
+         (click)="close.emit()"
+         class="fixed inset-0 bg-black/50 z-40 lg:hidden backdrop-blur-sm transition-opacity duration-300">
+    </div>
+
+    <aside [class.translate-x-0]="isOpen" 
+           [class.-translate-x-full]="!isOpen"
+           class="h-screen w-72 bg-[#1B3C53] text-white flex flex-col fixed left-0 top-0 shadow-2xl z-50 overflow-hidden transition-transform duration-300 lg:translate-x-0">
       <!-- Logo / Brand -->
       <div class="p-8 pb-4">
-        <div class="flex items-center gap-3 mb-2">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
-            <span class="material-icons text-white text-xl">apartment</span>
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center shadow-lg">
+              <span class="material-icons text-white text-xl">apartment</span>
+            </div>
+            <h1 class="text-2xl font-black tracking-tighter !text-white">
+              BUILDING<span class="text-blue-400">APP</span>
+            </h1>
           </div>
-          <h1 class="text-2xl font-black tracking-tighter !text-white">
-            BUILDING<span class="text-blue-400">APP</span>
-          </h1>
+          <!-- Mobile Close Button -->
+          <button (click)="close.emit()" class="lg:hidden p-2 text-white/70 hover:text-white transition-colors">
+            <span class="material-icons">close</span>
+          </button>
         </div>
         <p class="text-xs text-gray-400 font-medium tracking-widest uppercase pl-1">Management System</p>
       </div>
@@ -32,6 +46,7 @@ interface NavItem {
       <nav class="flex-1 px-4 py-6 space-y-2 overflow-y-auto custom-scrollbar">
         <ng-container *ngFor="let item of navItems">
           <a [routerLink]="item.route" 
+             (click)="close.emit()"
              routerLinkActive="bg-white/10 !text-white shadow-lg translate-x-1"
              class="flex items-center gap-4 px-5 py-4 rounded-2xl text-gray-400 hover:bg-white/5 hover:text-white transition-all duration-300 group">
             <span class="material-icons text-2xl group-hover:scale-110 transition-transform duration-300" 
@@ -81,6 +96,8 @@ interface NavItem {
 })
 export class SidebarComponent implements OnInit, OnChanges {
   @Input() role: 'manager' | 'tenant' = 'tenant';
+  @Input() isOpen = false;
+  @Output() close = new EventEmitter<void>();
 
   private authService = inject(AuthService);
   private router = inject(Router);
