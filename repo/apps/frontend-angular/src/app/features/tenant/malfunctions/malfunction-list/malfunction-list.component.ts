@@ -85,17 +85,10 @@ export class MalfunctionListComponent implements OnInit {
             rating_score: score,
             comment
         }).subscribe({
-            next: () => {
+            next: (newRating: Rating) => {
                 alert('Rating submitted successfully!');
                 if (!malfunction.ratings) malfunction.ratings = [];
-                malfunction.ratings.push({
-                    id: 'temp',
-                    rated_by: user.id,
-                    rating_score: score,
-                    comment,
-                    created_at: new Date().toISOString(),
-                    servicer_id: malfunction.servicer_id ? malfunction.servicer_id : ""
-                });
+                malfunction.ratings.push(newRating);
                 this.cdr.detectChanges();
             },
             error: (err) => {
