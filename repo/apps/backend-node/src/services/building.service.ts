@@ -3,7 +3,7 @@ import { IBuildingRepository, IUserRepository, Building, Tenant } from "@repo/do
 export class BuildingService {
     constructor(
         private buildingRepository: IBuildingRepository,
-        private userRepository?: IUserRepository
+        private userRepository: IUserRepository
     ) { }
 
     async findUnverifiedTenants(
@@ -16,10 +16,6 @@ export class BuildingService {
         userId: string,
         adminId: string
     ): Promise<{ success: boolean }> {
-        if (!this.userRepository) {
-            throw new Error("UserRepository is required for verifyTenant");
-        }
-
         await this.userRepository.verifyUser(userId, adminId);
 
         const tenant = await this.buildingRepository.findTenantByUserId(userId);

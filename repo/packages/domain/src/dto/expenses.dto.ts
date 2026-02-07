@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { expenseSchema } from '../entities/expenses.entity';
+import { expenseSchema } from '../entities/expenses.entity.js';
 
 export const createExpenseSchema = expenseSchema.omit({
     id: true,

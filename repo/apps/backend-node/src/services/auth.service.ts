@@ -4,15 +4,13 @@ import { IUserRepository, IBuildingRepository, RegisterAdminInputDto, LoginInput
 
 export class AuthService {
     constructor(
-        private userRepository?: IUserRepository,
-        private buildingRepository?: IBuildingRepository
+        private userRepository: IUserRepository,
+        private buildingRepository: IBuildingRepository
     ) { }
 
     async registerAdmin(
         input: RegisterAdminInputDto
     ) {
-        if (!this.userRepository) throw new Error("UserRepository is required for registerAdmin");
-
         const { email, password, fullName, buildingName, location, numberApartments } = input;
 
         const { data: building, error: buildingError } = await supabaseAdmin

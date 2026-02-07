@@ -2,7 +2,7 @@ import z from "zod";
 
 export const ratingSchema = z.object({
     id: z.string().uuid(),
-    intervention_id: z.string().uuid().optional(),
+    intervention_id: z.string().uuid(),
     rated_by: z.string().uuid(),
     rating_score: z.number().min(1).max(5),
     comment: z.string().nullable().optional(),

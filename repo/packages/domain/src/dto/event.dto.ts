@@ -1,5 +1,5 @@
 import z from "zod";
-import { eventSchema } from "../entities/event.entity";
+import { eventSchema } from "../entities/event.entity.js";
 
 export const CreateEventSchema = eventSchema.omit({
     id: true,

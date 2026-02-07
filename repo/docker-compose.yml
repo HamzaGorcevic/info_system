@@ -25,6 +25,8 @@ services:
       - "4200:80"
     depends_on:
       - backend
+    environment:
+      - BACKEND_URL=http://backend:3000
     networks:
       - app-network
     restart: unless-stopped

@@ -1,3 +1,3 @@
-export * from './database.types';
+export * from './database.types.js';
 
-export type { Database, Tables, TablesInsert, TablesUpdate } from './database.types';
+export type { Database, Tables, TablesInsert, TablesUpdate } from './database.types.js';
