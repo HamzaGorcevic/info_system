@@ -33,16 +33,17 @@ RUN ../../node_modules/.bin/ng build --configuration production
 # Stage 4: Production runtime with nginx
 FROM nginx:alpine AS runner
 
+# Install gettext for envsubst
+RUN apk add --no-cache gettext
 
-# Copy custom nginx configuration
-COPY apps/frontend-angular/nginx.conf /etc/nginx/conf.d/default.conf
+# Copy nginx config template
+COPY apps/frontend-angular/nginx.conf /etc/nginx/templates/default.conf.template
 
 # Copy built Angular app from builder
 COPY --from=builder /app/apps/frontend-angular/dist/frontend-angular/browser /usr/share/nginx/html
 
-
-# Expose port (Railway will map this)
+# Expose port
 EXPOSE 80
 
-# Start nginx
+# Start nginx (envsubst will automatically process templates in /etc/nginx/templates/)
 CMD ["nginx", "-g", "daemon off;"]
