@@ -1,6 +1,7 @@
 import { IContext } from "../types/context.interface.js";
 import { AuthService } from "../services/auth.service.js";
 import { BuildingService } from "../services/building.service.js";
+import { supabaseAdmin } from "@repo/supabase";
 import { MalfunctionsService } from "../services/malfunctions.service.js";
 import { ServicersService } from "../services/servicers.service.js";
 import { EventsService } from "../services/events.service.js";
@@ -14,9 +15,11 @@ import { RepositoryFactory } from "./repository.factory.js";
 
 export class ServiceFactory {
     static getAuthService(context: IContext): AuthService {
-        const userRepository = RepositoryFactory.getUserRepository(context);
-        const buildingRepository = RepositoryFactory.getBuildingRepository(context);
-        return new AuthService(userRepository, buildingRepository);
+        const adminContext = { ...context, db: supabaseAdmin };
+        const userRepository = RepositoryFactory.getUserRepository(adminContext);
+        const buildingRepository = RepositoryFactory.getBuildingRepository(adminContext);
+        const tenantRepository = RepositoryFactory.getTenantRepository(adminContext);
+        return new AuthService(userRepository, buildingRepository, tenantRepository);
     }
 
     static getBuildingService(context: IContext): BuildingService {

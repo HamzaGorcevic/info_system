@@ -64,5 +64,14 @@ export class UserRepository implements IUserRepository {
         if (error) throw new Error(error.message);
     }
 
+    async delete(id: string): Promise<void> {
+        const { error } = await this.client
+            .from('users')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw new Error(error.message);
+    }
+
 
 }

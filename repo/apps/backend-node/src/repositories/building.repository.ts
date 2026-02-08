@@ -1,5 +1,5 @@
 import { SupabaseClient } from "@repo/supabase";
-import { IBuildingRepository, Building, Tenant, UpdateTenantDto } from "@repo/domain";
+import { IBuildingRepository, Building, Tenant, UpdateTenantDto, CreateBuildingDto } from "@repo/domain";
 import { Database } from "@repo/types";
 
 export class BuildingRepository implements IBuildingRepository {
@@ -84,5 +84,47 @@ export class BuildingRepository implements IBuildingRepository {
 
         if (error && error.code !== 'PGRST116') throw new Error(error.message);
         return data as unknown as Tenant | null;
+    }
+
+    async create(building: CreateBuildingDto): Promise<Building> {
+        const { data, error } = await this.client
+            .from('buildings')
+            .insert(building)
+            .select()
+            .single();
+
+        if (error) throw new Error(error.message);
+        return data as unknown as Building;
+    }
+
+    async addManager(buildingId: string, userId: string): Promise<void> {
+        const { error } = await this.client
+            .from('building_managers')
+            .insert({
+                user_id: userId,
+                building_id: buildingId
+            });
+
+        if (error) throw new Error(error.message);
+    }
+
+    async findById(id: string): Promise<Building | null> {
+        const { data, error } = await this.client
+            .from('buildings')
+            .select('*')
+            .eq('id', id)
+            .single();
+
+        if (error) return null;
+        return data as unknown as Building;
+    }
+
+    async delete(id: string): Promise<void> {
+        const { error } = await this.client
+            .from('buildings')
+            .delete()
+            .eq('id', id);
+
+        if (error) throw new Error(error.message);
     }
 }

@@ -7,4 +7,5 @@ export interface IUserRepository {
     create(user: CreateUserDto): Promise<User>;
     update(id: string, user: UpdateUserDto): Promise<User>;
     verifyUser(id: string, adminId: string): Promise<void>;
+    delete(id: string): Promise<void>;
 }

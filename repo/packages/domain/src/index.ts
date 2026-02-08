@@ -34,5 +34,6 @@ export * from './dto/document.dto.js';
 export * from './entities/document.entity.js';
 export * from './entities/guest-access-token.entity.js';
 export * from './dto/guest-access-token.dto.js';
+export * from './repositories/tenants.repository.interface.js';
 
 

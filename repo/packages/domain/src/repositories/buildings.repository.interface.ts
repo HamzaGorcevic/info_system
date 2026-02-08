@@ -1,6 +1,7 @@
 import { Building } from "../entities/building.entity.js";
 import { Tenant } from "../entities/tenant.entity.js";
 import { UpdateTenantDto } from "../dto/tenant.dto.js";
+import { CreateBuildingDto } from "../dto/building.dto.js";
 
 export interface IBuildingRepository {
     findUnverifiedTenants(buildingId: string): Promise<Tenant[]>;
@@ -12,4 +13,9 @@ export interface IBuildingRepository {
 
     findBuildingsByManagerId(userId: string): Promise<Building[]>;
     findTenantById(id: string): Promise<Tenant | null>;
+
+    create(building: CreateBuildingDto): Promise<Building>;
+    addManager(buildingId: string, userId: string): Promise<void>;
+    findById(id: string): Promise<Building | null>;
+    delete(id: string): Promise<void>;
 }

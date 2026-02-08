@@ -1,5 +1,5 @@
 import { IContext } from "../types/context.interface.js";
-import { IMalfunctionRepository, IBuildingRepository, IUserRepository, IStorageService, IServicerRepository, IEventRepository, IMessageRepository, ISuggestionRepository, IExpensesRepository, IDocumentRepository } from "@repo/domain";
+import { IMalfunctionRepository, IBuildingRepository, IUserRepository, IStorageService, IServicerRepository, IEventRepository, IMessageRepository, ISuggestionRepository, IExpensesRepository, IDocumentRepository, ITenantRepository } from "@repo/domain";
 import { MalfunctionsRepository } from "../repositories/malfunctions.repository.js";
 import { BuildingRepository } from "../repositories/building.repository.js";
 import { UserRepository } from "../repositories/user.repository.js";
@@ -10,6 +10,7 @@ import { SuggestionsRepository } from "../repositories/suggestions.repository.js
 import { DocumentsRepository } from "../repositories/documents.repository.js";
 import { SupabaseStorageService } from "../services/storage.service.js";
 import { ExpensesRepository } from "../repositories/expenses.repository.js";
+import { TenantRepository } from "../repositories/tenant.repository.js";
 
 export class RepositoryFactory {
     static getMalfunctionsRepository(context: IContext): IMalfunctionRepository {
@@ -46,6 +47,10 @@ export class RepositoryFactory {
 
     static getExpensesRepository(context: IContext): IExpensesRepository {
         return new ExpensesRepository(context.db);
+    }
+
+    static getTenantRepository(context: IContext): ITenantRepository {
+        return new TenantRepository(context.db);
     }
 
     static getStorageService(context: IContext): IStorageService {
