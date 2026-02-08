@@ -36,8 +36,6 @@ FROM nginx:alpine AS runner
 # Install gettext for envsubst
 RUN apk add --no-cache gettext
 
-# Copy nginx config template
-COPY apps/frontend-angular/nginx.conf /etc/nginx/templates/default.conf.template
 
 # Copy built Angular app from builder
 COPY --from=builder /app/apps/frontend-angular/dist/frontend-angular/browser /usr/share/nginx/html
@@ -45,5 +43,4 @@ COPY --from=builder /app/apps/frontend-angular/dist/frontend-angular/browser /us
 # Expose port
 EXPOSE 80
 
-# Start nginx (envsubst will automatically process templates in /etc/nginx/templates/)
 CMD ["nginx", "-g", "daemon off;"]
