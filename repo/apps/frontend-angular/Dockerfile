@@ -33,8 +33,7 @@ RUN ../../node_modules/.bin/ng build --configuration production
 # Stage 4: Production runtime with nginx
 FROM nginx:alpine AS runner
 
-# Install gettext for envsubst
-RUN apk add --no-cache gettext
+COPY apps/frontend-angular/nginx.conf /etc/nginx/conf.d/default.conf
 
 
 # Copy built Angular app from builder
