@@ -771,6 +771,10 @@ export type Database = {
         Returns: boolean
       }
       is_tenant_owner: { Args: { tenant_id_param: string }; Returns: boolean }
+      get_next_tenant_number: {
+        Args: { p_building_id: string }
+        Returns: number
+      }
     }
     Enums: {
       [_ in never]: never

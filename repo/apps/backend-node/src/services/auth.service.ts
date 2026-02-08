@@ -147,21 +147,15 @@ export class AuthService {
         }
 
         try {
-            const maxTenantNumber = await this.tenantRepository.findMaxTenantNumber(buildingId);
-            const nextTenantNumber = maxTenantNumber + 1;
+            const nextTenantNumber = await this.tenantRepository.getNextTenantNumber(buildingId);
 
             await this.tenantRepository.create({
                 user_id: userId,
                 building_id: buildingId,
                 apartment_number: apartmentNumber,
                 tenant_number: nextTenantNumber,
-                is_owner: false, // Default
-                move_in_date: new Date() // Default or needed? Check DTO. DTO is partial of Schema. Schema likely has defaults.
-                // Checking DTOs/Entities is hard without viewing, but `createTenantSchema` omitted ID, created_at. 
-                // Let's assume other fields are optional or handled by DB defaults if not provided.
-                // Wait, `tenant_number` was calculated manually. 
-            } as any); // Casting as any to avoid strict DTO check failure without viewing DTO details deeply. 
-            // Ideally should check CreateTenantDto.
+                is_owner: false,
+            } as any);
         } catch (tenantError: any) {
             await supabaseAdmin.auth.admin.deleteUser(userId);
             await this.userRepository.delete(userId);

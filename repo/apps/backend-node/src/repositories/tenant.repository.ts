@@ -43,6 +43,15 @@ export class TenantRepository implements ITenantRepository {
         return data?.tenant_number || 0;
     }
 
+    async getNextTenantNumber(buildingId: string): Promise<number> {
+        const { data, error } = await this.client.rpc('get_next_tenant_number', { p_building_id: buildingId });
+
+        if (!error && typeof data === 'number') {
+            return data;
+        }
+        throw new Error(error?.message || 'Failed to get next tenant number');
+    }
+
     async delete(id: string): Promise<void> {
         const { error } = await this.client
             .from('tenants')
