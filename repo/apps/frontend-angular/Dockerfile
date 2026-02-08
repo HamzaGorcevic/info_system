@@ -33,11 +33,9 @@ RUN ../../node_modules/.bin/ng build --configuration production
 # Stage 4: Production runtime with nginx
 FROM nginx:alpine AS runner
 
-# Install envsubst (comes with gettext, which is usually in alpine)
-RUN apk add --no-cache gettext
 
-# Copy custom nginx configuration template
-COPY apps/frontend-angular/nginx.conf.template /etc/nginx/conf.d/default.conf.template
+# Copy custom nginx configuration
+COPY apps/frontend-angular/nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copy built Angular app from builder
 COPY --from=builder /app/apps/frontend-angular/dist/frontend-angular/browser /usr/share/nginx/html
@@ -46,5 +44,5 @@ COPY --from=builder /app/apps/frontend-angular/dist/frontend-angular/browser /us
 # Expose port (Railway will map this)
 EXPOSE 80
 
-# Use envsubst to replace ${BACKEND_URL} in the template and then start nginx
-CMD ["/bin/sh", "-c", "envsubst '${BACKEND_URL}' < /etc/nginx/conf.d/default.conf.template > /etc/nginx/conf.d/default.conf && exec nginx -g 'daemon off;'"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
