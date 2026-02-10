@@ -54,6 +54,10 @@ export const routes: Routes = [
         canActivate: [roleGuard(['manager'])],
         children: [
             {
+                path: '',
+                component: Dashboard
+            },
+            {
                 path: 'dashboard',
                 component: Dashboard
             },
@@ -122,6 +126,10 @@ export const routes: Routes = [
         component: TenantLayoutComponent,
         canActivate: [roleGuard(['tenant'])],
         children: [
+            {
+                path: '',
+                component: TenantDashboard
+            },
             {
                 path: 'dashboard',
                 component: TenantDashboard
