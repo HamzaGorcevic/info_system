@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MalfunctionService } from '../../../services/malfunction.service';
 import { AuthService } from '../../../services/auth.service';
-import { Malfunction } from '@repo/domain';
+import { Building, Malfunction } from '@repo/domain';
 
 @Component({
   selector: 'app-analytics-dashboard',
@@ -27,7 +27,7 @@ import { Malfunction } from '@repo/domain';
           <p class="text-4xl font-black text-[#1B3C53] mt-2">
             {{ isLoading ? '...' : occupancyRate }}%
           </p>
-          <p class="text-gray-400 text-sm font-bold mt-2">Across all buildings</p>
+          <p class="text-gray-400 text-sm font-bold mt-2">Across building</p>
         </div>
         <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
           <h3 class="text-gray-500 text-sm font-bold uppercase tracking-wider">Active Issues</h3>
@@ -115,14 +115,10 @@ export class AnalyticsDashboardComponent implements OnInit {
     if (user) {
       this.authService.getAdminBuildings(user.id).subscribe({
         next: (buildings) => {
-          console.log('Buildings loaded:', buildings);
-          // Calculate stats from buildings if available
-          // Assuming buildings might have 'tenants_count' or similar, otherwise we default to 0
-          // For now, we'll try to sum up if the property exists, or mock it if needed for demo
           let total = 0;
           let totalUnits = 0;
 
-          buildings.forEach((b: any) => {
+          buildings.forEach((b: Building & { tenants_count: number }) => {
             total += b.tenants_count || 0;
             totalUnits += b.number_apartments || 0;
           });

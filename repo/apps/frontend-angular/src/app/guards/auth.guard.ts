@@ -28,7 +28,7 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
 
         if (authService.isLoggedIn()) {
             const user = authService.currentUser();
-            const targetRoute = user?.role === 'manager' ? '/dashboard' : '/tenant/dashboard';
+            const targetRoute = user?.role === 'manager' ? '/admin/analytics' : '/tenant/dashboard';
 
             // Prevent infinite loop if we are already trying to access the target route
             if (state.url === targetRoute) {
@@ -58,7 +58,7 @@ export const guestGuard: CanActivateFn = () => {
     if (authService.isLoggedIn()) {
         const user = authService.currentUser();
         if (user?.role === 'manager') {
-            router.navigate(['/dashboard']);
+            router.navigate(['/admin/analytics']);
         } else {
             router.navigate(['/tenant/dashboard']);
         }

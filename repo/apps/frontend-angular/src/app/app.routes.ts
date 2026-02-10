@@ -55,7 +55,7 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                redirectTo: 'dashboard',
+                redirectTo: 'admin/analytics',
                 pathMatch: 'full'
             },
             {
@@ -183,11 +183,11 @@ export const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: 'dashboard',
+        redirectTo: 'admin/analytics',
         pathMatch: 'full'
     },
     {
         path: '**',
-        redirectTo: 'dashboard'
+        redirectTo: 'admin/analytics'
     }
 ];

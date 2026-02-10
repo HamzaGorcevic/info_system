@@ -117,7 +117,6 @@ export class SidebarComponent implements OnInit, OnChanges {
   private updateNavItems() {
     if (this.role === 'manager') {
       this.navItems = [
-        { label: 'Dashboard', icon: 'dashboard', route: '/dashboard' },
         { label: 'Analytics', icon: 'analytics', route: '/admin/analytics' },
         { label: 'My Buildings', icon: 'domain', route: '/admin/qr' },
         { label: 'Tenants', icon: 'people', route: '/admin/tenants' },
@@ -128,10 +127,11 @@ export class SidebarComponent implements OnInit, OnChanges {
         { label: 'Announcements', icon: 'campaign', route: '/admin/announcements' },
         { label: 'Documents', icon: 'folder', route: '/admin/documents' },
         { label: 'Expenses', icon: 'receipt_long', route: '/admin/expenses' },
+        { label: 'Quick Navigator', icon: 'apps', route: '/dashboard' },
       ];
     } else {
       this.navItems = [
-        { label: 'Dashboard', icon: 'home', route: '/tenant/dashboard' },
+        { label: 'Home', icon: 'home', route: '/tenant/dashboard' },
         { label: 'My Stats', icon: 'pie_chart', route: '/tenant/stats' },
         { label: 'Malfunctions', icon: 'build', route: '/tenant/malfunctions' },
         { label: 'Suggestions', icon: 'lightbulb', route: '/tenant/suggestions' },
