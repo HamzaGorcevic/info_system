@@ -55,7 +55,8 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                component: Dashboard
+                redirectTo: 'dashboard',
+                pathMatch: 'full'
             },
             {
                 path: 'dashboard',
@@ -128,7 +129,8 @@ export const routes: Routes = [
         children: [
             {
                 path: '',
-                component: TenantDashboard
+                redirectTo: 'dashboard',
+                pathMatch: 'full'
             },
             {
                 path: 'dashboard',
@@ -166,11 +168,7 @@ export const routes: Routes = [
                 path: 'expenses',
                 component: TenantExpensesComponent
             },
-            {
-                path: '',
-                redirectTo: 'dashboard',
-                pathMatch: 'full'
-            }
+
         ]
     },
     {
@@ -185,11 +183,11 @@ export const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: 'login',
+        redirectTo: 'dashboard',
         pathMatch: 'full'
     },
     {
         path: '**',
-        redirectTo: 'login'
+        redirectTo: 'dashboard'
     }
 ];
