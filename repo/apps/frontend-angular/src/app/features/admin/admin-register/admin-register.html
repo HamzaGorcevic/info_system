@@ -134,15 +134,8 @@
 
                                 <!-- Location -->
                                 <div class="relative">
-                                    <input type="text" id="location" formControlName="location"
-                                        class="peer input-field placeholder-transparent" placeholder=" ">
-                                    <label for="location"
-                                        class="absolute left-6 top-5 z-10 origin-[0] -translate-y-0 scale-100 transform px-2 text-sm font-bold text-[#456882]/60 duration-300 bg-transparent
-                                        peer-placeholder-shown:top-5 peer-placeholder-shown:-translate-y-0 peer-placeholder-shown:scale-100 peer-placeholder-shown:bg-transparent
-                                        peer-focus:-top-3 peer-focus:-translate-y-0 peer-focus:scale-90 peer-focus:bg-white peer-focus:text-[#1B3C53]
-                                        peer-not-placeholder-shown:-top-3 peer-not-placeholder-shown:-translate-y-0 peer-not-placeholder-shown:scale-90 peer-not-placeholder-shown:bg-white peer-not-placeholder-shown:text-[#1B3C53]">
-                                        LOCATION / ADDRESS
-                                    </label>
+                                    <app-location-picker formControlName="location"
+                                        label="LOCATION / ADDRESS"></app-location-picker>
                                 </div>
 
                                 <!-- Number of Apartments -->

@@ -5,12 +5,13 @@ import { AuthService } from '../../../services/auth.service';
 import { Router, RouterModule } from '@angular/router';
 import { UiButton } from '../../../shared/ui/button/button';
 import { UiModal } from '../../../shared/ui/modal/modal';
+import { LocationPicker } from '../../../shared/ui/location-picker/location-picker';
 import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-admin-register',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, UiButton, UiModal, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, UiButton, UiModal, RouterModule, LocationPicker],
   templateUrl: './admin-register.html',
   styleUrl: './admin-register.css',
 })
