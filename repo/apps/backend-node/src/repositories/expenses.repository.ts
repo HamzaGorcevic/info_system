@@ -62,8 +62,8 @@ export class ExpensesRepository implements IExpensesRepository {
     async findByCreator(userId: string): Promise<Expense[]> {
         const { data: expenses, error } = await this.db
             .from('tenant_expenses')
-            .select('*, tenants!inner(buildings!inner(manager_id))')
-            .eq('tenants.buildings.manager_id', userId)
+            .select('*, tenants!inner(buildings!inner(building_managers!inner(user_id)))')
+            .eq('tenants.buildings.building_managers.user_id', userId)
             .order('created_at', { ascending: false });
 
         if (error) throw error;
