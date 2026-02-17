@@ -22,6 +22,7 @@ WORKDIR /app
 
 # Copy dependencies from deps stage
 COPY --from=deps /app/node_modules ./node_modules
+COPY --from=deps /app/apps/frontend-angular/node_modules ./apps/frontend-angular/node_modules
 
 # Copy all source code
 COPY . .
