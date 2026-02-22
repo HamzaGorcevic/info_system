@@ -24,7 +24,7 @@ import { BuildingService } from '../../../services/building.service';
         <div class="p-8 text-center text-gray-400">
           <span class="material-icons text-6xl mb-4 opacity-20">folder_open</span>
           <p class="font-bold">No documents uploaded yet</p>
-          <p class="text-sm mt-2">Upload building regulations, meeting minutes, or notices.</p>
+          <p class="text-sm mt-2">Upload building regulations, meeting minutes, or notices (max 10MB).</p>
         </div>
       </div>
 
@@ -89,6 +89,27 @@ export class AdminDocumentsComponent implements OnInit {
   onFileSelected(event: any) {
     const file = event.target.files[0];
     if (file && this.buildingId) {
+      // Limit: 10MB for documents
+      if (file.size > 10 * 1024 * 1024) {
+        alert('File is too large. Maximum size is 10MB.');
+        event.target.value = '';
+        return;
+      }
+
+      const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'image/jpeg',
+        'image/png'
+      ];
+
+      if (!allowedTypes.includes(file.type)) {
+        alert('Invalid file type. Only PDF, Word documents, and images are allowed.');
+        event.target.value = '';
+        return;
+      }
+
       const title = prompt('Enter document title:', file.name);
       if (title) {
         this.isUploading = true;

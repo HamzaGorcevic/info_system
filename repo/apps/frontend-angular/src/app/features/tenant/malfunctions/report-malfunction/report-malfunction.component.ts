@@ -41,6 +41,19 @@ export class ReportMalfunctionComponent {
         const input = event.target as HTMLInputElement;
         if (input.files && input.files[0]) {
             const file = input.files[0];
+
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File is too large. Maximum size is 5MB.');
+                input.value = '';
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                alert('Only image files are allowed.');
+                input.value = '';
+                return;
+            }
+
             this.selectedFile = file;
             this.reportForm.patchValue({ image: file });
             this.reportForm.get('image')?.updateValueAndValidity();
