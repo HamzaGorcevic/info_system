@@ -1,13 +1,13 @@
 import {
-    Component,
-    Input,
-    forwardRef,
-    ViewChild,
-    ElementRef,
-    AfterViewInit,
-    OnDestroy,
-    ChangeDetectorRef,
-    ChangeDetectionStrategy,
+  Component,
+  Input,
+  forwardRef,
+  ViewChild,
+  ElementRef,
+  AfterViewInit,
+  OnDestroy,
+  ChangeDetectorRef,
+  ChangeDetectionStrategy,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NG_VALUE_ACCESSOR, ControlValueAccessor } from '@angular/forms';
@@ -16,30 +16,30 @@ import * as L from 'leaflet';
 // Fix Leaflet default icon issue with bundlers
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
-    iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-    iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-    shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
 });
 
 interface NominatimResult {
-    display_name: string;
-    lat: string;
-    lon: string;
+  display_name: string;
+  lat: string;
+  lon: string;
 }
 
 @Component({
-    selector: 'app-location-picker',
-    standalone: true,
-    imports: [CommonModule, FormsModule],
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    providers: [
-        {
-            provide: NG_VALUE_ACCESSOR,
-            useExisting: forwardRef(() => LocationPicker),
-            multi: true,
-        },
-    ],
-    template: `
+  selector: 'app-location-picker',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => LocationPicker),
+      multi: true,
+    },
+  ],
+  template: `
     <!-- Trigger Button — mimics the same input-field + floating label as other form fields -->
     <div class="location-trigger" (click)="openDialog()" [class.has-value]="!!value">
       <div class="location-input-fake">
@@ -65,7 +65,7 @@ interface NominatimResult {
             </svg>
             <span>SELECT LOCATION</span>
           </div>
-          <button class="map-dialog-close" (click)="closeDialog()">
+          <button type="button" class="map-dialog-close" (click)="closeDialog()">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
               <line x1="18" y1="6" x2="6" y2="18"></line>
               <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -85,10 +85,11 @@ interface NominatimResult {
               type="text"
               class="map-search-input"
               [(ngModel)]="searchQuery"
-              (keydown.enter)="searchLocation()"
+              (keydown.enter)="$event.preventDefault(); $event.stopPropagation(); searchLocation()"
               placeholder="Search for an address or place..."
             />
             <button
+              type="button"
               class="map-search-btn"
               (click)="searchLocation()"
               [disabled]="searching"
@@ -100,6 +101,7 @@ interface NominatimResult {
           <!-- Search Results -->
           <div class="map-search-results" *ngIf="searchResults.length > 0">
             <button
+              type="button"
               class="map-search-result-item"
               *ngFor="let result of searchResults"
               (click)="selectSearchResult(result)"
@@ -129,8 +131,9 @@ interface NominatimResult {
             <span>Click on the map or search to select a location</span>
           </div>
           <div class="map-dialog-actions">
-            <button class="map-btn-cancel" (click)="closeDialog()">CANCEL</button>
+            <button type="button" class="map-btn-cancel" (click)="closeDialog()">CANCEL</button>
             <button
+              type="button"
               class="map-btn-confirm"
               (click)="confirmSelection()"
               [disabled]="!selectedAddress"
@@ -142,8 +145,8 @@ interface NominatimResult {
       </div>
     </div>
   `,
-    styles: [
-        `
+  styles: [
+    `
       /* ========= Trigger — matches .input-field exactly ========= */
       .location-trigger {
         position: relative;
@@ -586,198 +589,198 @@ interface NominatimResult {
         }
       }
     `,
-    ],
+  ],
 })
 export class LocationPicker implements AfterViewInit, OnDestroy, ControlValueAccessor {
-    @Input() label = 'LOCATION / ADDRESS';
-    @ViewChild('mapContainer') mapContainer!: ElementRef;
-    @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
+  @Input() label = 'LOCATION / ADDRESS';
+  @ViewChild('mapContainer') mapContainer!: ElementRef;
+  @ViewChild('searchInput') searchInput!: ElementRef<HTMLInputElement>;
 
-    value: string = '';
-    isOpen = false;
-    searchQuery = '';
-    searchResults: NominatimResult[] = [];
-    searching = false;
-    selectedAddress: string = '';
+  value: string = '';
+  isOpen = false;
+  searchQuery = '';
+  searchResults: NominatimResult[] = [];
+  searching = false;
+  selectedAddress: string = '';
 
-    private map!: L.Map;
-    private marker: L.Marker | null = null;
-    private searchTimeout: any;
+  private map!: L.Map;
+  private marker: L.Marker | null = null;
+  private searchTimeout: any;
 
-    private onChange: (val: string) => void = () => { };
-    private onTouched: () => void = () => { };
+  private onChange: (val: string) => void = () => { };
+  private onTouched: () => void = () => { };
 
-    constructor(private cdr: ChangeDetectorRef) { }
+  constructor(private cdr: ChangeDetectorRef) { }
 
-    ngAfterViewInit() { }
+  ngAfterViewInit() { }
 
-    ngOnDestroy() {
-        this.destroyMap();
+  ngOnDestroy() {
+    this.destroyMap();
+  }
+
+  // ControlValueAccessor
+  writeValue(val: string): void {
+    this.value = val || '';
+    this.selectedAddress = this.value;
+    this.cdr.markForCheck();
+  }
+
+  registerOnChange(fn: any): void {
+    this.onChange = fn;
+  }
+
+  registerOnTouched(fn: any): void {
+    this.onTouched = fn;
+  }
+
+  // Dialog
+  openDialog() {
+    this.isOpen = true;
+    this.selectedAddress = this.value || '';
+    this.searchResults = [];
+    this.cdr.markForCheck();
+
+    // Wait for the DOM to render
+    setTimeout(() => this.initMap(), 50);
+  }
+
+  closeDialog() {
+    this.isOpen = false;
+    this.searchResults = [];
+    this.destroyMap();
+    this.cdr.markForCheck();
+  }
+
+  onOverlayClick(event: MouseEvent) {
+    if ((event.target as HTMLElement).classList.contains('map-overlay')) {
+      this.closeDialog();
+    }
+  }
+
+  confirmSelection() {
+    if (this.selectedAddress) {
+      this.value = this.selectedAddress;
+      this.onChange(this.value);
+      this.onTouched();
+      this.closeDialog();
+    }
+  }
+
+  // Map
+  private initMap() {
+    if (!this.mapContainer?.nativeElement) return;
+
+    this.map = L.map(this.mapContainer.nativeElement, {
+      zoomControl: true,
+    }).setView([43.8563, 18.4131], 13); // Default: Sarajevo
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(this.map);
+
+    // If there's already a selected address, try to geocode it
+    if (this.value) {
+      this.geocodeAndMark(this.value);
     }
 
-    // ControlValueAccessor
-    writeValue(val: string): void {
-        this.value = val || '';
-        this.selectedAddress = this.value;
+    // On map click, reverse geocode
+    this.map.on('click', (e: L.LeafletMouseEvent) => {
+      this.reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+
+    // Force a map size recalculation after dialog animation
+    setTimeout(() => {
+      this.map?.invalidateSize();
+    }, 400);
+
+    // Focus search input
+    setTimeout(() => {
+      this.searchInput?.nativeElement?.focus();
+    }, 500);
+  }
+
+  private destroyMap() {
+    if (this.map) {
+      this.map.remove();
+      this.map = null as any;
+    }
+    this.marker = null;
+  }
+
+  private setMarker(lat: number, lng: number) {
+    if (this.marker) {
+      this.marker.setLatLng([lat, lng]);
+    } else {
+      this.marker = L.marker([lat, lng]).addTo(this.map);
+    }
+    this.map.setView([lat, lng], Math.max(this.map.getZoom(), 15));
+  }
+
+  // Search
+  searchLocation() {
+    const query = this.searchQuery.trim();
+    if (!query) return;
+
+    this.searching = true;
+    this.searchResults = [];
+    this.cdr.markForCheck();
+
+    fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
+    )
+      .then((res) => res.json())
+      .then((results: NominatimResult[]) => {
+        this.searchResults = results;
+        this.searching = false;
         this.cdr.markForCheck();
-    }
-
-    registerOnChange(fn: any): void {
-        this.onChange = fn;
-    }
-
-    registerOnTouched(fn: any): void {
-        this.onTouched = fn;
-    }
-
-    // Dialog
-    openDialog() {
-        this.isOpen = true;
-        this.selectedAddress = this.value || '';
-        this.searchResults = [];
+      })
+      .catch(() => {
+        this.searching = false;
         this.cdr.markForCheck();
+      });
+  }
 
-        // Wait for the DOM to render
-        setTimeout(() => this.initMap(), 50);
-    }
+  selectSearchResult(result: NominatimResult) {
+    const lat = parseFloat(result.lat);
+    const lng = parseFloat(result.lon);
+    this.selectedAddress = result.display_name;
+    this.searchResults = [];
+    this.searchQuery = result.display_name;
+    this.setMarker(lat, lng);
+    this.cdr.markForCheck();
+  }
 
-    closeDialog() {
-        this.isOpen = false;
-        this.searchResults = [];
-        this.destroyMap();
-        this.cdr.markForCheck();
-    }
+  private reverseGeocode(lat: number, lng: number) {
+    this.setMarker(lat, lng);
 
-    onOverlayClick(event: MouseEvent) {
-        if ((event.target as HTMLElement).classList.contains('map-overlay')) {
-            this.closeDialog();
+    fetch(
+      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
+    )
+      .then((res) => res.json())
+      .then((data: any) => {
+        if (data.display_name) {
+          this.selectedAddress = data.display_name;
+          this.searchQuery = data.display_name;
+          this.cdr.markForCheck();
         }
-    }
+      })
+      .catch(() => { });
+  }
 
-    confirmSelection() {
-        if (this.selectedAddress) {
-            this.value = this.selectedAddress;
-            this.onChange(this.value);
-            this.onTouched();
-            this.closeDialog();
+  private geocodeAndMark(address: string) {
+    fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`
+    )
+      .then((res) => res.json())
+      .then((results: NominatimResult[]) => {
+        if (results.length > 0) {
+          const lat = parseFloat(results[0].lat);
+          const lng = parseFloat(results[0].lon);
+          this.setMarker(lat, lng);
         }
-    }
-
-    // Map
-    private initMap() {
-        if (!this.mapContainer?.nativeElement) return;
-
-        this.map = L.map(this.mapContainer.nativeElement, {
-            zoomControl: true,
-        }).setView([43.8563, 18.4131], 13); // Default: Sarajevo
-
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution:
-                '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-            maxZoom: 19,
-        }).addTo(this.map);
-
-        // If there's already a selected address, try to geocode it
-        if (this.value) {
-            this.geocodeAndMark(this.value);
-        }
-
-        // On map click, reverse geocode
-        this.map.on('click', (e: L.LeafletMouseEvent) => {
-            this.reverseGeocode(e.latlng.lat, e.latlng.lng);
-        });
-
-        // Force a map size recalculation after dialog animation
-        setTimeout(() => {
-            this.map?.invalidateSize();
-        }, 400);
-
-        // Focus search input
-        setTimeout(() => {
-            this.searchInput?.nativeElement?.focus();
-        }, 500);
-    }
-
-    private destroyMap() {
-        if (this.map) {
-            this.map.remove();
-            this.map = null as any;
-        }
-        this.marker = null;
-    }
-
-    private setMarker(lat: number, lng: number) {
-        if (this.marker) {
-            this.marker.setLatLng([lat, lng]);
-        } else {
-            this.marker = L.marker([lat, lng]).addTo(this.map);
-        }
-        this.map.setView([lat, lng], Math.max(this.map.getZoom(), 15));
-    }
-
-    // Search
-    searchLocation() {
-        const query = this.searchQuery.trim();
-        if (!query) return;
-
-        this.searching = true;
-        this.searchResults = [];
-        this.cdr.markForCheck();
-
-        fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5`
-        )
-            .then((res) => res.json())
-            .then((results: NominatimResult[]) => {
-                this.searchResults = results;
-                this.searching = false;
-                this.cdr.markForCheck();
-            })
-            .catch(() => {
-                this.searching = false;
-                this.cdr.markForCheck();
-            });
-    }
-
-    selectSearchResult(result: NominatimResult) {
-        const lat = parseFloat(result.lat);
-        const lng = parseFloat(result.lon);
-        this.selectedAddress = result.display_name;
-        this.searchResults = [];
-        this.searchQuery = result.display_name;
-        this.setMarker(lat, lng);
-        this.cdr.markForCheck();
-    }
-
-    private reverseGeocode(lat: number, lng: number) {
-        this.setMarker(lat, lng);
-
-        fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`
-        )
-            .then((res) => res.json())
-            .then((data: any) => {
-                if (data.display_name) {
-                    this.selectedAddress = data.display_name;
-                    this.searchQuery = data.display_name;
-                    this.cdr.markForCheck();
-                }
-            })
-            .catch(() => { });
-    }
-
-    private geocodeAndMark(address: string) {
-        fetch(
-            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}&limit=1`
-        )
-            .then((res) => res.json())
-            .then((results: NominatimResult[]) => {
-                if (results.length > 0) {
-                    const lat = parseFloat(results[0].lat);
-                    const lng = parseFloat(results[0].lon);
-                    this.setMarker(lat, lng);
-                }
-            })
-            .catch(() => { });
-    }
+      })
+      .catch(() => { });
+  }
 }
