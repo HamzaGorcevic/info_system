@@ -20,8 +20,7 @@ import { CreateAnnouncementComponent } from './features/admin/events-messages/cr
 import { AnnouncementsListComponent } from './features/tenant/events-messages/announcements-list.component';
 import { AnnouncementsBuildingListComponent } from './features/admin/events-messages/announcements-building-list.component';
 
-import { SuggestionListComponent } from './features/tenant/suggestions/suggestion-list.component';
-import { SuggestionCreateComponent } from './features/tenant/suggestions/suggestion-create.component';
+import { TenantSuggestionsComponent } from './features/tenant/suggestions/tenant-suggestions.component';
 import { SuggestionsBuildingListComponent } from './features/admin/suggestions/suggestions-building-list.component';
 import { ManagerSuggestionsComponent } from './features/admin/suggestions/manager-suggestions.component';
 import { TenantLayoutComponent } from './layout/tenant-layout/tenant-layout.component';
@@ -150,11 +149,7 @@ export const routes: Routes = [
             },
             {
                 path: 'suggestions',
-                component: SuggestionListComponent
-            },
-            {
-                path: 'suggestions/new',
-                component: SuggestionCreateComponent
+                component: TenantSuggestionsComponent
             },
             {
                 path: 'documents',
