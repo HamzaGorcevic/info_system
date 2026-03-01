@@ -5,11 +5,12 @@ import { SuggestionService } from '../../../services/suggestion.service';
 import { SuggestionWithVote } from '@repo/domain';
 
 import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.component';
+import { UiButton } from '../../../shared/ui/button/button';
 
 @Component({
   selector: 'app-manager-suggestions',
   standalone: true,
-  imports: [CommonModule, BackButtonComponent],
+  imports: [CommonModule, BackButtonComponent, UiButton],
   template: `
 
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
@@ -53,12 +54,16 @@ import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.
 
               <!-- Delete Action -->
               <div class="absolute top-8 right-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button 
-                  (click)="deleteSuggestion(suggestion.id)"
-                  class="bg-red-50 hover:bg-red-500 text-red-500 hover:text-white p-3 rounded-xl transition-all duration-300 flex items-center gap-2 group/btn">
-                  <span class="material-icons text-xl">delete_outline</span>
-                  <span class="font-bold text-xs pr-1">REMOVE</span>
-                </button>
+                <app-ui-button
+                  variant="outline"
+                  customClass="!border-red-200 !text-red-500 hover:!bg-red-500 hover:!text-white !py-2 !px-4 !text-xs"
+                  [loading]="deletingId === suggestion.id"
+                  [disabled]="!!deletingId"
+                  (btnClick)="deleteSuggestion(suggestion.id)"
+                >
+                  <span class="material-icons text-base">delete_outline</span>
+                  REMOVE
+                </app-ui-button>
               </div>
             </div>
           </div>
@@ -76,6 +81,7 @@ import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.
 export class ManagerSuggestionsComponent implements OnInit {
   suggestions: SuggestionWithVote[] = [];
   buildingId: string = '';
+  deletingId: string | null = null;
 
   private suggestionService = inject(SuggestionService);
   private route = inject(ActivatedRoute);
@@ -93,13 +99,26 @@ export class ManagerSuggestionsComponent implements OnInit {
   loadSuggestions() {
     this.suggestionService.getSuggestionsByBuilding(this.buildingId).subscribe(suggestions => {
       this.suggestions = suggestions;
+      this.cdr.detectChanges();
     });
   }
 
   deleteSuggestion(id: string) {
     if (confirm('Are you sure you want to remove this suggestion?')) {
-      this.suggestionService.deleteSuggestion(id).subscribe(() => {
-        this.suggestions = this.suggestions.filter(s => s.id !== id);
+      this.deletingId = id;
+      this.cdr.detectChanges();
+      this.suggestionService.deleteSuggestion(id).subscribe({
+        next: () => {
+          this.suggestions = this.suggestions.filter(s => s.id !== id);
+          this.deletingId = null;
+          this.cdr.detectChanges();
+        },
+        error: err => {
+          this.deletingId = null;
+          this.cdr.detectChanges();
+          console.error('Delete failed', err);
+          alert('Failed to remove suggestion. Please try again.');
+        }
       });
     }
   }

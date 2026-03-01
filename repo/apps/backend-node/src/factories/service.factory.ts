@@ -50,7 +50,8 @@ export class ServiceFactory {
     }
 
     static getSuggestionsService(context: IContext): SuggestionsService {
-        const suggestionsRepository = RepositoryFactory.getSuggestionsRepository(context);
+        const adminContext = { ...context, db: supabaseAdmin };
+        const suggestionsRepository = RepositoryFactory.getSuggestionsRepository(adminContext);
         return new SuggestionsService(suggestionsRepository);
     }
 

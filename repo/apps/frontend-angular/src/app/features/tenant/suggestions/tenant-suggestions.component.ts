@@ -61,7 +61,7 @@ import { UiButton } from '../../../shared/ui/button/button';
                 ></textarea>
               </div>
               <div class="pt-4">
-                <app-ui-button variant="primary" customClass="w-full !py-5" (btnClick)="createSuggestion()">
+                <app-ui-button variant="primary" customClass="w-full !py-5" (btnClick)="createSuggestion()" [loading]="submitting">
                   SUBMIT SUGGESTION
                 </app-ui-button>
               </div>
@@ -134,6 +134,7 @@ import { UiButton } from '../../../shared/ui/button/button';
 export class TenantSuggestionsComponent {
   suggestions: SuggestionWithVote[] = [];
   showForm = false;
+  submitting = false;
   newSuggestion: Partial<CreateSuggestionDto> = {};
   buildingId: string = '';
 
@@ -181,10 +182,19 @@ export class TenantSuggestionsComponent {
       created_by: user.id
     };
 
-    this.suggestionService.createSuggestion(input).subscribe(() => {
-      this.newSuggestion = {};
-      this.showForm = false;
-      this.loadSuggestions();
+    this.submitting = true;
+    this.suggestionService.createSuggestion(input).subscribe({
+      next: () => {
+        this.newSuggestion = {};
+        this.showForm = false;
+        this.submitting = false;
+        this.loadSuggestions();
+      },
+      error: err => {
+        this.submitting = false;
+        console.error('Failed to create suggestion', err);
+        alert('Failed to create suggestion. Please try again.');
+      }
     });
   }
 
