@@ -81,17 +81,13 @@ export class BuildingQR implements OnInit {
   ) { }
 
   ngOnInit() {
-    const sessionStr = localStorage.getItem('sb-session');
-    if (sessionStr) {
-      const session = JSON.parse(sessionStr);
-      if (session.user) {
-        this.authService.getAdminBuildings(session.user.id).subscribe((res: any[]) => {
-          this.buildings = res;
-          this.cdr.detectChanges();
-          setTimeout(() => this.generateQRs(), 100);
-        });
+    this.authService.getManagerBuilding().subscribe(building => {
+      if (building) {
+        this.buildings = [building];
+        this.cdr.detectChanges();
+        setTimeout(() => this.generateQRs(), 100);
       }
-    }
+    });
   }
 
   generateQRs() {

@@ -206,13 +206,13 @@ export class AdminExpensesComponent implements OnInit {
   }
 
   loadTenants(userId: string) {
-    this.authService.getAdminBuildings(userId).subscribe(buildings => {
-      buildings.forEach(b => {
-        this.buildingService.getBuildingTenants(b.id).subscribe(t => {
-          this.tenants = [...this.tenants, ...t.map(tenant => ({ ...tenant, building_name: b.building_name }))];
+    this.authService.getManagerBuilding().subscribe(building => {
+      if (building) {
+        this.buildingService.getBuildingTenants(building.id).subscribe(t => {
+          this.tenants = t.map(tenant => ({ ...tenant, building_name: building.building_name }));
           this.cdr.detectChanges();
         });
-      });
+      }
     });
   }
 

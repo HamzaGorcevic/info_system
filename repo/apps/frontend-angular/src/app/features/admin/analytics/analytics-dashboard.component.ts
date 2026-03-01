@@ -2,7 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MalfunctionService } from '../../../services/malfunction.service';
 import { AuthService } from '../../../services/auth.service';
-import { Building, Malfunction } from '@repo/domain';
+import { Malfunction } from '@repo/domain';
 
 @Component({
   selector: 'app-analytics-dashboard',
@@ -110,26 +110,21 @@ export class AnalyticsDashboardComponent implements OnInit {
       }
     });
 
-    // Load Buildings/Tenants (Simulated for now as we lack a direct endpoint)
+    // Load Buildings/Tenants
     const user = this.authService.currentUser();
     if (user) {
-      this.authService.getAdminBuildings(user.id).subscribe({
-        next: (buildings) => {
-          let total = 0;
-          let totalUnits = 0;
-
-          buildings.forEach((b: Building & { tenants_count: number }) => {
-            total += b.tenants_count || 0;
-            totalUnits += b.number_apartments || 0;
-          });
-
-          this.totalTenants = total;
-          this.occupancyRate = totalUnits > 0 ? Math.round((total / totalUnits) * 100) : 0;
-
+      this.authService.getManagerBuilding().subscribe({
+        next: (building) => {
+          if (building) {
+            this.totalTenants = building.tenants_count || 0;
+            this.occupancyRate = building.number_apartments > 0
+              ? Math.round((this.totalTenants / building.number_apartments) * 100)
+              : 0;
+          }
           this.checkLoading();
         },
         error: (err) => {
-          console.error('Error loading buildings:', err);
+          console.error('Error loading building:', err);
           this.checkLoading();
         }
       });

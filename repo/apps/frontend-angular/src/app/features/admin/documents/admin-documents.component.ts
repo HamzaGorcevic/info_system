@@ -67,11 +67,10 @@ export class AdminDocumentsComponent implements OnInit {
   loadDocuments() {
     const user = this.authService.currentUser();
     if (user) {
-      this.authService.getAdminBuildings(user.id).subscribe(buildings => {
-        if (buildings && buildings.length > 0) {
-          this.buildingId = buildings[0].id; // Assuming single building for now
+      this.authService.getManagerBuilding().subscribe(building => {
+        if (building) {
+          this.buildingId = building.id;
           this.documentService.getDocumentsByBuilding(this.buildingId!).subscribe(docs => {
-            console.log('Documents loaded:', docs);
             this.documents = docs;
             this.cdr.detectChanges();
           });

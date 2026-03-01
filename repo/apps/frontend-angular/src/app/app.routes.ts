@@ -18,10 +18,8 @@ import { guestTokenGuard } from './guards/guest-token.guard';
 import { VerificationPendingComponent } from './features/auth/verification-pending/verification-pending.component';
 import { CreateAnnouncementComponent } from './features/admin/events-messages/create-announcement.component';
 import { AnnouncementsListComponent } from './features/tenant/events-messages/announcements-list.component';
-import { AnnouncementsBuildingListComponent } from './features/admin/events-messages/announcements-building-list.component';
 
 import { TenantSuggestionsComponent } from './features/tenant/suggestions/tenant-suggestions.component';
-import { SuggestionsBuildingListComponent } from './features/admin/suggestions/suggestions-building-list.component';
 import { ManagerSuggestionsComponent } from './features/admin/suggestions/manager-suggestions.component';
 import { TenantLayoutComponent } from './layout/tenant-layout/tenant-layout.component';
 import { AdminLayoutComponent } from './layout/admin-layout/admin-layout.component';
@@ -83,18 +81,10 @@ export const routes: Routes = [
             },
             {
                 path: 'admin/announcements',
-                component: AnnouncementsBuildingListComponent
-            },
-            {
-                path: 'admin/announcements/:buildingId',
                 component: CreateAnnouncementComponent
             },
             {
                 path: 'admin/suggestions',
-                component: SuggestionsBuildingListComponent
-            },
-            {
-                path: 'admin/suggestions/:buildingId',
                 component: ManagerSuggestionsComponent
             },
             {

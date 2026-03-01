@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { AuthService } from '../../../services/auth.service';
 import { SuggestionService } from '../../../services/suggestion.service';
 import { SuggestionWithVote } from '@repo/domain';
 
@@ -84,13 +84,13 @@ export class ManagerSuggestionsComponent implements OnInit {
   deletingId: string | null = null;
 
   private suggestionService = inject(SuggestionService);
-  private route = inject(ActivatedRoute);
+  private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
   ngOnInit() {
-    this.route.params.subscribe(params => {
-      this.buildingId = params['buildingId'];
-      if (this.buildingId) {
+    this.authService.getManagerBuilding().subscribe(building => {
+      if (building) {
+        this.buildingId = building.id;
         this.loadSuggestions();
       }
     });

@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { EventService } from '../../../services/event.service';
 import { MessageService } from '../../../services/message.service';
 import { AuthService } from '../../../services/auth.service';
-import { ActivatedRoute } from '@angular/router';
 import { CreateEventDto, CreateMessageDto } from '@repo/domain';
 import { UiCard } from '../../../shared/ui/card/card';
 import { UiButton } from '../../../shared/ui/button/button';
@@ -20,7 +19,7 @@ import { BackButtonComponent } from '../../../shared/ui/back-button/back-button.
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
       <div class="max-w-4xl mx-auto">
         <div class="mb-6">
-            <app-back-button route="/admin/announcements" label="Back to Buildings"></app-back-button>
+            <app-back-button route="/admin/analytics" label="Back to Dashboard"></app-back-button>
         </div>
         
         <header class="mb-12 animate-fade-in-up">
@@ -209,20 +208,18 @@ export class CreateAnnouncementComponent implements OnInit {
   private eventService = inject(EventService);
   private messageService = inject(MessageService);
   private authService = inject(AuthService);
-  private route = inject(ActivatedRoute);
   private cdr = inject(ChangeDetectorRef);
 
-  constructor() {
-    this.route.params.subscribe(params => {
-      this.buildingId = params['buildingId'];
-    });
-  }
+  constructor() { }
 
   ngOnInit() {
-    if (this.buildingId) {
-      this.loadEvents();
-      this.loadMessages();
-    }
+    this.authService.getManagerBuilding().subscribe(building => {
+      if (building) {
+        this.buildingId = building.id;
+        this.loadEvents();
+        this.loadMessages();
+      }
+    });
   }
 
   loadEvents() {

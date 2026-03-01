@@ -115,20 +115,18 @@ export class TenantManagement implements OnInit {
   }
 
   loadPending(adminId: string) {
-    this.authService.getAdminBuildings(adminId).subscribe({
-      next: (buildings: any[]) => {
-        this.pendingTenants = [];
-        buildings.forEach(building => {
-          this.buildingService.getUnverifiedTenants(building.id).subscribe({
-            next: (tenants: any[]) => {
-              this.pendingTenants = [...this.pendingTenants, ...tenants];
-              this.cdr.detectChanges();
-            },
-            error: (err) => console.error('Error loading tenants for building:', building.id, err)
-          });
+    this.authService.getManagerBuilding().subscribe({
+      next: (building) => {
+        if (!building) return;
+        this.buildingService.getUnverifiedTenants(building.id).subscribe({
+          next: (tenants: any[]) => {
+            this.pendingTenants = tenants;
+            this.cdr.detectChanges();
+          },
+          error: (err) => console.error('Error loading tenants:', err)
         });
       },
-      error: (err) => console.error('Error loading admin buildings:', err)
+      error: (err) => console.error('Error loading building:', err)
     });
   }
 

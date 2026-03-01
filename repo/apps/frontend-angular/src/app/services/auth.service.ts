@@ -1,6 +1,7 @@
 import { Injectable, signal, computed } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, tap } from 'rxjs';
+import { Observable, EMPTY, tap } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 @Injectable({
@@ -65,6 +66,14 @@ export class AuthService {
 
     getAdminBuildings(userId: string): Observable<any[]> {
         return this.http.get<any[]>(`${this.apiUrl}/buildings?userId=${userId}`);
+    }
+
+    getManagerBuilding(): Observable<any> {
+        const user = this.currentUser();
+        if (!user) return EMPTY;
+        return this.getAdminBuildings(user.id).pipe(
+            map((buildings: any[]) => buildings[0] || null)
+        );
     }
 
     logout() {
