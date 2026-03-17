@@ -1,8 +1,7 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
+import '@repo/react-ui';
 import { CommonModule } from '@angular/common';
 import { MalfunctionService } from '../../../../services/malfunction.service';
-import { UiCard } from '../../../../shared/ui/card/card';
-import { UiButton } from '../../../../shared/ui/button/button';
 import { Malfunction, Servicer } from '@repo/domain';
 import { AssignServicerDialogComponent } from '../assign-servicer-dialog/assign-servicer-dialog.component';
 import { TokenSuccessModalComponent } from '../../../../shared/ui/token-success-modal/token-success-modal.component';
@@ -12,7 +11,8 @@ import { BackButtonComponent } from '../../../../shared/ui/back-button/back-butt
 @Component({
   selector: 'app-admin-malfunction-list',
   standalone: true,
-  imports: [CommonModule, UiCard, UiButton, AssignServicerDialogComponent, TokenSuccessModalComponent, BackButtonComponent],
+  imports: [CommonModule, AssignServicerDialogComponent, TokenSuccessModalComponent, BackButtonComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
   template: `
 
     <div class="min-h-screen bg-[#F0F2F5] p-6 md:p-12 pt-0">
@@ -44,51 +44,12 @@ import { BackButtonComponent } from '../../../../shared/ui/back-button/back-butt
           <p class="text-[#456882]">Everything is running smoothly.</p>
         </div>
 
-        <div *ngIf="!isLoading && malfunctions.length > 0" class="grid gap-6">
-          <div *ngFor="let malfunction of malfunctions; let i = index" class="animate-fade-in-up" [style.animation-delay]="i * 50 + 'ms'">
-            <app-ui-card>
-              <div class="flex flex-col md:flex-row gap-6">
-                <!-- Image -->
-                <div class="w-full md:w-48 h-48 rounded-xl overflow-hidden bg-gray-100 shrink-0">
-                  <img *ngIf="malfunction.image_url" [src]="malfunction.image_url" class="w-full h-full object-cover" alt="Malfunction">
-                  <div *ngIf="!malfunction.image_url" class="w-full h-full flex items-center justify-center text-[#456882]">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 opacity-50">
-                      <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
-                    </svg>
-                  </div>
-                </div>
-
-                <!-- Content -->
-                <div class="flex-grow">
-                  <div class="flex justify-between items-start mb-4">
-                    <div>
-                      <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2" 
-                        [ngClass]="getStatusClass(malfunction.status)">
-                        {{ malfunction.status }}
-                      </span>
-                      <h3 class="text-xl font-black text-[#1B3C53]">{{ malfunction.title }}</h3>
-                      <p class="text-[#456882] text-sm font-bold uppercase tracking-wider">{{ malfunction.category }}</p>
-                    </div>
-                    <div class="text-right">
-                      <p class="text-xs font-bold text-[#456882]">REPORTED</p>
-                      <p class="text-sm font-bold text-[#1B3C53]">{{ malfunction.created_at | date:'mediumDate' }}</p>
-                    </div>
-                  </div>
-
-                  <p class="text-[#456882] mb-6 line-clamp-2">{{ malfunction.description }}</p>
-
-                  <div class="flex flex-wrap gap-4 items-center pt-4 border-t border-gray-100">
-                    <app-ui-button 
-                      variant="primary" 
-                      customClass="!py-2 !px-6 !text-xs"
-                      (btnClick)="openAssignDialog(malfunction)">
-                      ASSIGN SERVICER
-                    </app-ui-button>
-                  </div>
-                </div>
-              </div>
-            </app-ui-card>
-          </div>
+        <div *ngIf="!isLoading && malfunctions.length > 0" class="mt-8 animate-fade-in-up">
+          <my-awesome-kanban
+            [attr.malfunctions-json]="malfunctionsJson"
+            (mySecretReactEvent)="onKanbanStatusChange($event)"
+            (assignClick)="onKanbanAssignClick($event)">
+          </my-awesome-kanban>
         </div>
       </div>
 
@@ -138,6 +99,25 @@ export class AdminMalfunctionListComponent implements OnInit {
         this.cdr.detectChanges();
       }
     });
+  }
+
+  get malfunctionsJson() {
+    return JSON.stringify(this.malfunctions);
+  }
+
+  onKanbanStatusChange(event: Event) {
+    const detail = (event as CustomEvent).detail;
+    const { id, status } = detail;
+    const malfunction = this.malfunctions.find(m => m.id === id);
+    if (malfunction) {
+      malfunction.status = status;
+      this.cdr.detectChanges();
+    }
+  }
+
+  onKanbanAssignClick(event: Event) {
+    const malfunction = (event as CustomEvent).detail;
+    this.openAssignDialog(malfunction);
   }
 
   getStatusClass(status: string): string {
